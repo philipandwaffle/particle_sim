@@ -1,6 +1,7 @@
 use bevy::{prelude::*, utils::Instant};
 use bevy_rapier3d::prelude::*;
 use random::Source;
+use serde::{Deserialize, Serialize};
 
 use self::{
     movement_functions::parallel_arc_move_particles,
@@ -22,10 +23,17 @@ pub struct ParticleSpawnInfo {
 }
 
 #[allow(dead_code)]
+#[derive(Debug, Serialize, Deserialize)]
 pub enum Count {
     Random(usize),
     Set(Vec<usize>),
 }
+impl Default for Count {
+    fn default() -> Self {
+        Self::Random(0)
+    }
+}
+
 pub struct ParticlesPlugin {
     pub min: Vec3,
     pub max: Vec3,

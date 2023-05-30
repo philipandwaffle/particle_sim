@@ -11,9 +11,12 @@ use bevy_rapier3d::prelude::*;
 use floating_cam::FloatingCamPlugin;
 use particles::{particle_metadata::AttractionFunc, ParticlesPlugin};
 use wall_bundles::{init_clear_box, init_opaque_box};
+
+mod config;
 mod floating_cam;
 mod particles;
 mod wall_bundles;
+
 fn main() {
     let zero1: AttractionFunc<f32> = |_| return 0.0;
     let reat1: AttractionFunc<f32> = |x| {
