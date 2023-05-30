@@ -8,6 +8,7 @@ use bevy::{
 };
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_rapier3d::prelude::*;
+use config::load_cfg;
 use floating_cam::FloatingCamPlugin;
 use particles::{particle_metadata::AttractionFunc, ParticlesPlugin};
 use wall_bundles::{init_clear_box, init_opaque_box};
@@ -121,6 +122,7 @@ fn main() {
     //     Color::ORANGE,
     // ];
     let colors = vec![Color::RED, Color::GREEN, Color::BLUE];
+    let cfg = load_cfg();
 
     App::new()
         .insert_resource(RapierConfiguration {

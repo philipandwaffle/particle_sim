@@ -1,0 +1,29 @@
+{
+    "spawn": {
+        "min": {
+            "x": -2.0,
+            "y": 2.0,
+            "z": -2.0
+        },
+        "max": {
+            "x": 2.0,
+            "y": 6.0,
+            "z": 2.0
+        },
+        "seed": 42,        
+        "type_id_counts": [1,2,3],
+        // "colors": [
+        //     {
+        //         "red": 1.0,            
+        //         "green": 1.0,            
+        //         "blue": 1.0,            
+        //         "alpha": 1.0
+        //     }
+        // ],
+// },
+// "particle_properties" {
+//     "radius": f32,
+//     "lin_damping": f32,
+// },
+    }
+}

@@ -24,6 +24,8 @@ pub struct ParticleSpawnInfo {
 
 #[allow(dead_code)]
 #[derive(Debug, Serialize, Deserialize)]
+// #[serde(tag = "type", content = "c")]
+#[serde(untagged)]
 pub enum Count {
     Random(usize),
     Set(Vec<usize>),
