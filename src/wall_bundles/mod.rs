@@ -12,7 +12,7 @@ pub fn init_opaque_box(
     // ground
     commands.spawn(WallBundle::new(
         "Bottom".into(),
-        vec3(20.0, 0.1, 20.0),
+        vec3(20.0, 0.5, 20.0),
         vec3(0.0, -10.0, 0.0),
         &asset_server,
         &mut meshes,
@@ -20,7 +20,7 @@ pub fn init_opaque_box(
     ));
     commands.spawn(WallBundle::new(
         "top".into(),
-        vec3(20.0, 0.1, 20.0),
+        vec3(20.0, 0.5, 20.0),
         vec3(0.0, 10.0, 0.0),
         &asset_server,
         &mut meshes,
@@ -28,7 +28,7 @@ pub fn init_opaque_box(
     ));
     commands.spawn(WallBundle::new(
         "left".into(),
-        vec3(0.1, 20.0, 20.0),
+        vec3(0.5, 20.0, 20.0),
         vec3(-10.0, 0.0, 0.0),
         &asset_server,
         &mut meshes,
@@ -36,7 +36,7 @@ pub fn init_opaque_box(
     ));
     commands.spawn(WallBundle::new(
         "right".into(),
-        vec3(0.1, 20.0, 20.0),
+        vec3(0.5, 20.0, 20.0),
         vec3(10.0, 0.0, 0.0),
         &asset_server,
         &mut meshes,
@@ -44,7 +44,7 @@ pub fn init_opaque_box(
     ));
     commands.spawn(WallBundle::new(
         "front".into(),
-        vec3(20.0, 20.0, 0.1),
+        vec3(20.0, 20.0, 0.5),
         vec3(0.0, 0.0, -10.0),
         &asset_server,
         &mut meshes,
@@ -52,7 +52,7 @@ pub fn init_opaque_box(
     ));
     commands.spawn(WallBundle::new(
         "back".into(),
-        vec3(20.0, 20.0, 0.1),
+        vec3(20.0, 20.0, 0.5),
         vec3(0.0, 0.0, 10.0),
         &asset_server,
         &mut meshes,
@@ -71,32 +71,32 @@ pub fn init_clear_box(mut commands: Commands) {
     // ground
     commands.spawn(ClearWallBundle::new(
         "Bottom".into(),
-        vec3(20.0, 0.1, 20.0),
+        vec3(20.0, 0.5, 20.0),
         vec3(0.0, -10.0, 0.0),
     ));
     commands.spawn(ClearWallBundle::new(
         "top".into(),
-        vec3(20.0, 0.1, 20.0),
+        vec3(20.0, 0.5, 20.0),
         vec3(0.0, 10.0, 0.0),
     ));
     commands.spawn(ClearWallBundle::new(
         "left".into(),
-        vec3(0.1, 20.0, 20.0),
+        vec3(0.5, 20.0, 20.0),
         vec3(-10.0, 0.0, 0.0),
     ));
     commands.spawn(ClearWallBundle::new(
         "right".into(),
-        vec3(0.1, 20.0, 20.0),
+        vec3(0.5, 20.0, 20.0),
         vec3(10.0, 0.0, 0.0),
     ));
     commands.spawn(ClearWallBundle::new(
         "front".into(),
-        vec3(20.0, 20.0, 0.1),
+        vec3(20.0, 20.0, 0.5),
         vec3(0.0, 0.0, -10.0),
     ));
     commands.spawn(ClearWallBundle::new(
         "back".into(),
-        vec3(20.0, 20.0, 0.1),
+        vec3(20.0, 20.0, 0.5),
         vec3(0.0, 0.0, 10.0),
     ));
 

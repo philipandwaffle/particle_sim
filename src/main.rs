@@ -1,3 +1,5 @@
+use std::arch::x86_64::_mm256_zeroupper;
+
 use bevy::{
     diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
     math::vec3,
@@ -28,6 +30,15 @@ fn main() {
         // let b = (3.0 * a) / 2.0;
         if x < 1.5 {
             return -(x - 1.0).abs() + 0.5;
+        } else {
+            return 0.1;
+        }
+    };
+    let reat3: AttractionFunc<f32> = |x| {
+        // let a = 0.5;
+        // let b = (3.0 * a) / 2.0;
+        if x < 0.25 {
+            return -(x - 0.375).abs() + 0.125;
         } else {
             return 0.1;
         }
@@ -68,23 +79,45 @@ fn main() {
     //     vec![reat1, repl1, repl1, attr1, reat2, repl1],
     //     vec![reat1, repl1, repl1, repl1, attr1, reat2],
     // ];
-
+    // let matrix = vec![
+    //     vec![repl2, zero1, attr1, zero1, zero1, zero1],
+    //     vec![reat1, repl1, zero1, zero1, zero1, zero1],
+    //     vec![zero1, zero1, repl2, zero1, attr1, zero1],
+    //     vec![zero1, zero1, reat1, repl1, zero1, zero1],
+    //     vec![attr1, zero1, zero1, zero1, repl2, zero1],
+    //     vec![zero1, zero1, zero1, zero1, reat1, repl1],
+    // ];
+    // let matrix = vec![
+    //     vec![reat2, attr1, zero1, zero1, zero1, zero1],
+    //     vec![zero1, reat2, attr1, zero1, zero1, zero1],
+    //     vec![zero1, zero1, reat2, attr1, zero1, zero1],
+    //     vec![zero1, zero1, zero1, reat2, attr1, zero1],
+    //     vec![zero1, zero1, zero1, zero1, reat2, attr1],
+    //     vec![attr1, zero1, zero1, zero1, zero1, reat2],
+    // ];
+    // let matrix = vec![
+    //     vec![reat2, zero1, zero1, zero1, zero1, zero1],
+    //     vec![attr1, repl1, zero1, zero1, zero1, zero1],
+    //     vec![zero1, attr1, repl1, zero1, zero1, zero1],
+    //     vec![zero1, zero1, attr1, repl1, zero1, zero1],
+    //     vec![zero1, zero1, zero1, attr1, repl1, zero1],
+    //     vec![zero1, zero1, zero1, zero1, attr1, repl1],
+    // ];
     let matrix = vec![
-        vec![repl2, zero1, attr1, zero1, zero1, zero1],
-        vec![reat1, repl1, zero1, zero1, zero1, zero1],
-        vec![zero1, zero1, repl2, zero1, attr1, zero1],
-        vec![zero1, zero1, reat1, repl1, zero1, zero1],
-        vec![attr1, zero1, zero1, zero1, repl2, zero1],
-        vec![zero1, zero1, zero1, zero1, reat1, repl1],
+        vec![repl2, zero1, zero1],
+        vec![reat3, zero1, zero1],
+        vec![zero1, zero1, zero1],
     ];
-    let colors = vec![
-        Color::RED,
-        Color::GREEN,
-        Color::BLUE,
-        Color::PURPLE,
-        Color::YELLOW,
-        Color::ORANGE,
-    ];
+
+    // let colors = vec![
+    //     Color::RED,
+    //     Color::GREEN,
+    //     Color::BLUE,
+    //     Color::PURPLE,
+    //     Color::YELLOW,
+    //     Color::ORANGE,
+    // ];
+    let colors = vec![Color::RED, Color::GREEN, Color::BLUE];
 
     App::new()
         .insert_resource(RapierConfiguration {
@@ -95,9 +128,9 @@ fn main() {
             DefaultPlugins
                 .set(WindowPlugin {
                     primary_window: Some(Window {
-                        title: "FPS Cam".into(),
+                        title: "Particle Sim".into(),
                         resolution: (1900., 1280.).into(),
-                        present_mode: PresentMode::AutoVsync,
+                        // present_mode: PresentMode::AutoVsync,
                         mode: WindowMode::BorderlessFullscreen,
                         // Tells wasm to resize the window according to the available canvas
                         fit_canvas_to_parent: true,
@@ -112,9 +145,8 @@ fn main() {
         )
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
         // .add_plugin(WorldInspectorPlugin::new())
-        // .add_plugin(LogDiagnosticsPlugin::default())
-        // .add_plugin(LogDiagnosticsPlugin::default())
-        // .add_plugin(FrameTimeDiagnosticsPlugin::default())
+        .add_plugin(LogDiagnosticsPlugin::default())
+        .add_plugin(FrameTimeDiagnosticsPlugin::default())
         .add_plugin(FloatingCamPlugin)
         .add_plugin(ParticlesPlugin {
             min: Vec3 {
@@ -131,6 +163,7 @@ fn main() {
             // seed: None,
             attraction_matrix: matrix,
             // type_id_counts: particles::Count::Set(vec![2, 32, 2, 31, 2, 31]),
+            // type_id_counts: particles::Count::Set(vec![1, 3, 9, 27, 81, 246]),
             type_id_counts: particles::Count::Random(500),
             // type_id_counts: Some(vec![2, 0, 2, 0, 2, 0]),
             colors: colors,
