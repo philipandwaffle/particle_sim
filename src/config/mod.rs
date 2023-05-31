@@ -24,8 +24,8 @@ pub struct ParticleProperties {
 
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct Config {
-    spawn: Spawn,
-    particle_properties: ParticleProperties,
+    pub spawn: Spawn,
+    pub particle_properties: ParticleProperties,
 }
 
 pub fn load_cfg() -> Config {

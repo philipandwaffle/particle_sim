@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use serde::{Deserialize, Serialize};
 
 pub type AttractionFunc = fn(f: f32) -> f32;
 

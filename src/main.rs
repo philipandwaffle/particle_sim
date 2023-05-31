@@ -8,7 +8,7 @@ use bevy::{
 };
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_rapier3d::prelude::*;
-use config::load_cfg;
+use config::{load_cfg, ParticleProperties, Spawn};
 use floating_cam::FloatingCamPlugin;
 use particles::{particle_metadata::AttractionFunc, ParticlesPlugin};
 use wall_bundles::{init_clear_box, init_opaque_box};
@@ -17,6 +17,8 @@ mod config;
 mod floating_cam;
 mod particles;
 mod wall_bundles;
+
+
 
 fn main() {
     let zero1: AttractionFunc = |_| return 0.0;
@@ -163,26 +165,14 @@ fn main() {
         .add_plugin(FrameTimeDiagnosticsPlugin::default())
         .add_plugin(FloatingCamPlugin)
         .add_plugin(ParticlesPlugin {
-            min: Vec3 {
-                x: -2.0,
-                y: 2.0,
-                z: -2.0,
-            },
-            max: Vec3 {
-                x: 2.0,
-                y: 6.0,
-                z: 2.0,
-            },
-            seed: Some(42),
-            // seed: None,
+            min: cfg.spawn.min,
+            max: cfg.spawn.max,
+            seed: cfg.spawn.seed,
             attraction_matrix: matrix,
-            // type_id_counts: particles::Count::Set(vec![2, 32, 2, 31, 2, 31]),
-            // type_id_counts: particles::Count::Set(vec![1, 3, 9, 27, 81, 246]),
-            type_id_counts: particles::Count::Random(500),
-            // type_id_counts: Some(vec![2, 0, 2, 0, 2, 0]),
-            colors: colors,
-            radius: 0.05,
-            lin_damping: 0.5,
+            type_id_counts: cfg.spawn.type_id_counts,
+            colors: cfg.spawn.colors,
+            radius: cfg.particle_properties.radius,
+            lin_damping: cfg.particle_properties.lin_damping,
         })
         // .add_startup_system(init_opaque_box)
         .add_startup_system(init_clear_box)
