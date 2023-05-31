@@ -3786,6 +3786,7 @@ dependencies = [
  "crossbeam",
  "random",
  "serde",
+ "serde_json",
 ]
 
 [[package]]

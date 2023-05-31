@@ -40,7 +40,7 @@ pub struct ParticlesPlugin {
     pub min: Vec3,
     pub max: Vec3,
     pub seed: Option<u64>,
-    pub attraction_matrix: Vec<Vec<AttractionFunc<f32>>>,
+    pub attraction_matrix: Vec<Vec<AttractionFunc>>,
     pub type_id_counts: Count,
     pub colors: Vec<Color>,
     pub radius: f32,

@@ -19,8 +19,8 @@ mod particles;
 mod wall_bundles;
 
 fn main() {
-    let zero1: AttractionFunc<f32> = |_| return 0.0;
-    let reat1: AttractionFunc<f32> = |x| {
+    let zero1: AttractionFunc = |_| return 0.0;
+    let reat1: AttractionFunc = |x| {
         // let a = 2.0;
         // let b = (3.0 * a) / 2.0;
         if x < 3.0 {
@@ -29,7 +29,7 @@ fn main() {
             return 0.1;
         }
     };
-    let reat2: AttractionFunc<f32> = |x| {
+    let reat2: AttractionFunc = |x| {
         // let a = 0.5;
         // let b = (3.0 * a) / 2.0;
         if x < 1.5 {
@@ -40,7 +40,7 @@ fn main() {
             return 0.0;
         }
     };
-    let reat3: AttractionFunc<f32> = |x| {
+    let reat3: AttractionFunc = |x| {
         // let a = 0.5;
         // let b = (3.0 * a) / 2.0;
         if x < 0.25 {
@@ -52,7 +52,7 @@ fn main() {
         }
     };
 
-    let repl1: AttractionFunc<f32> = |x| {
+    let repl1: AttractionFunc = |x| {
         // let a = 0.1;
         if x < 1.2 {
             return x - 1.2;
@@ -61,7 +61,7 @@ fn main() {
         }
     };
 
-    let repl2: AttractionFunc<f32> = |x| {
+    let repl2: AttractionFunc = |x| {
         // let a = 0.1;
         if x < 2.0 {
             return -0.1;
@@ -69,7 +69,7 @@ fn main() {
             return 0.0;
         }
     };
-    let attr1: AttractionFunc<f32> = |x| {
+    let attr1: AttractionFunc = |x| {
         // let a = 5.5;
         if x < 20.0 {
             return 0.03;
@@ -126,7 +126,12 @@ fn main() {
         Color::ORANGE,
     ];
     // let colors = vec![Color::RED, Color::GREEN, Color::BLUE];
+
+    // let foo = serde_json::to_string(&Color::RED);
+    let foo = serde_json::to_string(&Some(42)).unwrap();
+    println!("{:?}", foo);
     let cfg = load_cfg();
+    println!("{:?}", cfg);
 
     App::new()
         .insert_resource(RapierConfiguration {
