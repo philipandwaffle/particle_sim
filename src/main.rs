@@ -34,8 +34,10 @@ fn main() {
         // let b = (3.0 * a) / 2.0;
         if x < 1.5 {
             return -(x - 1.0).abs() + 0.5;
-        } else {
+        } else if x < 2.5 {
             return 0.1;
+        } else {
+            return 0.0;
         }
     };
     let reat3: AttractionFunc<f32> = |x| {
@@ -43,8 +45,10 @@ fn main() {
         // let b = (3.0 * a) / 2.0;
         if x < 0.25 {
             return -(x - 0.375).abs() + 0.125;
-        } else {
+        } else if x < 0.75 {
             return 0.1;
+        } else {
+            return 0.0;
         }
     };
 
@@ -59,7 +63,7 @@ fn main() {
 
     let repl2: AttractionFunc<f32> = |x| {
         // let a = 0.1;
-        if x < 2.5 {
+        if x < 2.0 {
             return -0.1;
         } else {
             return 0.0;
@@ -83,21 +87,21 @@ fn main() {
     //     vec![reat1, repl1, repl1, attr1, reat2, repl1],
     //     vec![reat1, repl1, repl1, repl1, attr1, reat2],
     // ];
+    let matrix = vec![
+        vec![repl2, zero1, attr1, zero1, zero1, zero1],
+        vec![reat1, repl1, zero1, zero1, zero1, zero1],
+        vec![zero1, zero1, repl2, zero1, attr1, zero1],
+        vec![zero1, zero1, reat1, repl1, zero1, zero1],
+        vec![attr1, zero1, zero1, zero1, repl2, zero1],
+        vec![zero1, zero1, zero1, zero1, reat1, repl1],
+    ];
     // let matrix = vec![
-    //     vec![repl2, zero1, attr1, zero1, zero1, zero1],
-    //     vec![reat1, repl1, zero1, zero1, zero1, zero1],
-    //     vec![zero1, zero1, repl2, zero1, attr1, zero1],
-    //     vec![zero1, zero1, reat1, repl1, zero1, zero1],
-    //     vec![attr1, zero1, zero1, zero1, repl2, zero1],
-    //     vec![zero1, zero1, zero1, zero1, reat1, repl1],
-    // ];
-    // let matrix = vec![
-    //     vec![reat2, attr1, zero1, zero1, zero1, zero1],
-    //     vec![zero1, reat2, attr1, zero1, zero1, zero1],
-    //     vec![zero1, zero1, reat2, attr1, zero1, zero1],
-    //     vec![zero1, zero1, zero1, reat2, attr1, zero1],
-    //     vec![zero1, zero1, zero1, zero1, reat2, attr1],
-    //     vec![attr1, zero1, zero1, zero1, zero1, reat2],
+    //     vec![reat1, attr1, zero1, zero1, zero1, zero1],
+    //     vec![zero1, reat1, attr1, zero1, zero1, zero1],
+    //     vec![zero1, zero1, reat1, attr1, zero1, zero1],
+    //     vec![zero1, zero1, zero1, reat1, attr1, zero1],
+    //     vec![zero1, zero1, zero1, zero1, reat1, attr1],
+    //     vec![attr1, zero1, zero1, zero1, zero1, reat1],
     // ];
     // let matrix = vec![
     //     vec![reat2, zero1, zero1, zero1, zero1, zero1],
@@ -107,21 +111,21 @@ fn main() {
     //     vec![zero1, zero1, zero1, attr1, repl1, zero1],
     //     vec![zero1, zero1, zero1, zero1, attr1, repl1],
     // ];
-    let matrix = vec![
-        vec![repl2, zero1, zero1],
-        vec![reat3, zero1, zero1],
-        vec![zero1, zero1, zero1],
-    ];
-
-    // let colors = vec![
-    //     Color::RED,
-    //     Color::GREEN,
-    //     Color::BLUE,
-    //     Color::PURPLE,
-    //     Color::YELLOW,
-    //     Color::ORANGE,
+    // let matrix = vec![
+    //     vec![attr1, zero1, zero1],
+    //     vec![reat2, repl2, zero1],
+    //     vec![attr1, zero1, zero1],
     // ];
-    let colors = vec![Color::RED, Color::GREEN, Color::BLUE];
+
+    let colors = vec![
+        Color::RED,
+        Color::GREEN,
+        Color::BLUE,
+        Color::PURPLE,
+        Color::YELLOW,
+        Color::ORANGE,
+    ];
+    // let colors = vec![Color::RED, Color::GREEN, Color::BLUE];
     let cfg = load_cfg();
 
     App::new()
