@@ -18,8 +18,6 @@ mod floating_cam;
 mod particles;
 mod wall_bundles;
 
-
-
 fn main() {
     let zero1: AttractionFunc = |_| return 0.0;
     let reat1: AttractionFunc = |x| {
