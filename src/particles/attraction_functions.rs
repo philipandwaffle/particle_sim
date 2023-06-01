@@ -258,28 +258,28 @@ fn get_pos_fns() -> HashMap<String, AttractionFunc> {
 fn get_neg_fns() -> HashMap<String, AttractionFunc> {
     let range1x0_return0x01: AttractionFunc = |x| {
         if x < 1.0 {
-            return 0.01;
+            return -0.01;
         } else {
             return 0.0;
         }
     };
     let range1x5_return0x01: AttractionFunc = |x| {
         if x < 1.5 {
-            return 0.01;
+            return -0.01;
         } else {
             return 0.0;
         }
     };
     let range2x0_return0x01: AttractionFunc = |x| {
         if x < 2.0 {
-            return 0.01;
+            return -0.01;
         } else {
             return 0.0;
         }
     };
     let range2x5_return0x01: AttractionFunc = |x| {
         if x < 2.5 {
-            return 0.01;
+            return -0.01;
         } else {
             return 0.0;
         }
@@ -287,28 +287,28 @@ fn get_neg_fns() -> HashMap<String, AttractionFunc> {
 
     let range1x0_return0x02: AttractionFunc = |x| {
         if x < 1.0 {
-            return 0.02;
+            return -0.02;
         } else {
             return 0.0;
         }
     };
     let range1x5_return0x02: AttractionFunc = |x| {
         if x < 1.5 {
-            return 0.02;
+            return -0.02;
         } else {
             return 0.0;
         }
     };
     let range2x0_return0x02: AttractionFunc = |x| {
         if x < 2.0 {
-            return 0.02;
+            return -0.02;
         } else {
             return 0.0;
         }
     };
     let range2x5_return0x02: AttractionFunc = |x| {
         if x < 2.5 {
-            return 0.02;
+            return -0.02;
         } else {
             return 0.0;
         }
@@ -316,28 +316,28 @@ fn get_neg_fns() -> HashMap<String, AttractionFunc> {
 
     let range1x0_return0x03: AttractionFunc = |x| {
         if x < 1.0 {
-            return 0.03;
+            return -0.03;
         } else {
             return 0.0;
         }
     };
     let range1x5_return0x03: AttractionFunc = |x| {
         if x < 1.5 {
-            return 0.03;
+            return -0.03;
         } else {
             return 0.0;
         }
     };
     let range2x0_return0x03: AttractionFunc = |x| {
         if x < 2.0 {
-            return 0.03;
+            return -0.03;
         } else {
             return 0.0;
         }
     };
     let range2x5_return0x03: AttractionFunc = |x| {
         if x < 2.5 {
-            return 0.03;
+            return -0.03;
         } else {
             return 0.0;
         }
@@ -345,31 +345,28 @@ fn get_neg_fns() -> HashMap<String, AttractionFunc> {
 
     let range1x0_return0x04: AttractionFunc = |x| {
         if x < 1.0 {
-            return 0.04;
+            return -0.04;
         } else {
             return 0.0;
         }
     };
-
     let range1x5_return0x04: AttractionFunc = |x| {
         if x < 1.5 {
-            return 0.04;
+            return -0.04;
         } else {
             return 0.0;
         }
     };
-
     let range2x0_return0x04: AttractionFunc = |x| {
         if x < 2.0 {
-            return 0.04;
+            return -0.04;
         } else {
             return 0.0;
         }
     };
-
     let range2x5_return0x04: AttractionFunc = |x| {
         if x < 2.5 {
-            return 0.04;
+            return -0.04;
         } else {
             return 0.0;
         }
@@ -377,28 +374,28 @@ fn get_neg_fns() -> HashMap<String, AttractionFunc> {
 
     let range1x0_return0x05: AttractionFunc = |x| {
         if x < 1.0 {
-            return 0.05;
+            return -0.05;
         } else {
             return 0.0;
         }
     };
     let range1x5_return0x05: AttractionFunc = |x| {
         if x < 1.5 {
-            return 0.05;
+            return -0.05;
         } else {
             return 0.0;
         }
     };
     let range2x0_return0x05: AttractionFunc = |x| {
         if x < 2.0 {
-            return 0.05;
+            return -0.05;
         } else {
             return 0.0;
         }
     };
     let range2x5_return0x05: AttractionFunc = |x| {
         if x < 2.5 {
-            return 0.05;
+            return -0.05;
         } else {
             return 0.0;
         }
