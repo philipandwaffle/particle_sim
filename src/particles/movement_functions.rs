@@ -62,7 +62,7 @@ pub fn parallel_move_particles(
         .map(|(e, p, _, t)| (e, p.type_id, t.translation))
         .collect::<Vec<(Entity, usize, Vec3)>>();
 
-    let num_threads = 16;
+    let num_threads = 6;
     let num_particles = compare_vec.len();
 
     let mut threads = Vec::with_capacity(num_threads);

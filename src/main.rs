@@ -13,6 +13,8 @@ use floating_cam::FloatingCamPlugin;
 use particles::{particle_metadata::AttractionFunc, ParticlesPlugin};
 use wall_bundles::{init_clear_box, init_opaque_box};
 
+use crate::particles::attraction_functions::get_fns;
+
 mod config;
 mod floating_cam;
 mod particles;
@@ -78,60 +80,19 @@ fn main() {
         }
     };
 
-    // let matrix = vec![vec![zero, attr], vec![attr, zero]];
-    // let matrix = vec![
-    //     vec![repl1, zero1, zero1, zero1, zero1, zero1],
-    //     vec![reat1, reat2, repl1, repl1, repl1, repl1],
-    //     vec![reat1, attr1, reat2, repl1, repl1, repl1],
-    //     vec![reat1, repl1, attr1, reat2, repl1, repl1],
-    //     vec![reat1, repl1, repl1, attr1, reat2, repl1],
-    //     vec![reat1, repl1, repl1, repl1, attr1, reat2],
-    // ];
-    let matrix = vec![
-        vec![repl2, zero1, attr1, zero1, zero1, zero1],
-        vec![reat1, repl1, zero1, zero1, zero1, zero1],
-        vec![zero1, zero1, repl2, zero1, attr1, zero1],
-        vec![zero1, zero1, reat1, repl1, zero1, zero1],
-        vec![attr1, zero1, zero1, zero1, repl2, zero1],
-        vec![zero1, zero1, zero1, zero1, reat1, repl1],
-    ];
-    // let matrix = vec![
-    //     vec![reat1, attr1, zero1, zero1, zero1, zero1],
-    //     vec![zero1, reat1, attr1, zero1, zero1, zero1],
-    //     vec![zero1, zero1, reat1, attr1, zero1, zero1],
-    //     vec![zero1, zero1, zero1, reat1, attr1, zero1],
-    //     vec![zero1, zero1, zero1, zero1, reat1, attr1],
-    //     vec![attr1, zero1, zero1, zero1, zero1, reat1],
-    // ];
-    // let matrix = vec![
-    //     vec![reat2, zero1, zero1, zero1, zero1, zero1],
-    //     vec![attr1, repl1, zero1, zero1, zero1, zero1],
-    //     vec![zero1, attr1, repl1, zero1, zero1, zero1],
-    //     vec![zero1, zero1, attr1, repl1, zero1, zero1],
-    //     vec![zero1, zero1, zero1, attr1, repl1, zero1],
-    //     vec![zero1, zero1, zero1, zero1, attr1, repl1],
-    // ];
-    // let matrix = vec![
-    //     vec![attr1, zero1, zero1],
-    //     vec![reat2, repl2, zero1],
-    //     vec![attr1, zero1, zero1],
-    // ];
-
-    let colors = vec![
-        Color::RED,
-        Color::GREEN,
-        Color::BLUE,
-        Color::PURPLE,
-        Color::YELLOW,
-        Color::ORANGE,
-    ];
-    // let colors = vec![Color::RED, Color::GREEN, Color::BLUE];
-
-    // let foo = serde_json::to_string(&Color::RED);
-    let foo = serde_json::to_string(&Some(42)).unwrap();
-    println!("{:?}", foo);
     let cfg = load_cfg();
     println!("{:?}", cfg);
+
+    let map = get_fns();
+    let mut matrix = vec![];
+
+    for row in cfg.particle_properties.attraction_matrix {
+        let mut r = vec![];
+        for cell in row {
+            r.push(map[&cell]);
+        }
+        matrix.push(r);
+    }
 
     App::new()
         .insert_resource(RapierConfiguration {
@@ -159,8 +120,8 @@ fn main() {
         )
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
         // .add_plugin(WorldInspectorPlugin::new())
-        .add_plugin(LogDiagnosticsPlugin::default())
-        .add_plugin(FrameTimeDiagnosticsPlugin::default())
+        // .add_plugin(LogDiagnosticsPlugin::default())
+        // .add_plugin(FrameTimeDiagnosticsPlugin::default())
         .add_plugin(FloatingCamPlugin)
         .add_plugin(ParticlesPlugin {
             min: cfg.spawn.min,

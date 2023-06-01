@@ -12,6 +12,7 @@ use self::{
 mod movement_functions;
 mod particle_bundle;
 pub mod particle_metadata;
+pub mod attraction_functions;
 
 #[derive(Resource)]
 pub struct ParticleSpawnInfo {

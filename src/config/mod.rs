@@ -20,6 +20,7 @@ pub struct Spawn {
 pub struct ParticleProperties {
     pub radius: f32,
     pub lin_damping: f32,
+    pub attraction_matrix: Vec<Vec<String>>,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]
