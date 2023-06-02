@@ -1,10 +1,6 @@
 use std::vec;
 
-use bevy::{
-    math::{vec2, vec3},
-    prelude::Vec2,
-};
-use bevy_rapier3d::parry::query::PointProjection;
+use bevy::{math::vec2, prelude::Vec2};
 
 /// Generates an rule in the form  y = mx + c
 macro_rules! linear_rule {
