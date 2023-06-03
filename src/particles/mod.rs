@@ -4,15 +4,17 @@ use random::Source;
 use serde::{Deserialize, Serialize};
 
 use self::{
-    movement_functions::parallel_arc_move_particles,
+    interaction_rule::{insert_interaction_matrix, matrix::InteractionMatrix},
+    movement_functions::move_particles,
     particle_bundle::{Particle, ParticleBundle},
     particle_metadata::{AttractionFunc, ParticleMetadata},
 };
 
+pub mod attraction_functions;
+mod interaction_rule;
 mod movement_functions;
 mod particle_bundle;
 pub mod particle_metadata;
-pub mod attraction_functions;
 
 #[derive(Resource)]
 pub struct ParticleSpawnInfo {
@@ -80,6 +82,8 @@ impl Plugin for ParticlesPlugin {
             radius: self.radius,
             lin_damping: self.lin_damping,
         })
+        .insert_resource(InteractionMatrix::new(6))
+        // .add_startup_system(insert_interaction_matrix)
         .insert_resource(ParticleMetadata::new(
             self.min,
             self.max,
@@ -88,9 +92,9 @@ impl Plugin for ParticlesPlugin {
         ))
         .add_startup_system(spawn_particles)
         // .add_system(constrain_particles)
-        // .add_system(move_particles);
+        .add_system(move_particles);
         // .add_system(parallel_move_particles);
-        .add_system(parallel_arc_move_particles);
+        // .add_system(parallel_arc_move_particles);
     }
 }
 

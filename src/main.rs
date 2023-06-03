@@ -8,23 +8,19 @@ use bevy::{
 };
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_rapier3d::prelude::*;
-use config::{load_cfg, ParticleProperties, Spawn};
+use config::load_cfg;
 use floating_cam::FloatingCamPlugin;
 use particles::{particle_metadata::AttractionFunc, ParticlesPlugin};
 use wall_bundles::{init_clear_box, init_opaque_box};
 
-use crate::{interaction_rule::development, particles::attraction_functions::get_fns};
+use crate::particles::attraction_functions::get_fns;
 
 mod config;
 mod floating_cam;
-mod interaction_rule;
 mod particles;
 mod wall_bundles;
 
 fn main() {
-    development();
-
-    return;
     let zero1: AttractionFunc = |_| return 0.0;
     let reat1: AttractionFunc = |x| {
         // let a = 2.0;

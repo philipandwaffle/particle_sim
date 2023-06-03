@@ -1,4 +1,4 @@
-use std::vec;
+use std::{rc::Rc, vec};
 
 use bevy::{math::vec2, prelude::Vec2};
 
@@ -19,45 +19,87 @@ macro_rules! constant_rule {
     };
 }
 
+type RuleFunc = dyn Fn(f32) -> f32;
+
 /// Contains function that is called when determining interaction
 pub trait InteractionRule {
     // Takes a distance and returns a float to scale an interaction
     fn interact(&self, d: f32) -> f32;
 }
 
-// Composed rules are comprised of smaller SubRules
-struct SubRule<'a> {
-    rule: Box<dyn Fn(f32) -> f32 + 'a>,
+// trait InteractionRuleClone {
+//     fn clone_rc(&self) -> dyn InteractionRule;
+// }
+// impl<T> InteractionRuleClone for T
+// where
+//     T: 'static + InteractionRule + Clone,
+// {
+//     fn clone_rc(&self) -> Rc<dyn InteractionRule> {
+//         Rc::new(self.clone())
+//     }
+// }
+// impl Clone for Rc<dyn InteractionRule> {
+//     fn clone(&self) -> dyn InteractionRule {
+//         self.clone_rc()
+//     }
+// }
+
+struct Simple;
+impl Clone for Simple {
+    fn clone(&self) -> Self {
+        Self {}
+    }
 }
-impl SubRule<'_> {
+
+// Composed rules are comprised of smaller SubRules
+#[derive(Clone)]
+struct SubRule {
+    rule: Rc<RuleFunc>,
+}
+
+impl SubRule {
     // Create a new linear sub rule
     fn new_linear(m: f32, c: f32) -> Self {
         return Self {
-            rule: Box::new(linear_rule!(x, m, c)),
+            rule: Rc::new(linear_rule!(x, m, c)),
         };
     }
 
     // Create a new constant sub rule
     fn new_constant(c: f32) -> Self {
         return Self {
-            rule: Box::new(constant_rule!(c)),
+            rule: Rc::new(constant_rule!(c)),
         };
     }
 }
-impl InteractionRule for SubRule<'_> {
+impl InteractionRule for SubRule {
     fn interact(&self, d: f32) -> f32 {
+        let foo = 0;
         return (self.rule)(d);
     }
 }
 
+#[derive(Clone)]
+pub struct ZeroRule;
+impl ZeroRule {
+    pub fn new() -> Self {
+        return Self;
+    }
+}
+impl InteractionRule for ZeroRule {
+    fn interact(&self, _: f32) -> f32 {
+        return 0.0;
+    }
+}
 // A composite threshold rule consists of sub rules that are applied to across thresholds
-pub struct CompThreshRule<'a> {
-    sub_rules: Vec<SubRule<'a>>,
+#[derive(Clone)]
+pub struct CompThreshRule {
+    sub_rules: Vec<SubRule>,
     thresholds: Vec<f32>,
     count: usize,
     default_val: f32,
 }
-impl CompThreshRule<'_> {
+impl CompThreshRule {
     /// Creates a composite rule based on the vertices of a line on a 2d plane
     pub fn from_points(points: Vec<Vec2>) -> Self {
         let num_points = points.len();
@@ -79,7 +121,7 @@ impl CompThreshRule<'_> {
         };
     }
 
-    fn linear_sub_rule(a: Vec2, b: Vec2) -> SubRule<'static> {
+    fn linear_sub_rule(a: Vec2, b: Vec2) -> SubRule {
         let rise = b.y - a.y;
         // special case when there is a horizontal line
 
@@ -97,7 +139,7 @@ impl CompThreshRule<'_> {
         return SubRule::new_linear(m, c);
     }
 }
-impl InteractionRule for CompThreshRule<'_> {
+impl InteractionRule for CompThreshRule {
     fn interact(&self, d: f32) -> f32 {
         for i in 0..self.count {
             if d < self.thresholds[i] {
