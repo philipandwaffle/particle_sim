@@ -25,6 +25,9 @@ pub trait InteractionRule {
     fn interact(&self, d: f32) -> f32;
 }
 
+// dyn_clone::clone_trait_object!(InteractionRule);
+// dyn_clone::clone_trait_object!(dyn Fn(f32) -> f32 + Send + Sync);
+
 // Composed rules are comprised of smaller SubRules
 struct SubRule<'a> {
     rule: Box<dyn Fn(f32) -> f32 + 'a>,

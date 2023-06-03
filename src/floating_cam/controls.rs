@@ -17,6 +17,8 @@ pub struct Bindings {
     right_key: KeyCode,
     fly_up: KeyCode,
     fly_down: KeyCode,
+    next_mode: KeyCode,
+    prev_mode: KeyCode,
 }
 impl Default for Bindings {
     fn default() -> Self {
@@ -25,6 +27,8 @@ impl Default for Bindings {
             backward_key: KeyCode::S,
             left_key: KeyCode::A,
             right_key: KeyCode::D,
+            fly_up: KeyCode::Space,
+            fly_down: KeyCode::LShift,
             fly_up: KeyCode::Space,
             fly_down: KeyCode::LShift,
         }

@@ -3,7 +3,7 @@
         "min": [-2.0, 2.0, -2.0],
         "max": [2.0, 6.0, 2.0],
         "seed": 42,
-        "type_id_counts": 500,
+        "type_id_counts": 100,
         "colors": [
             {"Rgba":{"red":1.0,"green":0.0,"blue":0.0,"alpha":1.0}},
             {"Rgba":{"red":1.0,"green":1.0,"blue":0.0,"alpha":1.0}},
