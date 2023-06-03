@@ -4,7 +4,7 @@ use random::Source;
 use serde::{Deserialize, Serialize};
 
 use self::{
-    interaction_rule::{insert_interaction_matrix, matrix::InteractionMatrix},
+    interaction_rule::matrix::InteractionMatrix,
     movement_functions::move_particles,
     particle_bundle::{Particle, ParticleBundle},
     particle_metadata::{AttractionFunc, ParticleMetadata},
@@ -83,7 +83,6 @@ impl Plugin for ParticlesPlugin {
             lin_damping: self.lin_damping,
         })
         .insert_resource(InteractionMatrix::new(6))
-        // .add_startup_system(insert_interaction_matrix)
         .insert_resource(ParticleMetadata::new(
             self.min,
             self.max,

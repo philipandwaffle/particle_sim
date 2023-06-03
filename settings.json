@@ -7,22 +7,16 @@
         "colors": [
             {"Rgba":{"red":1.0,"green":0.0,"blue":0.0,"alpha":1.0}},
             {"Rgba":{"red":1.0,"green":1.0,"blue":0.0,"alpha":1.0}},
-            {"Rgba":{"red":0.0,"green":1.0,"blue":0.0,"alpha":1.0}},
-            {"Rgba":{"red":0.0,"green":1.0,"blue":1.0,"alpha":1.0}},
-            {"Rgba":{"red":0.0,"green":0.0,"blue":1.0,"alpha":1.0}},
-            {"Rgba":{"red":1.0,"green":0.0,"blue":1.0,"alpha":1.0}}
+            {"Rgba":{"red":0.0,"green":1.0,"blue":0.0,"alpha":1.0}}
         ]
     },
     "particle_properties": {
         "radius": 0.05,
         "lin_damping": 0.5,
         "attraction_matrix": [
-            ["pos_range1x0_return0x01", "pos_range1x0_return0x01", "zer_range0x0_return0x00", "zer_range0x0_return0x00", "zer_range0x0_return0x00", "zer_range0x0_return0x00"],
-            ["zer_range0x0_return0x00", "pos_range1x0_return0x01", "pos_range1x0_return0x01", "zer_range0x0_return0x00", "zer_range0x0_return0x00", "zer_range0x0_return0x00"],
-            ["zer_range0x0_return0x00", "zer_range0x0_return0x00", "pos_range1x0_return0x01", "pos_range1x0_return0x01", "zer_range0x0_return0x00", "zer_range0x0_return0x00"],
-            ["zer_range0x0_return0x00", "zer_range0x0_return0x00", "zer_range0x0_return0x00", "pos_range1x0_return0x01", "pos_range1x0_return0x01", "zer_range0x0_return0x00"],
-            ["zer_range0x0_return0x00", "zer_range0x0_return0x00", "zer_range0x0_return0x00", "zer_range0x0_return0x00", "pos_range1x0_return0x01", "pos_range1x0_return0x01"],
-            ["pos_range1x0_return0x01", "zer_range0x0_return0x00", "zer_range0x0_return0x00", "zer_range0x0_return0x00", "zer_range0x0_return0x00", "pos_range1x0_return0x01"]
+            ["pos_range1x0_return0x01", "pos_range1x0_return0x01", "zer_range0x0_return0x00"],
+            ["zer_range0x0_return0x00", "pos_range1x0_return0x01", "pos_range1x0_return0x01"],
+            ["zer_range0x0_return0x00", "zer_range0x0_return0x00", "pos_range1x0_return0x01"]
         ]
     }
 }

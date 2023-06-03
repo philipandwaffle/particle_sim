@@ -1,4 +1,4 @@
-use std::{sync::Arc, thread};
+use std::thread;
 
 use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
@@ -11,15 +11,9 @@ use super::{
 #[allow(dead_code)]
 pub fn move_particles(
     mut particles: Query<(Entity, &Particle, &mut Velocity, &Transform)>,
-    particle_metadata: Res<ParticleMetadata>,
     interaction_matrix: Res<InteractionMatrix>,
 ) {
-    if !interaction_matrix.is_added() {
-        println!("Empty");
-        return;
-    } else {
-        println!("Has stuff");
-    }
+    let matrix = &interaction_matrix.matrix;
     let compare_vec = particles
         .iter()
         .map(|x| (x.0, x.1.type_id, x.3.translation))
@@ -34,8 +28,8 @@ pub fn move_particles(
             let dir = *compare_translation - transform.translation;
             let dist = dir.length();
             let attract_modifier =
-                interaction_matrix.get_interaction(particle.type_id, *compare_type_id, dist);
-            // (interaction_matrix.matrix[particle.type_id][*compare_type_id]).interact(dist);
+                // interaction_matrix.get_interaction(particle.type_id, *compare_type_id, dist);
+                (matrix[particle.type_id][*compare_type_id]).interact(dist);
             if attract_modifier == 0.0 {
                 continue;
             }

@@ -1,4 +1,4 @@
-use std::vec;
+use std::{sync::Arc, vec};
 
 use bevy::{math::vec2, prelude::Vec2};
 
@@ -24,12 +24,14 @@ pub trait InteractionRule {
     // Takes a distance and returns a float to scale an interaction
     fn interact(&self, d: f32) -> f32;
 }
+// dyn_clone::clone_trait_object!(InteractionRule);
+// dyn_clone::clone_trait_object!(dyn Fn(f32) -> f32 + Send + Sync);
 
 // Composed rules are comprised of smaller SubRules
-struct SubRule<'a> {
-    rule: Box<dyn Fn(f32) -> f32 + 'a + Send + Sync>,
+struct SubRule {
+    rule: Box<dyn Fn(f32) -> f32 + Send + Sync>,
 }
-impl SubRule<'_> {
+impl SubRule {
     // Create a new linear sub rule
     fn new_linear(m: f32, c: f32) -> Self {
         return Self {
@@ -44,7 +46,7 @@ impl SubRule<'_> {
         };
     }
 }
-impl InteractionRule for SubRule<'_> {
+impl InteractionRule for SubRule {
     fn interact(&self, d: f32) -> f32 {
         return (self.rule)(d);
     }
@@ -63,13 +65,13 @@ impl InteractionRule for ZeroRule {
 }
 
 // A composite threshold rule consists of sub rules that are applied to across thresholds
-pub struct CompThreshRule<'a> {
-    sub_rules: Vec<SubRule<'a>>,
+pub struct CompThreshRule {
+    sub_rules: Vec<SubRule>,
     thresholds: Vec<f32>,
     count: usize,
     default_val: f32,
 }
-impl CompThreshRule<'_> {
+impl CompThreshRule {
     /// Creates a composite rule based on the vertices of a line on a 2d plane
     pub fn from_points(points: Vec<Vec2>) -> Self {
         let num_points = points.len();
@@ -90,7 +92,7 @@ impl CompThreshRule<'_> {
         };
     }
 
-    fn linear_sub_rule(a: Vec2, b: Vec2) -> SubRule<'static> {
+    fn linear_sub_rule(a: Vec2, b: Vec2) -> SubRule {
         let rise = b.y - a.y;
         // special case when there is a horizontal line
 
@@ -102,13 +104,13 @@ impl CompThreshRule<'_> {
         let m = rise / run;
         let c = b.y - m * b.x;
 
-        println!("y={}x+{} for:{} and {}", m, c, a, b);
-        println!("rise: {}, run: {}", rise, run);
+        // println!("y={}x+{} for:{} and {}", m, c, a, b);
+        // println!("rise: {}, run: {}", rise, run);
 
         return SubRule::new_linear(m, c);
     }
 }
-impl InteractionRule for CompThreshRule<'_> {
+impl InteractionRule for CompThreshRule {
     fn interact(&self, d: f32) -> f32 {
         for i in 0..self.count {
             if d < self.thresholds[i] {
