@@ -8,8 +8,8 @@ pub struct MovablePointBundle {
 impl MovablePointBundle {
     pub fn new(
         name: String,
-        size: Vec3,
-        pos: Vec3,
+        radius: f32,
+        translation: Vec3,
         asset_server: &Res<AssetServer>,
         meshes: &mut Assets<Mesh>,
         materials: &mut Assets<StandardMaterial>,
@@ -17,13 +17,20 @@ impl MovablePointBundle {
         return Self {
             name: Name::new(name),
             mat: MaterialMeshBundle {
-                mesh: meshes.add(Mesh::from(shape::Box::new(size.x, size.y, size.z))),
+                mesh: meshes.add(
+                    shape::Icosphere {
+                        radius: radius,
+                        subdivisions: 10,
+                    }
+                    .try_into()
+                    .unwrap(),
+                ),
                 material: materials.add(StandardMaterial {
-                    base_color: Color::WHITE,
                     base_color_texture: Some(asset_server.load("textures/checker_board.png")),
+                    base_color: Color::WHITE,
                     ..default()
                 }),
-                transform: Transform::from_translation(pos),
+                transform: Transform::from_translation(translation),
                 ..default()
             },
         };

@@ -23,6 +23,10 @@ pub struct Bindings {
     look_right: KeyCode,
     next_mode: KeyCode,
     prev_mode: KeyCode,
+    designer_point_up: KeyCode,
+    designer_point_down: KeyCode,
+    designer_point_left: KeyCode,
+    designer_point_right: KeyCode,
 }
 impl Default for Bindings {
     fn default() -> Self {
@@ -33,12 +37,16 @@ impl Default for Bindings {
             right_key: KeyCode::D,
             fly_up: KeyCode::Space,
             fly_down: KeyCode::LShift,
-            next_mode: KeyCode::Key1,
-            prev_mode: KeyCode::Key2,
             look_up: KeyCode::Up,
             look_down: KeyCode::Down,
             look_left: KeyCode::Left,
             look_right: KeyCode::Right,
+            next_mode: KeyCode::Key1,
+            prev_mode: KeyCode::Key2,
+            designer_point_up: KeyCode::Up,
+            designer_point_down: KeyCode::Down,
+            designer_point_left: KeyCode::Left,
+            designer_point_right: KeyCode::Right,
         }
     }
 }
@@ -92,7 +100,6 @@ fn update_control_state(
     for ev in motion_evr.iter() {
         mouse_look_delta += ev.delta;
     }
-    println!("detected: {}", mouse_look_delta);
 
     // Update mouse button
     let mut button_look_delta = Vec2::ZERO;
@@ -111,4 +118,17 @@ fn update_control_state(
 
     control_state.button_look_delta = button_look_delta;
     control_state.mouse_look_delta = mouse_look_delta;
+
+    if input.pressed(bindings.designer_point_up) {
+        button_look_delta.y += 1.0;
+    }
+    if input.pressed(bindings.designer_point_down) {
+        button_look_delta.y -= 1.0;
+    }
+    if input.pressed(bindings.designer_point_left) {
+        button_look_delta.x += 1.0;
+    }
+    if input.pressed(bindings.designer_point_right) {
+        button_look_delta.x -= 1.0;
+    }
 }

@@ -11,7 +11,7 @@ use self::{
     particle_bundle::{Particle, ParticleBundle},
 };
 
-mod interaction_designer;
+pub mod interaction_designer;
 mod interaction_rule;
 mod movement_functions;
 mod particle_bundle;

@@ -18,10 +18,12 @@ fn spawn_design_room(
 ) {
     commands.spawn(MovablePointBundle::new(
         "Movable Point".into(),
-        Vec3::ONE,
-        vec3(0.0, 20.0, 0.0),
+        0.5,
+        vec3(0.0, 1.0, -5.0),
         &asset_server,
         &mut meshes,
         &mut materials,
     ));
 }
+
+fn move_point() {}

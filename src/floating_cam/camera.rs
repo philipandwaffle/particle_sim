@@ -27,7 +27,6 @@ pub fn transform_camera(
 ) {
     match cam.get_single_mut() {
         Ok(mut transform) => {
-            println!("received: {}", control_state.mouse_look_delta);
             let total_look_delta = (control_state.mouse_look_delta * -cam_settings.mouse_look_sen)
                 + (control_state.button_look_delta * -cam_settings.button_look_sen);
 
