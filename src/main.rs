@@ -9,7 +9,7 @@ use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_rapier3d::prelude::*;
 use config::structs::*;
 use floating_cam::FloatingCamPlugin;
-use particles::{interaction_designer::DesignerPlugin, ParticlesPlugin};
+use particles::{interaction_designer::DesignerModePlugin, ParticlesPlugin};
 use wall_bundles::{init_clear_box, init_opaque_box};
 
 mod config;
@@ -19,7 +19,7 @@ mod wall_bundles;
 
 fn main() {
     let edit_mode = true;
-    let profiling_mode = true;
+    let profiling_mode = false;
 
     let cfg = Config::load_cfg("settings.json");
 
@@ -60,7 +60,7 @@ fn main() {
     }
 
     if edit_mode {
-        app.add_plugin(DesignerPlugin);
+        app.add_plugin(DesignerModePlugin);
     } else {
         app.add_plugin(ParticlesPlugin);
     }
