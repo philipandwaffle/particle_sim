@@ -84,9 +84,6 @@ fn development() {
 }
 
 fn main() {
-    development();
-    // return;
-
     let zero1: AttractionFunc = |_| return 0.0;
     let reat1: AttractionFunc = |x| {
         // let a = 2.0;

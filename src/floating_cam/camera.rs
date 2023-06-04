@@ -4,13 +4,15 @@ use bevy::prelude::*;
 
 #[derive(Component)]
 pub struct FloatingCam {
-    pub sen: f32,
+    pub mouse_look_sen: f32,
+    pub button_look_sen: f32,
     pub speed: f32,
 }
 impl Default for FloatingCam {
     fn default() -> Self {
         Self {
-            sen: 0.001,
+            mouse_look_sen: 0.001,
+            button_look_sen: 10.0,
             speed: 0.1,
         }
     }
@@ -43,10 +45,13 @@ pub fn transform_camera(
 ) {
     match cam.get_single_mut() {
         Ok((fps_cam, mut transform)) => {
-            let pitch = Quat::from_axis_angle(Vec3::X, cs.look_delta.y * -fps_cam.sen);
+            let total_look_delta = (cs.mouse_look_delta * -fps_cam.mouse_look_sen)
+                + (cs.button_look_delta * -fps_cam.button_look_sen);
+            let pitch =
+                Quat::from_axis_angle(Vec3::X, total_look_delta.y * -fps_cam.mouse_look_sen);
             transform.rotate_local(pitch);
 
-            let yaw = Quat::from_axis_angle(Vec3::Y, cs.look_delta.x * -fps_cam.sen);
+            let yaw = Quat::from_axis_angle(Vec3::Y, total_look_delta.x * -fps_cam.mouse_look_sen);
             ps.rotation *= yaw;
             transform.rotate(yaw);
 

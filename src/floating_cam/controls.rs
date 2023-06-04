@@ -17,6 +17,10 @@ pub struct Bindings {
     right_key: KeyCode,
     fly_up: KeyCode,
     fly_down: KeyCode,
+    look_up: KeyCode,
+    look_down: KeyCode,
+    look_left: KeyCode,
+    look_right: KeyCode,
     next_mode: KeyCode,
     prev_mode: KeyCode,
 }
@@ -29,8 +33,12 @@ impl Default for Bindings {
             right_key: KeyCode::D,
             fly_up: KeyCode::Space,
             fly_down: KeyCode::LShift,
-            fly_up: KeyCode::Space,
-            fly_down: KeyCode::LShift,
+            next_mode: KeyCode::Key1,
+            prev_mode: KeyCode::Key2,
+            look_up: KeyCode::Up,
+            look_down: KeyCode::Down,
+            look_left: KeyCode::Left,
+            look_right: KeyCode::Right,
         }
     }
 }
@@ -38,13 +46,15 @@ impl Default for Bindings {
 #[derive(Resource)]
 pub struct ControlState {
     pub move_dir: Vec3,
-    pub look_delta: Vec2,
+    pub mouse_look_delta: Vec2,
+    pub button_look_delta: Vec2,
 }
 impl Default for ControlState {
     fn default() -> Self {
         Self {
             move_dir: Vec3::ZERO,
-            look_delta: Vec2::ZERO,
+            mouse_look_delta: Vec2::ZERO,
+            button_look_delta: Vec2::ZERO,
         }
     }
 }
@@ -78,10 +88,28 @@ fn update_control_state(
         cs.move_dir.y -= 1.0
     }
 
+    let mut mouse_look_delta = Vec2::ZERO;
+
     // Update mouse
-    let mut look_delta = Vec2::ZERO;
     for ev in motion_evr.iter() {
-        look_delta += ev.delta;
+        mouse_look_delta += ev.delta;
     }
-    control_state.look_delta = look_delta;
+
+    // Update for button
+    let mut button_look_delta = Vec2::ZERO;
+    if input.pressed(bindings.look_up) {
+        button_look_delta.y -= 1.0;
+    }
+    if input.pressed(bindings.look_down) {
+        button_look_delta.y += 1.0;
+    }
+    if input.pressed(bindings.look_left) {
+        button_look_delta.x -= 1.0;
+    }
+    if input.pressed(bindings.look_right) {
+        button_look_delta.x += 1.0;
+    }
+
+    control_state.button_look_delta = button_look_delta;
+    control_state.mouse_look_delta = mouse_look_delta;
 }

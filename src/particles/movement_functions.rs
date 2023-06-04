@@ -19,6 +19,7 @@ pub fn move_particles(
         .map(|x| (x.0, x.1.type_id, x.3.translation))
         .collect::<Vec<(Entity, usize, Vec3)>>();
 
+
     for (entity, particle, mut velocity, transform) in particles.iter_mut() {
         let mut total_vel = Vec3::ZERO;
         for (compare_entity, compare_type_id, compare_translation) in compare_vec.iter() {

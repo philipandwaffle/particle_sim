@@ -4,8 +4,7 @@ use random::Source;
 use serde::{Deserialize, Serialize};
 
 use self::{
-    interaction_rule::matrix::InteractionMatrix,
-    movement_functions::move_particles,
+    movement_functions::{parallel_arc_move_particles, move_particles},
     particle_bundle::{Particle, ParticleBundle},
     particle_metadata::{AttractionFunc, ParticleMetadata},
 };
