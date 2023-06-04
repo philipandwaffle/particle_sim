@@ -65,8 +65,7 @@ fn update_control_state(
     input: Res<Input<KeyCode>>,
     bindings: Res<Bindings>,
 ) {
-    // Update keyboard
-    // Y is forward and X is right
+    // Update movement keys
     let cs = control_state.as_mut();
     if input.pressed(bindings.forward_key) {
         cs.move_dir.z -= 1.0
@@ -88,14 +87,14 @@ fn update_control_state(
         cs.move_dir.y -= 1.0
     }
 
+    // Update mouse look
     let mut mouse_look_delta = Vec2::ZERO;
-
-    // Update mouse
     for ev in motion_evr.iter() {
         mouse_look_delta += ev.delta;
     }
+    println!("detected: {}", mouse_look_delta);
 
-    // Update for button
+    // Update mouse button
     let mut button_look_delta = Vec2::ZERO;
     if input.pressed(bindings.look_up) {
         button_look_delta.y -= 1.0;

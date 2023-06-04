@@ -22,7 +22,7 @@ impl Plugin for FloatingCamPlugin {
 fn spawn_floating_cam(mut commands: Commands) {
     commands
         .spawn(Name::new("Player"))
-        .insert(FloatingCam::default())
+        .insert(FloatingCam)
         .insert(Velocity::default())
         .insert(Damping {
             linear_damping: 0.99,

@@ -1,4 +1,9 @@
 {
+    "camera":{
+        "mouse_look_sen": 0.001,
+        "button_look_sen": 0.05, 
+        "move_speed": 0.1
+    },
     "spawn": {
         "min": [-2.0, 2.0, -2.0],
         "max": [2.0, 6.0, 2.0],
@@ -12,11 +17,6 @@
     },
     "particle_properties": {
         "radius": 0.05,
-        "lin_damping": 0.5,
-        "attraction_matrix": [
-            ["pos_range1x0_return0x01", "pos_range1x0_return0x01", "zer_range0x0_return0x00"],
-            ["zer_range0x0_return0x00", "pos_range1x0_return0x01", "pos_range1x0_return0x01"],
-            ["zer_range0x0_return0x00", "zer_range0x0_return0x00", "pos_range1x0_return0x01"]
-        ]
+        "lin_damping": 0.5
     }
 }

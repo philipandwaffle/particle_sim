@@ -3,10 +3,7 @@ use std::thread;
 use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
 
-use super::{
-    interaction_rule::matrix::InteractionMatrix, particle_bundle::Particle,
-    particle_metadata::ParticleMetadata,
-};
+use super::{interaction_rule::matrix::InteractionMatrix, particle_bundle::Particle};
 
 #[allow(dead_code)]
 pub fn move_particles(
@@ -19,7 +16,6 @@ pub fn move_particles(
         .map(|x| (x.0, x.1.type_id, x.3.translation))
         .collect::<Vec<(Entity, usize, Vec3)>>();
 
-
     for (entity, particle, mut velocity, transform) in particles.iter_mut() {
         let mut total_vel = Vec3::ZERO;
         for (compare_entity, compare_type_id, compare_translation) in compare_vec.iter() {
@@ -29,8 +25,8 @@ pub fn move_particles(
             let dir = *compare_translation - transform.translation;
             let dist = dir.length();
             let attract_modifier =
-                // interaction_matrix.get_interaction(particle.type_id, *compare_type_id, dist);
-                (matrix[particle.type_id][*compare_type_id]).interact(dist);
+                interaction_matrix.get_interaction(particle.type_id, *compare_type_id, dist);
+            // (matrix[particle.type_id][*compare_type_id]).interact(dist);
             if attract_modifier == 0.0 {
                 continue;
             }
@@ -39,7 +35,7 @@ pub fn move_particles(
         velocity.linvel += total_vel;
     }
 }
-
+/*
 #[allow(dead_code)]
 pub fn parallel_move_particles(
     mut particles: Query<(Entity, &Particle, &mut Velocity, &Transform)>,
@@ -110,6 +106,7 @@ pub fn parallel_move_particles(
         i += 1;
     }
 }
+*/
 
 /*
 // #[allow(dead_code)]
