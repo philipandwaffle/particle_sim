@@ -1,32 +1,39 @@
-use bevy::{ecs::component, math::vec3, prelude::*, transform::commands};
+use core::panic;
+
+use bevy::{math::vec3, prelude::*};
+use bevy_inspector_egui::inspector_options::Target;
 
 use crate::floating_cam::controls::ControlState;
 
-use self::bundles::{DesignerPoint, DesignerPointBundle};
+use self::line::*;
+use self::point::*;
 
-mod bundles;
+mod line;
+mod point;
+
 pub struct DesignerModePlugin;
 impl Plugin for DesignerModePlugin {
     fn build(&self, app: &mut App) {
-        app.insert_resource(DesignerModeState::new(vec![0, 1, 2, 3, 4, 5]))
+        app.insert_resource(DesignerModeState::new(6))
             .add_startup_system(spawn_design_room)
             .add_startup_system(spawn_design_terminal)
-            .add_system(move_point);
+            .add_system(move_point)
+            .add_system(move_lines);
     }
 }
 
 #[derive(Resource)]
 pub struct DesignerModeState {
-    pub point_order: Vec<usize>,
+    pub points: Vec<Entity>,
     pub cur_point_id: isize,
     pub num_points: usize,
 }
 impl DesignerModeState {
-    pub fn new(point_order: Vec<usize>) -> Self {
+    pub fn new(num_points: usize) -> Self {
         return Self {
-            point_order: point_order.clone(),
+            points: Vec::with_capacity(num_points),
             cur_point_id: 0,
-            num_points: point_order.len(),
+            num_points: num_points,
         };
     }
 }
@@ -53,7 +60,7 @@ fn spawn_design_terminal(
     mut materials: ResMut<Assets<StandardMaterial>>,
     mut meshes: ResMut<Assets<Mesh>>,
     asset_server: Res<AssetServer>,
-    designer_mode_state: Res<DesignerModeState>,
+    mut designer_mode_state: ResMut<DesignerModeState>,
 ) {
     let radius = 0.5;
     let num_points = designer_mode_state.num_points;
@@ -63,15 +70,56 @@ fn spawn_design_terminal(
 
     let dir = max - min;
     for id in 0..num_points {
-        commands.spawn(DesignerPointBundle::new(
-            "point_1".into(),
+        let point = commands
+            .spawn(DesignerPointBundle::new(
+                "point_1".into(),
+                id,
+                radius,
+                min + dir * (id as f32 / (num_points - 1) as f32),
+                &asset_server,
+                &mut meshes,
+                &mut materials,
+            ))
+            .id();
+        designer_mode_state.points.push(point);
+    }
+
+    for id in 0..num_points - 1 {
+        commands.spawn(LineBundle::new(
+            "".into(),
             id,
-            radius,
-            min + dir * (id as f32 / (num_points - 1) as f32),
-            &asset_server,
+            designer_mode_state.points[id],
+            designer_mode_state.points[id + 1],
+            0.05,
             &mut meshes,
             &mut materials,
         ));
+    }
+}
+
+fn move_lines(
+    mut designer_lines: Query<(&mut Transform, &DesignerLine), Without<DesignerPoint>>,
+    designer_points: Query<(&Transform, With<DesignerPoint>)>,
+    designer_mode_state: Res<DesignerModeState>,
+) {
+    for (mut transform, line) in designer_lines.iter_mut() {
+        let from = if let Ok((point, _)) = designer_points.get(line.from) {
+            point.translation
+        } else {
+            panic!();
+        };
+
+        let to = if let Ok((point, _)) = designer_points.get(line.to) {
+            point.translation
+        } else {
+            panic!()
+        };
+
+        let dir = to - from;
+        let dist = dir.length();
+        transform.scale = vec3(1.0, dist, 1.0);
+        transform.translation = from + dir / 2.0;
+        transform.look_to(Vec3::NEG_Z, dir)
     }
 }
 
