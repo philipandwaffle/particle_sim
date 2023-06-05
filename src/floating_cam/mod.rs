@@ -7,7 +7,7 @@ use self::{
 };
 
 mod camera;
-mod controls;
+pub mod controls;
 
 pub struct FloatingCamPlugin;
 impl Plugin for FloatingCamPlugin {

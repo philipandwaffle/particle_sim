@@ -9,7 +9,7 @@ use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_rapier3d::prelude::*;
 use config::structs::*;
 use floating_cam::FloatingCamPlugin;
-use particles::ParticlesPlugin;
+use particles::{interaction_designer::DesignerModePlugin, ParticlesPlugin};
 use wall_bundles::{init_clear_box, init_opaque_box};
 
 mod config;
@@ -18,6 +18,9 @@ mod particles;
 mod wall_bundles;
 
 fn main() {
+    let edit_mode = true;
+    let profiling_mode = false;
+
     let cfg = Config::load_cfg("settings.json");
 
     let mut app = App::new();
@@ -48,12 +51,21 @@ fn main() {
             .set(ImagePlugin::default_nearest()),
     )
     .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
-    // .add_plugin(WorldInspectorPlugin::new())
-    // .add_plugin(LogDiagnosticsPlugin::default())
-    // .add_plugin(FrameTimeDiagnosticsPlugin::default())
-    .add_plugin(FloatingCamPlugin)
-    .add_plugin(ParticlesPlugin)
-    .add_startup_system(init_opaque_box)
-    // .add_startup_system(init_clear_box)
-    .run();
+    .add_plugin(FloatingCamPlugin);
+
+    if profiling_mode {
+        app.add_plugin(WorldInspectorPlugin::new())
+            .add_plugin(LogDiagnosticsPlugin::default())
+            .add_plugin(FrameTimeDiagnosticsPlugin::default());
+    }
+
+    if edit_mode {
+        app.add_plugin(DesignerModePlugin);
+    } else {
+        app.add_plugin(ParticlesPlugin);
+    }
+    app.add_startup_system(init_opaque_box);
+    // app.add_startup_system(init_clear_box);
+
+    app.run();
 }

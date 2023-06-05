@@ -23,6 +23,12 @@ pub struct Bindings {
     look_right: KeyCode,
     next_mode: KeyCode,
     prev_mode: KeyCode,
+    designer_point_up: KeyCode,
+    designer_point_down: KeyCode,
+    designer_point_left: KeyCode,
+    designer_point_right: KeyCode,
+    next_designer_point: KeyCode,
+    prev_designer_point: KeyCode,
 }
 impl Default for Bindings {
     fn default() -> Self {
@@ -33,12 +39,18 @@ impl Default for Bindings {
             right_key: KeyCode::D,
             fly_up: KeyCode::Space,
             fly_down: KeyCode::LShift,
-            next_mode: KeyCode::Key1,
-            prev_mode: KeyCode::Key2,
             look_up: KeyCode::Up,
             look_down: KeyCode::Down,
             look_left: KeyCode::Left,
             look_right: KeyCode::Right,
+            next_mode: KeyCode::Key1,
+            prev_mode: KeyCode::Key2,
+            designer_point_up: KeyCode::I,
+            designer_point_down: KeyCode::K,
+            designer_point_left: KeyCode::J,
+            designer_point_right: KeyCode::L,
+            next_designer_point: KeyCode::O,
+            prev_designer_point: KeyCode::U,
         }
     }
 }
@@ -48,6 +60,8 @@ pub struct ControlState {
     pub move_dir: Vec3,
     pub mouse_look_delta: Vec2,
     pub button_look_delta: Vec2,
+    pub design_point_delta: Vec2,
+    pub design_point_id_delta: isize,
 }
 impl Default for ControlState {
     fn default() -> Self {
@@ -55,6 +69,8 @@ impl Default for ControlState {
             move_dir: Vec3::ZERO,
             mouse_look_delta: Vec2::ZERO,
             button_look_delta: Vec2::ZERO,
+            design_point_delta: Vec2::ZERO,
+            design_point_id_delta: 0,
         }
     }
 }
@@ -92,7 +108,6 @@ fn update_control_state(
     for ev in motion_evr.iter() {
         mouse_look_delta += ev.delta;
     }
-    println!("detected: {}", mouse_look_delta);
 
     // Update mouse button
     let mut button_look_delta = Vec2::ZERO;
@@ -108,7 +123,32 @@ fn update_control_state(
     if input.pressed(bindings.look_right) {
         button_look_delta.x += 1.0;
     }
-
     control_state.button_look_delta = button_look_delta;
     control_state.mouse_look_delta = mouse_look_delta;
+
+    // Update design point
+    let mut design_point_delta = Vec2::ZERO;
+    if input.pressed(bindings.designer_point_up) {
+        design_point_delta.y += 1.0;
+    }
+    if input.pressed(bindings.designer_point_down) {
+        design_point_delta.y -= 1.0;
+    }
+    if input.pressed(bindings.designer_point_left) {
+        design_point_delta.x -= 1.0;
+    }
+    if input.pressed(bindings.designer_point_right) {
+        design_point_delta.x += 1.0;
+    }
+    control_state.design_point_delta = design_point_delta;
+
+    // Update design point id
+    let mut design_point_id_delta = 0;
+    if input.just_pressed(bindings.next_designer_point) {
+        design_point_id_delta += 1;
+    }
+    if input.just_pressed(bindings.prev_designer_point) {
+        design_point_id_delta -= 1;
+    }
+    control_state.design_point_id_delta += design_point_id_delta;
 }
