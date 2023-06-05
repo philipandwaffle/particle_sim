@@ -1,4 +1,54 @@
-use bevy::{ecs::component, prelude::*, transform::commands};
+use bevy::prelude::*;
+#[derive(Bundle)]
+pub struct LineBundle {
+    name: Name,
+    line: Line,
+    mat: MaterialMeshBundle<StandardMaterial>,
+}
+impl LineBundle {
+    pub fn new(
+        name: String,
+        from: Vec3,
+        to: Vec3,
+        asset_server: &Res<AssetServer>,
+        meshes: &mut Assets<Mesh>,
+        materials: &mut Assets<StandardMaterial>,
+    ) -> Self {
+        return Self {
+            name: Name::new(name),
+            line: Line::new(from, to),
+            mat: MaterialMeshBundle {
+                mesh: meshes.add(
+                    shape::Cylinder {
+                        radius: todo!(),
+                        height: todo!(),
+                        resolution: todo!(),
+                        segments: todo!(),
+                    }
+                    .try_into()
+                    .unwrap(),
+                ),
+                material: materials.add(StandardMaterial {
+                    base_color_texture: Some(asset_server.load("textures/checker_board.png")),
+                    base_color: Color::WHITE,
+                    ..default()
+                }),
+                transform: Transform::from_translation(from),
+                ..default()
+            },
+        };
+    }
+}
+#[derive(Component)]
+pub struct Line {
+    pub from: Vec3,
+    pub to: Vec3,
+}
+impl Line {
+    pub fn new(from: Vec3, to: Vec3) -> Self {
+        return Self { from, to };
+    }
+}
 
 #[derive(Bundle)]
 pub struct DesignerPointBundle {
