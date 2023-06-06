@@ -6,7 +6,7 @@ use self::line::*;
 use self::point::*;
 
 mod line;
-mod point;
+pub mod point;
 
 pub struct DesignerModePlugin;
 impl Plugin for DesignerModePlugin {
@@ -16,7 +16,7 @@ impl Plugin for DesignerModePlugin {
             .add_startup_system(spawn_design_terminal)
             .add_system(move_point)
             .add_system(move_lines)
-            .add_system(save_graph)
+            // .add_system(save_graph)
             .add_system(reorder_points_and_lines);
     }
 }
@@ -180,9 +180,9 @@ fn move_point(
     let points = designer_mode_state.point_entities.clone();
 
     // Change current point if change triggered
-    if control_state.design_point_id_delta != 0 {
+    if control_state.design_alpha_delta != 0 {
         // Aggregate current id with delta id
-        designer_mode_state.cur_point_id += control_state.design_point_id_delta;
+        designer_mode_state.cur_point_id += control_state.design_alpha_delta;
 
         // Check if new id is out of bounds and fix
         if designer_mode_state.cur_point_id == -1 {
@@ -191,10 +191,10 @@ fn move_point(
             designer_mode_state.cur_point_id = 0;
         }
     }
-    control_state.design_point_id_delta = 0;
+    control_state.design_alpha_delta = 0;
 
     // Return if there is no transform to apply
-    if control_state.design_point_delta == Vec2::ZERO {
+    if control_state.design_terminal_delta == Vec2::ZERO {
         return;
     }
 
@@ -213,31 +213,9 @@ fn move_point(
 
         // Apply transform to the selected point
         if id == cur_id as usize {
-            transform.translation += control_state.design_point_delta.extend(0.0) * 0.05;
+            transform.translation += control_state.design_terminal_delta.extend(0.0) * 0.05;
         }
     }
 
-    control_state.design_point_delta = Vec2::ZERO;
-}
-
-fn save_graph(
-    mut control_state: ResMut<ControlState>,
-    mut designer_mode_state: ResMut<DesignerModeState>,
-    designer_points: Query<&Transform, With<DesignerPoint>>,
-) {
-    if !control_state.save_designer_points {
-        return;
-    }
-    control_state.save_designer_points = false;
-
-    for i in 0..designer_mode_state.num_points {
-        let pos = if let Ok(transform) = designer_points.get(designer_mode_state.point_entities[i])
-        {
-            transform.translation
-        } else {
-            panic!();
-        };
-
-        designer_mode_state.point_pos[i] = pos.truncate();
-    }
+    control_state.design_terminal_delta = Vec2::ZERO;
 }

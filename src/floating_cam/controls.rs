@@ -23,12 +23,12 @@ pub struct Bindings {
     look_right: KeyCode,
     next_mode: KeyCode,
     prev_mode: KeyCode,
-    designer_point_up: KeyCode,
-    designer_point_down: KeyCode,
-    designer_point_left: KeyCode,
-    designer_point_right: KeyCode,
-    next_designer_point: KeyCode,
-    prev_designer_point: KeyCode,
+    designer_terminal_up: KeyCode,
+    designer_terminal_down: KeyCode,
+    designer_terminal_left: KeyCode,
+    designer_terminal_right: KeyCode,
+    next_designer_node: KeyCode,
+    prev_designer_node: KeyCode,
     save_designer_points: KeyCode,
 }
 impl Default for Bindings {
@@ -46,12 +46,12 @@ impl Default for Bindings {
             look_right: KeyCode::Right,
             next_mode: KeyCode::Key1,
             prev_mode: KeyCode::Key2,
-            designer_point_up: KeyCode::I,
-            designer_point_down: KeyCode::K,
-            designer_point_left: KeyCode::J,
-            designer_point_right: KeyCode::L,
-            next_designer_point: KeyCode::O,
-            prev_designer_point: KeyCode::U,
+            designer_terminal_up: KeyCode::I,
+            designer_terminal_down: KeyCode::K,
+            designer_terminal_left: KeyCode::J,
+            designer_terminal_right: KeyCode::L,
+            next_designer_node: KeyCode::O,
+            prev_designer_node: KeyCode::U,
             save_designer_points: KeyCode::P,
         }
     }
@@ -62,8 +62,8 @@ pub struct ControlState {
     pub move_dir: Vec3,
     pub mouse_look_delta: Vec2,
     pub button_look_delta: Vec2,
-    pub design_point_delta: Vec2,
-    pub design_point_id_delta: isize,
+    pub design_terminal_delta: Vec2,
+    pub design_alpha_delta: isize,
     pub save_designer_points: bool,
 }
 impl Default for ControlState {
@@ -72,8 +72,8 @@ impl Default for ControlState {
             move_dir: Vec3::ZERO,
             mouse_look_delta: Vec2::ZERO,
             button_look_delta: Vec2::ZERO,
-            design_point_delta: Vec2::ZERO,
-            design_point_id_delta: 0,
+            design_terminal_delta: Vec2::ZERO,
+            design_alpha_delta: 0,
             save_designer_points: false,
         }
     }
@@ -132,29 +132,29 @@ fn update_control_state(
 
     // Update design point
     let mut design_point_delta = Vec2::ZERO;
-    if input.pressed(bindings.designer_point_up) {
+    if input.pressed(bindings.designer_terminal_up) {
         design_point_delta.y += 1.0;
     }
-    if input.pressed(bindings.designer_point_down) {
+    if input.pressed(bindings.designer_terminal_down) {
         design_point_delta.y -= 1.0;
     }
-    if input.pressed(bindings.designer_point_left) {
+    if input.pressed(bindings.designer_terminal_left) {
         design_point_delta.x -= 1.0;
     }
-    if input.pressed(bindings.designer_point_right) {
+    if input.pressed(bindings.designer_terminal_right) {
         design_point_delta.x += 1.0;
     }
-    control_state.design_point_delta = design_point_delta;
+    control_state.design_terminal_delta = design_point_delta;
 
-    // Update design point id
-    let mut design_point_id_delta = 0;
-    if input.just_pressed(bindings.next_designer_point) {
-        design_point_id_delta += 1;
+    // Update alpha value
+    let mut design_alpha_delta = 0;
+    if input.just_pressed(bindings.next_designer_node) {
+        design_alpha_delta += 1;
     }
-    if input.just_pressed(bindings.prev_designer_point) {
-        design_point_id_delta -= 1;
+    if input.just_pressed(bindings.prev_designer_node) {
+        design_alpha_delta -= 1;
     }
-    control_state.design_point_id_delta += design_point_id_delta;
+    control_state.design_alpha_delta += design_alpha_delta;
 
     if input.just_pressed(bindings.save_designer_points) {
         control_state.save_designer_points = true;

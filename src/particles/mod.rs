@@ -13,6 +13,7 @@ use self::{
 
 pub mod interaction_designer;
 mod interaction_rule;
+mod matrix_designer;
 mod movement_functions;
 mod particle_bundle;
 
