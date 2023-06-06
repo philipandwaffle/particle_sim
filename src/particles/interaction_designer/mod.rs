@@ -128,8 +128,6 @@ fn reorder_points_and_lines(
     designer_points: Query<&Transform>,
     mut designer_mode_state: ResMut<DesignerModeState>,
 ) {
-    // Get the vec containing the order of the points
-
     // Loop through each point in order
     for i in 0..designer_mode_state.num_points {
         // Get id and transform of the current point
@@ -139,10 +137,12 @@ fn reorder_points_and_lines(
             panic!();
         };
 
+        // Don't reorder the first and last point
         if i == 0 || i == designer_mode_state.num_points - 1 {
             continue;
         }
 
+        // Get surrounding points
         let prev_point = designer_points
             .get(designer_mode_state.points[i - 1])
             .unwrap()
@@ -152,6 +152,7 @@ fn reorder_points_and_lines(
             .unwrap()
             .translation;
 
+        // Swap point order
         if transform.translation.x < prev_point.x {
             println!("swapping {} and {}", i, i - 1);
             designer_mode_state.points.swap(i, i - 1);
