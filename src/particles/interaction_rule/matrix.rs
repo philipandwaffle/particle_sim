@@ -6,26 +6,6 @@ use crate::particles::interaction_rule::interaction::CompThreshRule;
 
 use super::interaction::{InteractionRule, ZeroRule};
 
-type IR = dyn InteractionRule + Send + Sync;
-
-// trait IRClone {
-//     fn clone_box(&self) -> Box<IR>;
-// }
-
-// impl<T> IRClone for T
-// where
-//     T: 'static + IR + Clone,
-// {
-//     fn clone_box(&self) -> Box<IR> {
-//         Box::new(self.clone())
-//     }
-// }
-// impl Clone for Box<IR> {
-//     fn clone(&self) -> Box<IR> {
-//         self.clone_box()
-//     }
-// }
-
 #[derive(Resource)]
 pub struct InteractionMatrix {
     pub matrix: Vec<Vec<Box<dyn InteractionRule + Send + Sync>>>,
@@ -38,7 +18,8 @@ impl InteractionMatrix {
             for j in 0..count {
                 // println!("row: {} col: {}", i, j);
                 let cell = Box::new(CompThreshRule::from_points(vec![
-                    vec2(0.0, 0.5),
+                    vec2(0.0, -2.0),
+                    vec2(2.0, 0.5),
                     vec2(7.0, 0.5),
                 ])) as Box<dyn InteractionRule + Send + Sync>;
                 row.push(cell);

@@ -69,6 +69,7 @@ fn spawn_particles(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
+    asset_server: Res<AssetServer>,
     spawn_info: Res<Spawn>,
     particle_properties: Res<ParticleProperties>,
 ) {
@@ -106,6 +107,7 @@ fn spawn_particles(
             particle_properties.radius,
             spawn_positions[i].clone(),
             particle_properties.lin_damping,
+            &asset_server,
             meshes.as_mut(),
             materials.as_mut(),
             collider.clone(),
