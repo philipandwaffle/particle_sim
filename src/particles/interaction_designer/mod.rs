@@ -16,22 +16,25 @@ impl Plugin for DesignerModePlugin {
             .add_startup_system(spawn_design_terminal)
             .add_system(move_point)
             .add_system(move_lines)
+            .add_system(save_graph)
             .add_system(reorder_points_and_lines);
     }
 }
 
 #[derive(Resource)]
 pub struct DesignerModeState {
-    pub points: Vec<Entity>,
-    pub lines: Vec<Entity>,
+    pub point_entities: Vec<Entity>,
+    pub line_entities: Vec<Entity>,
+    pub point_pos: Vec<Vec2>,
     pub cur_point_id: isize,
     pub num_points: usize,
 }
 impl DesignerModeState {
     pub fn new(num_points: usize) -> Self {
         return Self {
-            points: Vec::with_capacity(num_points),
-            lines: Vec::with_capacity(num_points - 1),
+            point_entities: Vec::with_capacity(num_points),
+            line_entities: Vec::with_capacity(num_points - 1),
+            point_pos: Vec::with_capacity(num_points),
             cur_point_id: 0,
             num_points: num_points,
         };
@@ -72,7 +75,7 @@ fn spawn_design_terminal(
                 &mut materials,
             ))
             .id();
-        designer_mode_state.points.push(point);
+        designer_mode_state.point_entities.push(point);
     }
 
     for id in 0..num_points - 1 {
@@ -80,14 +83,14 @@ fn spawn_design_terminal(
             .spawn(LineBundle::new(
                 "".into(),
                 id,
-                designer_mode_state.points[id],
-                designer_mode_state.points[id + 1],
+                designer_mode_state.point_entities[id],
+                designer_mode_state.point_entities[id + 1],
                 0.05,
                 &mut meshes,
                 &mut materials,
             ))
             .id();
-        designer_mode_state.lines.push(line);
+        designer_mode_state.line_entities.push(line);
     }
 }
 
@@ -98,19 +101,22 @@ fn move_lines(
 ) {
     for i in 0..designer_mode_state.num_points - 1 {
         let mut transform =
-            if let Ok(transform) = designer_lines.get_mut(designer_mode_state.lines[i]) {
+            if let Ok(transform) = designer_lines.get_mut(designer_mode_state.line_entities[i]) {
                 transform
             } else {
                 panic!();
             };
 
-        let from = if let Ok((point, _)) = designer_points.get(designer_mode_state.points[i]) {
-            point.translation
-        } else {
-            panic!();
-        };
+        let from =
+            if let Ok((point, _)) = designer_points.get(designer_mode_state.point_entities[i]) {
+                point.translation
+            } else {
+                panic!();
+            };
 
-        let to = if let Ok((point, _)) = designer_points.get(designer_mode_state.points[i + 1]) {
+        let to = if let Ok((point, _)) =
+            designer_points.get(designer_mode_state.point_entities[i + 1])
+        {
             point.translation
         } else {
             panic!()
@@ -131,11 +137,12 @@ fn reorder_points_and_lines(
     // Loop through each point in order
     for i in 0..designer_mode_state.num_points {
         // Get id and transform of the current point
-        let transform = if let Ok(transform) = designer_points.get(designer_mode_state.points[i]) {
-            transform
-        } else {
-            panic!();
-        };
+        let transform =
+            if let Ok(transform) = designer_points.get(designer_mode_state.point_entities[i]) {
+                transform
+            } else {
+                panic!();
+            };
 
         // Don't reorder the first and last point
         if i == 0 || i == designer_mode_state.num_points - 1 {
@@ -144,22 +151,22 @@ fn reorder_points_and_lines(
 
         // Get surrounding points
         let prev_point = designer_points
-            .get(designer_mode_state.points[i - 1])
+            .get(designer_mode_state.point_entities[i - 1])
             .unwrap()
             .translation;
         let next_point = designer_points
-            .get(designer_mode_state.points[i + 1])
+            .get(designer_mode_state.point_entities[i + 1])
             .unwrap()
             .translation;
 
         // Swap point order
         if transform.translation.x < prev_point.x {
             println!("swapping {} and {}", i, i - 1);
-            designer_mode_state.points.swap(i, i - 1);
+            designer_mode_state.point_entities.swap(i, i - 1);
         }
         if transform.translation.x > next_point.x {
             println!("swapping {} and {}", i, i + 1);
-            designer_mode_state.points.swap(i, i + 1);
+            designer_mode_state.point_entities.swap(i, i + 1);
         }
     }
 }
@@ -170,7 +177,7 @@ fn move_point(
     mut designer_mode_state: ResMut<DesignerModeState>,
 ) {
     // Get the vec containing the order of the points
-    let points = designer_mode_state.points.clone();
+    let points = designer_mode_state.point_entities.clone();
 
     // Change current point if change triggered
     if control_state.design_point_id_delta != 0 {
@@ -211,4 +218,26 @@ fn move_point(
     }
 
     control_state.design_point_delta = Vec2::ZERO;
+}
+
+fn save_graph(
+    mut control_state: ResMut<ControlState>,
+    mut designer_mode_state: ResMut<DesignerModeState>,
+    designer_points: Query<&Transform, With<DesignerPoint>>,
+) {
+    if !control_state.save_designer_points {
+        return;
+    }
+    control_state.save_designer_points = false;
+
+    for i in 0..designer_mode_state.num_points {
+        let pos = if let Ok(transform) = designer_points.get(designer_mode_state.point_entities[i])
+        {
+            transform.translation
+        } else {
+            panic!();
+        };
+
+        designer_mode_state.point_pos[i] = pos.truncate();
+    }
 }

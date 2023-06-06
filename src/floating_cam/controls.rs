@@ -29,6 +29,7 @@ pub struct Bindings {
     designer_point_right: KeyCode,
     next_designer_point: KeyCode,
     prev_designer_point: KeyCode,
+    save_designer_points: KeyCode,
 }
 impl Default for Bindings {
     fn default() -> Self {
@@ -51,6 +52,7 @@ impl Default for Bindings {
             designer_point_right: KeyCode::L,
             next_designer_point: KeyCode::O,
             prev_designer_point: KeyCode::U,
+            save_designer_points: KeyCode::P,
         }
     }
 }
@@ -62,6 +64,7 @@ pub struct ControlState {
     pub button_look_delta: Vec2,
     pub design_point_delta: Vec2,
     pub design_point_id_delta: isize,
+    pub save_designer_points: bool,
 }
 impl Default for ControlState {
     fn default() -> Self {
@@ -71,6 +74,7 @@ impl Default for ControlState {
             button_look_delta: Vec2::ZERO,
             design_point_delta: Vec2::ZERO,
             design_point_id_delta: 0,
+            save_designer_points: false,
         }
     }
 }
@@ -151,4 +155,8 @@ fn update_control_state(
         design_point_id_delta -= 1;
     }
     control_state.design_point_id_delta += design_point_id_delta;
+
+    if input.just_pressed(bindings.save_designer_points) {
+        control_state.save_designer_points = true;
+    }
 }
