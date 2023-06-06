@@ -1,9 +1,6 @@
-use core::panic;
-
-use bevy::{math::vec3, prelude::*};
-use bevy_inspector_egui::inspector_options::Target;
-
 use crate::floating_cam::controls::ControlState;
+use bevy::{math::vec3, prelude::*};
+use core::panic;
 
 use self::line::*;
 use self::point::*;
@@ -95,14 +92,14 @@ fn spawn_design_terminal(
 }
 
 fn move_lines(
-    mut designer_lines: Query<(&mut Transform, &DesignerLine), Without<DesignerPoint>>,
+    mut designer_lines: Query<&mut Transform, (With<DesignerLine>, Without<DesignerPoint>)>,
     designer_points: Query<(&Transform, With<DesignerPoint>)>,
     designer_mode_state: Res<DesignerModeState>,
 ) {
     for i in 0..designer_mode_state.num_points - 1 {
-        let (mut transform, line) =
-            if let Ok((transform, line)) = designer_lines.get_mut(designer_mode_state.lines[i]) {
-                (transform, line)
+        let mut transform =
+            if let Ok(transform) = designer_lines.get_mut(designer_mode_state.lines[i]) {
+                transform
             } else {
                 panic!();
             };
@@ -128,7 +125,7 @@ fn move_lines(
 }
 
 fn reorder_points_and_lines(
-    designer_points: Query<(&DesignerPoint, &Transform)>,
+    designer_points: Query<&Transform>,
     mut designer_mode_state: ResMut<DesignerModeState>,
 ) {
     // Get the vec containing the order of the points
@@ -136,10 +133,8 @@ fn reorder_points_and_lines(
     // Loop through each point in order
     for i in 0..designer_mode_state.num_points {
         // Get id and transform of the current point
-        let (id, transform) = if let Ok((designer_point, transform)) =
-            designer_points.get(designer_mode_state.points[i])
-        {
-            (designer_point.id, transform)
+        let transform = if let Ok(transform) = designer_points.get(designer_mode_state.points[i]) {
+            transform
         } else {
             panic!();
         };
@@ -151,12 +146,10 @@ fn reorder_points_and_lines(
         let prev_point = designer_points
             .get(designer_mode_state.points[i - 1])
             .unwrap()
-            .1
             .translation;
         let next_point = designer_points
             .get(designer_mode_state.points[i + 1])
             .unwrap()
-            .1
             .translation;
 
         if transform.translation.x < prev_point.x {
