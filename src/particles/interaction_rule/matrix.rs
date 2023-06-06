@@ -19,8 +19,7 @@ impl InteractionMatrix {
                 // println!("row: {} col: {}", i, j);
                 let cell = Box::new(CompThreshRule::from_points(vec![
                     vec2(0.0, -2.0),
-                    vec2(2.0, 0.5),
-                    vec2(7.0, 0.5),
+                    vec2(4.0, 2.0),
                 ])) as Box<dyn InteractionRule + Send + Sync>;
                 row.push(cell);
             }
