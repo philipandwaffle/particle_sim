@@ -11,12 +11,15 @@
         "type_id_counts": 250,
         "colors": [
             {"Rgba":{"red":1.0,"green":0.0,"blue":0.0,"alpha":1.0}},
+            {"Rgba":{"red":0.0,"green":1.0,"blue":0.0,"alpha":1.0}},
+            {"Rgba":{"red":0.0,"green":0.0,"blue":1.0,"alpha":1.0}},
             {"Rgba":{"red":1.0,"green":1.0,"blue":0.0,"alpha":1.0}},
-            {"Rgba":{"red":0.0,"green":1.0,"blue":0.0,"alpha":1.0}}
+            {"Rgba":{"red":0.0,"green":1.0,"blue":1.0,"alpha":1.0}},
+            {"Rgba":{"red":1.0,"green":0.0,"blue":1.0,"alpha":1.0}}
         ]
     },
     "particle_properties": {
-        "radius": 0.05,
+        "radius": 0.1,
         "lin_damping": 0.5
     }
 }

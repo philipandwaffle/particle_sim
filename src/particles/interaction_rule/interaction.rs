@@ -31,19 +31,19 @@ pub trait InteractionRule {
 // dyn_clone::clone_trait_object!(dyn Fn(f32) -> f32 + Send + Sync);
 
 // Composed rules are comprised of smaller SubRules
-struct SubRule {
+pub struct SubRule {
     rule: Box<dyn Fn(f32) -> f32 + Send + Sync>,
 }
 impl SubRule {
     // Create a new linear sub rule
-    fn new_linear(m: f32, c: f32) -> Self {
+    pub fn new_linear(m: f32, c: f32) -> Self {
         return Self {
             rule: Box::new(linear_rule!(x, m, c)),
         };
     }
 
     // Create a new constant sub rule
-    fn new_constant(c: f32) -> Self {
+    pub fn new_constant(c: f32) -> Self {
         return Self {
             rule: Box::new(constant_rule!(c)),
         };
