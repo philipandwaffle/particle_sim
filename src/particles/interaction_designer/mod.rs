@@ -8,8 +8,8 @@ use self::point::*;
 mod line;
 pub mod point;
 
-pub struct DesignerModePlugin;
-impl Plugin for DesignerModePlugin {
+pub struct InteractionDesignerPlugin;
+impl Plugin for InteractionDesignerPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(DesignerModeState::new(6))
             .add_startup_system(spawn_design_room)

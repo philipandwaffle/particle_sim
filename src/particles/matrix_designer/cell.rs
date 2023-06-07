@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy_rapier3d::na::Translation;
 
 #[derive(Bundle)]
 pub struct CellBundle {
@@ -8,7 +9,8 @@ pub struct CellBundle {
 impl CellBundle {
     pub fn new(
         id: usize,
-        transform: Transform,
+        translation: Vec3,
+        scale: Vec3,
         color: Color,
         meshes: &mut Assets<Mesh>,
         materials: &mut Assets<StandardMaterial>,
@@ -21,7 +23,11 @@ impl CellBundle {
                     base_color: color,
                     ..default()
                 }),
-                transform: transform,
+                transform: Transform {
+                    translation,
+                    scale,
+                    ..default()
+                },
                 ..default()
             },
         };

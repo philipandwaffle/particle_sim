@@ -6,7 +6,9 @@ use serde::{Deserialize, Serialize};
 use crate::config::structs::{ParticleProperties, Spawn};
 
 use self::{
+    interaction_designer::InteractionDesignerPlugin,
     interaction_rule::matrix::InteractionMatrix,
+    matrix_designer::MatrixDesignerPlugin,
     movement_functions::move_particles,
     particle_bundle::{Particle, ParticleBundle},
 };
@@ -34,6 +36,8 @@ pub struct ParticlesPlugin;
 impl Plugin for ParticlesPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(InteractionMatrix::new(6))
+            .add_plugin(MatrixDesignerPlugin)
+            .add_plugin(InteractionDesignerPlugin)
             .add_startup_system(spawn_particles)
             // .add_system(constrain_particles)
             .add_system(move_particles);
