@@ -38,8 +38,7 @@ impl Plugin for ParticlesPlugin {
         app.insert_resource(InteractionMatrix::new(6))
             .add_plugin(MatrixDesignerPlugin)
             .add_plugin(InteractionDesignerPlugin)
-            .add_startup_system(spawn_particles)
-            // .add_system(constrain_particles)
+            // .add_startup_system(spawn_particles)
             .add_system(move_particles);
         // .add_system(parallel_move_particles);
         // .add_system(parallel_arc_move_particles);

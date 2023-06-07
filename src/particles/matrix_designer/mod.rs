@@ -1,9 +1,4 @@
-use core::num;
-
-use bevy::{
-    math::{vec2, vec3},
-    prelude::*,
-};
+use bevy::{math::vec3, prelude::*};
 
 use crate::floating_cam::controls::ControlState;
 
@@ -71,7 +66,11 @@ fn spawn_matrix_designer(
     for i in 0..num_particles {
         for j in 0..num_particles {
             let id = (i * num_particles) + j;
-            let translation = vec3(i as f32, j as f32, centre.z) - matrix_designer_state.centre;
+            let translation = vec3(
+                i as f32 - num_particles as f32 / 2.0,
+                j as f32 - num_particles as f32 / 2.0,
+                2.0 * centre.z,
+            ) - matrix_designer_state.centre;
             commands.spawn(CellBundle::new(
                 id,
                 translation,
