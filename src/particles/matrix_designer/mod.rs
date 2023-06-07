@@ -2,10 +2,13 @@ use bevy::prelude::*;
 
 use crate::floating_cam::controls::ControlState;
 
-use super::{
-    interaction_designer::{point::DesignerPoint, DesignerModeState},
-    interaction_rule::interaction::InteractionRule,
-};
+use self::{matrix::Matrix, state::MatrixDesignerState};
+
+use super::interaction_designer::{point::DesignerPoint, DesignerModeState};
+
+mod cell;
+mod matrix;
+mod state;
 
 pub struct MatrixDesignerPlugin;
 impl Plugin for MatrixDesignerPlugin {
@@ -14,73 +17,6 @@ impl Plugin for MatrixDesignerPlugin {
         app.insert_resource(Matrix::new(num_particles))
             .insert_resource(MatrixDesignerState::new(num_particles))
             .add_system(save_graph);
-    }
-}
-
-#[derive(Resource)]
-pub struct Matrix {
-    pub data: Vec<Option<Box<dyn InteractionRule + Sync + Send>>>,
-}
-impl Matrix {
-    pub fn new(num_particles: usize) -> Self {
-        return Self {
-            data: Vec::with_capacity(num_particles * num_particles),
-        };
-    }
-}
-
-#[derive(Resource)]
-pub struct MatrixDesignerState {
-    pub edit_point: UVec2,
-    pub scale: UVec2,
-    pub centre: Vec2,
-    pub num_particles: usize,
-}
-impl MatrixDesignerState {
-    pub fn new(num_particles: usize) -> Self {
-        Self {
-            edit_point: UVec2::ZERO,
-            scale: UVec2::ZERO,
-            centre: Vec2::ZERO,
-            num_particles,
-        }
-    }
-}
-
-#[derive(Bundle)]
-pub struct CellBundle {
-    pub cell: Cell,
-    pub material_mesh_bundle: MaterialMeshBundle<StandardMaterial>,
-}
-impl CellBundle {
-    pub fn new(
-        id: usize,
-        transform: Transform,
-        color: Color,
-        meshes: &mut Assets<Mesh>,
-        materials: &mut Assets<StandardMaterial>,
-    ) -> Self {
-        return Self {
-            cell: Cell::new(id),
-            material_mesh_bundle: MaterialMeshBundle {
-                mesh: meshes.add(shape::Cube { size: 1.0 }.try_into().unwrap()),
-                material: materials.add(StandardMaterial {
-                    base_color: color,
-                    ..default()
-                }),
-                transform: transform,
-                ..default()
-            },
-        };
-    }
-}
-#[derive(Component)]
-pub struct Cell {
-    pub id: usize,
-}
-impl Cell {
-    pub fn new(id: usize) -> Self {
-        return Self { id: id };
     }
 }
 

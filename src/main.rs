@@ -18,7 +18,7 @@ mod particles;
 mod wall_bundles;
 
 fn main() {
-    let edit_mode = false;
+    let edit_mode = true;
     let profiling_mode = false;
 
     let cfg = Config::load_cfg("settings.json");
