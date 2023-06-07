@@ -3,14 +3,14 @@ use std::thread;
 use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
 
-use super::{interaction_rule::matrix::InteractionMatrix, particle_bundle::Particle};
+use super::{matrix_designer::matrix::Matrix, particle::Particle};
 
 #[allow(dead_code)]
 pub fn move_particles(
     mut particles: Query<(Entity, &Particle, &mut Velocity, &Transform)>,
-    interaction_matrix: Res<InteractionMatrix>,
+    matrix: Res<Matrix>,
 ) {
-    let matrix = &interaction_matrix.matrix;
+    // let matrix = &interaction_matrix.matrix;
     let compare_vec = particles
         .iter()
         .map(|x| (x.0, x.1.type_id, x.3.translation))
@@ -24,9 +24,7 @@ pub fn move_particles(
             }
             let dir = *compare_translation - transform.translation;
             let dist = dir.length();
-            let attract_modifier =
-                interaction_matrix.get_interaction(particle.type_id, *compare_type_id, dist);
-            // (matrix[particle.type_id][*compare_type_id]).interact(dist);
+            let attract_modifier = matrix.get_interaction(particle.type_id, *compare_type_id, dist);
             if attract_modifier == 0.0 {
                 continue;
             }

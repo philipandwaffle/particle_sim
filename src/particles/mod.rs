@@ -6,18 +6,16 @@ use serde::{Deserialize, Serialize};
 use crate::config::structs::{ParticleProperties, Spawn};
 
 use self::{
-    interaction_designer::InteractionDesignerPlugin,
-    interaction_rule::matrix::InteractionMatrix,
-    matrix_designer::MatrixDesignerPlugin,
-    movement_functions::move_particles,
-    particle_bundle::{Particle, ParticleBundle},
+    interaction_designer::InteractionDesignerPlugin, interaction_rule::matrix::InteractionMatrix,
+    matrix_designer::MatrixDesignerPlugin, movement_functions::move_particles,
+    particle::ParticleBundle,
 };
 
 pub mod interaction_designer;
 mod interaction_rule;
 mod matrix_designer;
 mod movement_functions;
-mod particle_bundle;
+mod particle;
 
 #[allow(dead_code)]
 #[derive(Debug, Serialize, Deserialize, Clone)]

@@ -27,4 +27,11 @@ impl Matrix {
     ) {
         self.data[cell_coords.y as usize][cell_coords.x as usize] = rule;
     }
+
+    pub fn get_interaction(&self, row: usize, col: usize, d: f32) -> f32 {
+        match &self.data[row][col] {
+            Some(cell) => return cell.interact(d),
+            None => return 0.0,
+        }
+    }
 }

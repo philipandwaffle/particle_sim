@@ -4,10 +4,13 @@ use crate::floating_cam::controls::ControlState;
 
 use self::{cell::CellBundle, matrix::Matrix, state::MatrixDesignerState};
 
-use super::interaction_designer::{point::DesignerPoint, DesignerModeState};
+use super::{
+    interaction_designer::{point::DesignerPoint, InteractionDesignerState},
+    interaction_rule::interaction::CompThreshRule,
+};
 
 mod cell;
-mod matrix;
+pub mod matrix;
 mod state;
 
 pub struct MatrixDesignerPlugin;
@@ -27,7 +30,9 @@ impl Plugin for MatrixDesignerPlugin {
 
 fn save_graph(
     mut control_state: ResMut<ControlState>,
-    designer_mode_state: Res<DesignerModeState>,
+    interaction_designer_state: Res<InteractionDesignerState>,
+    matrix_designer_state: Res<MatrixDesignerState>,
+    mut matrix: ResMut<Matrix>,
     designer_points: Query<&Transform, With<DesignerPoint>>,
 ) {
     // Listen and check for key press
@@ -37,9 +42,10 @@ fn save_graph(
     control_state.save_designer_points = false;
 
     //
-    let mut point_positions = Vec::with_capacity(designer_mode_state.num_points);
-    for i in 0..designer_mode_state.num_points {
-        let pos = if let Ok(transform) = designer_points.get(designer_mode_state.point_entities[i])
+    let mut point_positions = Vec::with_capacity(interaction_designer_state.num_points);
+    for i in 0..interaction_designer_state.num_points {
+        let pos = if let Ok(transform) =
+            designer_points.get(interaction_designer_state.point_entities[i])
         {
             transform.translation
         } else {
@@ -48,6 +54,11 @@ fn save_graph(
 
         point_positions.push(pos.truncate());
     }
+
+    matrix.set_cell(
+        Some(Box::new(CompThreshRule::from_points(point_positions))),
+        matrix_designer_state.edit_point,
+    );
 }
 
 fn spawn_matrix_designer(

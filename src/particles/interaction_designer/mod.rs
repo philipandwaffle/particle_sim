@@ -11,8 +11,8 @@ pub mod point;
 pub struct InteractionDesignerPlugin;
 impl Plugin for InteractionDesignerPlugin {
     fn build(&self, app: &mut App) {
-        app.insert_resource(DesignerModeState::new(6))
-            .add_startup_system(spawn_design_room)
+        app.insert_resource(InteractionDesignerState::new(6))
+            // .add_startup_system(spawn_design_room)
             .add_startup_system(spawn_design_terminal)
             .add_system(move_point)
             .add_system(move_lines)
@@ -22,14 +22,14 @@ impl Plugin for InteractionDesignerPlugin {
 }
 
 #[derive(Resource)]
-pub struct DesignerModeState {
+pub struct InteractionDesignerState {
     pub point_entities: Vec<Entity>,
     pub line_entities: Vec<Entity>,
     pub point_pos: Vec<Vec2>,
     pub cur_point_id: isize,
     pub num_points: usize,
 }
-impl DesignerModeState {
+impl InteractionDesignerState {
     pub fn new(num_points: usize) -> Self {
         return Self {
             point_entities: Vec::with_capacity(num_points),
@@ -41,20 +41,20 @@ impl DesignerModeState {
     }
 }
 
-fn spawn_design_room(
-    mut commands: Commands,
-    mut materials: ResMut<Assets<StandardMaterial>>,
-    mut meshes: ResMut<Assets<Mesh>>,
-    asset_server: Res<AssetServer>,
-) {
-}
+// fn spawn_design_room(
+//     mut commands: Commands,
+//     mut materials: ResMut<Assets<StandardMaterial>>,
+//     mut meshes: ResMut<Assets<Mesh>>,
+//     asset_server: Res<AssetServer>,
+// ) {
+// }
 
 fn spawn_design_terminal(
     mut commands: Commands,
     mut materials: ResMut<Assets<StandardMaterial>>,
     mut meshes: ResMut<Assets<Mesh>>,
     asset_server: Res<AssetServer>,
-    mut designer_mode_state: ResMut<DesignerModeState>,
+    mut designer_mode_state: ResMut<InteractionDesignerState>,
 ) {
     let radius = 0.5;
     let num_points = designer_mode_state.num_points;
@@ -97,7 +97,7 @@ fn spawn_design_terminal(
 fn move_lines(
     mut designer_lines: Query<&mut Transform, (With<DesignerLine>, Without<DesignerPoint>)>,
     designer_points: Query<(&Transform, With<DesignerPoint>)>,
-    designer_mode_state: Res<DesignerModeState>,
+    designer_mode_state: Res<InteractionDesignerState>,
 ) {
     for i in 0..designer_mode_state.num_points - 1 {
         let mut transform =
@@ -132,7 +132,7 @@ fn move_lines(
 
 fn reorder_points_and_lines(
     designer_points: Query<&Transform>,
-    mut designer_mode_state: ResMut<DesignerModeState>,
+    mut designer_mode_state: ResMut<InteractionDesignerState>,
 ) {
     // Loop through each point in order
     for i in 0..designer_mode_state.num_points {
@@ -174,7 +174,7 @@ fn reorder_points_and_lines(
 fn move_point(
     mut designer_points: Query<(&DesignerPoint, &mut Transform)>,
     mut control_state: ResMut<ControlState>,
-    mut designer_mode_state: ResMut<DesignerModeState>,
+    mut designer_mode_state: ResMut<InteractionDesignerState>,
 ) {
     // Get the vec containing the order of the points
     let points = designer_mode_state.point_entities.clone();
