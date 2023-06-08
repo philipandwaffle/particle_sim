@@ -180,9 +180,9 @@ fn move_point(
     let points = designer_mode_state.point_entities.clone();
 
     // Change current point if change triggered
-    if control_state.design_alpha_delta != 0 {
+    if control_state.designer_secondary_nav_delta != 0 {
         // Aggregate current id with delta id
-        designer_mode_state.cur_point_id += control_state.design_alpha_delta;
+        designer_mode_state.cur_point_id += control_state.designer_secondary_nav_delta;
 
         // Check if new id is out of bounds and fix
         if designer_mode_state.cur_point_id == -1 {
@@ -191,10 +191,10 @@ fn move_point(
             designer_mode_state.cur_point_id = 0;
         }
     }
-    control_state.design_alpha_delta = 0;
+    control_state.designer_secondary_nav_delta = 0;
 
     // Return if there is no transform to apply
-    if control_state.design_terminal_delta == Vec2::ZERO {
+    if control_state.designer_primary_nav_delta == Vec2::ZERO {
         return;
     }
 
@@ -213,9 +213,9 @@ fn move_point(
 
         // Apply transform to the selected point
         if id == cur_id as usize {
-            transform.translation += control_state.design_terminal_delta.extend(0.0) * 0.05;
+            transform.translation += control_state.designer_primary_nav_delta.extend(0.0) * 0.05;
         }
     }
 
-    control_state.design_terminal_delta = Vec2::ZERO;
+    control_state.designer_primary_nav_delta = Vec2::ZERO;
 }

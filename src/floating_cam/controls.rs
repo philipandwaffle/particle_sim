@@ -23,13 +23,14 @@ pub struct Bindings {
     look_right: KeyCode,
     next_mode: KeyCode,
     prev_mode: KeyCode,
-    designer_terminal_up: KeyCode,
-    designer_terminal_down: KeyCode,
-    designer_terminal_left: KeyCode,
-    designer_terminal_right: KeyCode,
-    next_designer_node: KeyCode,
-    prev_designer_node: KeyCode,
-    save_designer_points: KeyCode,
+    designer_nav_up: KeyCode,
+    designer_nav_down: KeyCode,
+    designer_nav_left: KeyCode,
+    designer_nav_right: KeyCode,
+    designer_nav_next: KeyCode,
+    designer_nav_prev: KeyCode,
+    designer_primary: KeyCode,
+    designer_secondary: KeyCode,
 }
 impl Default for Bindings {
     fn default() -> Self {
@@ -46,13 +47,14 @@ impl Default for Bindings {
             look_right: KeyCode::Right,
             next_mode: KeyCode::Key1,
             prev_mode: KeyCode::Key2,
-            designer_terminal_up: KeyCode::I,
-            designer_terminal_down: KeyCode::K,
-            designer_terminal_left: KeyCode::J,
-            designer_terminal_right: KeyCode::L,
-            next_designer_node: KeyCode::O,
-            prev_designer_node: KeyCode::U,
-            save_designer_points: KeyCode::P,
+            designer_nav_up: KeyCode::I,
+            designer_nav_down: KeyCode::K,
+            designer_nav_left: KeyCode::J,
+            designer_nav_right: KeyCode::L,
+            designer_nav_next: KeyCode::O,
+            designer_nav_prev: KeyCode::U,
+            designer_primary: KeyCode::Return,
+            designer_secondary: KeyCode::Escape,
         }
     }
 }
@@ -62,9 +64,10 @@ pub struct ControlState {
     pub move_dir: Vec3,
     pub mouse_look_delta: Vec2,
     pub button_look_delta: Vec2,
-    pub design_terminal_delta: Vec2,
-    pub design_alpha_delta: isize,
-    pub save_designer_points: bool,
+    pub designer_primary_nav_delta: Vec2,
+    pub designer_secondary_nav_delta: isize,
+    pub designer_primary_interact: bool,
+    pub designer_secondary_interact: bool,
 }
 impl Default for ControlState {
     fn default() -> Self {
@@ -72,9 +75,10 @@ impl Default for ControlState {
             move_dir: Vec3::ZERO,
             mouse_look_delta: Vec2::ZERO,
             button_look_delta: Vec2::ZERO,
-            design_terminal_delta: Vec2::ZERO,
-            design_alpha_delta: 0,
-            save_designer_points: false,
+            designer_primary_nav_delta: Vec2::ZERO,
+            designer_secondary_nav_delta: 0,
+            designer_primary_interact: false,
+            designer_secondary_interact: false,
         }
     }
 }
@@ -130,33 +134,37 @@ fn update_control_state(
     control_state.button_look_delta = button_look_delta;
     control_state.mouse_look_delta = mouse_look_delta;
 
-    // Update design point
-    let mut design_point_delta = Vec2::ZERO;
-    if input.pressed(bindings.designer_terminal_up) {
-        design_point_delta.y += 1.0;
+    // Update primary nav
+    let mut design_primary_nav_delta = Vec2::ZERO;
+    if input.pressed(bindings.designer_nav_up) {
+        design_primary_nav_delta.y += 1.0;
     }
-    if input.pressed(bindings.designer_terminal_down) {
-        design_point_delta.y -= 1.0;
+    if input.pressed(bindings.designer_nav_down) {
+        design_primary_nav_delta.y -= 1.0;
     }
-    if input.pressed(bindings.designer_terminal_left) {
-        design_point_delta.x -= 1.0;
+    if input.pressed(bindings.designer_nav_left) {
+        design_primary_nav_delta.x -= 1.0;
     }
-    if input.pressed(bindings.designer_terminal_right) {
-        design_point_delta.x += 1.0;
+    if input.pressed(bindings.designer_nav_right) {
+        design_primary_nav_delta.x += 1.0;
     }
-    control_state.design_terminal_delta = design_point_delta;
+    control_state.designer_primary_nav_delta = design_primary_nav_delta;
 
-    // Update alpha value
-    let mut design_alpha_delta = 0;
-    if input.just_pressed(bindings.next_designer_node) {
-        design_alpha_delta += 1;
+    // Update secondary nav
+    let mut design_secondary_nav_delta = 0;
+    if input.just_pressed(bindings.designer_nav_next) {
+        design_secondary_nav_delta += 1;
     }
-    if input.just_pressed(bindings.prev_designer_node) {
-        design_alpha_delta -= 1;
+    if input.just_pressed(bindings.designer_nav_prev) {
+        design_secondary_nav_delta -= 1;
     }
-    control_state.design_alpha_delta += design_alpha_delta;
+    control_state.designer_secondary_nav_delta += design_secondary_nav_delta;
 
-    if input.just_pressed(bindings.save_designer_points) {
-        control_state.save_designer_points = true;
+    // Update interaction
+    if input.just_pressed(bindings.designer_primary) {
+        control_state.designer_primary_interact = true;
+    }
+    if input.just_pressed(bindings.designer_secondary) {
+        control_state.designer_secondary_interact = true;
     }
 }

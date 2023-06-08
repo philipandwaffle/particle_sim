@@ -36,10 +36,10 @@ fn save_graph(
     designer_points: Query<&Transform, With<DesignerPoint>>,
 ) {
     // Listen and check for key press
-    if !control_state.save_designer_points {
+    if !control_state.designer_primary_interact {
         return;
     }
-    control_state.save_designer_points = false;
+    control_state.designer_primary_interact = false;
 
     //
     let mut point_positions = Vec::with_capacity(interaction_designer_state.num_points);
