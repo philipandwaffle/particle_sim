@@ -70,7 +70,7 @@ fn spawn_matrix_designer(
     let num_particles = matrix_designer_state.num_particles;
 
     // let mut cur_spawn = matrix_designer_state.centre
-    let mut cell_scale = matrix_designer_state.size / num_particles as f32;
+    let mut cell_scale = matrix_designer_state.size / (num_particles - 1) as f32;
     cell_scale.z = 1.0;
     let centre = matrix_designer_state.centre;
 
@@ -78,15 +78,15 @@ fn spawn_matrix_designer(
         for j in 0..num_particles {
             let id = (i * num_particles) + j;
             let translation = vec3(
-                i as f32 - num_particles as f32 / 2.0,
-                j as f32 - num_particles as f32 / 2.0,
+                i as f32 - (num_particles - 1) as f32 / 2.0,
+                j as f32 - (num_particles - 1) as f32 / 2.0,
                 2.0 * centre.z,
             ) - matrix_designer_state.centre;
             commands.spawn(CellBundle::new(
                 id,
                 translation,
                 cell_scale,
-                Color::GREEN,
+                Color::rgb(i as f32, j as f32, 0.0),
                 &mut meshes,
                 &mut materials,
             ));
