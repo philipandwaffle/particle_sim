@@ -17,14 +17,13 @@ pub struct MatrixDesignerPlugin;
 impl Plugin for MatrixDesignerPlugin {
     fn build(&self, app: &mut App) {
         let num_particles = 6;
-        app.insert_resource(Matrix::new(num_particles))
-            .insert_resource(MatrixDesignerState::new(
-                num_particles,
-                vec3(5.0, 5.0, 1.0),
-                vec3(0.0, 0.0, 5.0),
-            ))
-            .add_startup_system(spawn_matrix_designer)
-            .add_system(save_graph);
+        app.insert_resource(MatrixDesignerState::new(
+            num_particles,
+            vec3(5.0, 5.0, 1.0),
+            vec3(0.0, 0.0, 5.0),
+        ))
+        .add_startup_system(spawn_matrix_designer)
+        .add_system(save_graph);
     }
 }
 

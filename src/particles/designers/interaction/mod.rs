@@ -19,9 +19,9 @@ fn update_display(
     mut lines: Query<&mut Transform, (With<DesignerLine>, Without<DesignerPoint>)>,
 ) {
     for mut designer in designers.iter_mut() {
-        let point_entities = &mut designer.point_entities;
-        let line_entities = &mut designer.line_entities;
-        let point_positions = &mut designer.point_positions;
+        let mut point_entities = designer.point_entities.clone();
+        let line_entities = designer.line_entities.clone();
+        let mut point_positions = designer.point_positions.clone();
 
         let num_points = designer.num_points.clone();
 
@@ -65,6 +65,9 @@ fn update_display(
             transform.translation = from + dir / 2.0;
             transform.look_to(Vec3::NEG_Z, dir)
         }
+
+        designer.point_entities = point_entities;
+        designer.point_positions = point_positions;
     }
 }
 
