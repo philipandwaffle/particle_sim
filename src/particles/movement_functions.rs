@@ -1,9 +1,7 @@
-use std::thread;
-
 use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
 
-use super::{matrix_designer::matrix::Matrix, particle::Particle};
+use super::{matrix::Matrix, particle::Particle};
 
 #[allow(dead_code)]
 pub fn move_particles(

@@ -5,15 +5,11 @@ use serde::{Deserialize, Serialize};
 
 use crate::config::structs::{ParticleProperties, Spawn};
 
-use self::{
-    interaction_designer::InteractionDesignerPlugin, matrix_designer::MatrixDesignerPlugin,
-    movement_functions::move_particles, particle::ParticleBundle,
-};
+use self::{movement_functions::move_particles, particle::ParticleBundle};
 
-mod designer;
-pub mod interaction_designer;
+mod designers;
 mod interaction_rule;
-mod matrix_designer;
+pub mod matrix;
 mod movement_functions;
 mod particle;
 
@@ -33,12 +29,13 @@ impl Default for Count {
 pub struct ParticlesPlugin;
 impl Plugin for ParticlesPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugin(MatrixDesignerPlugin)
-            .add_plugin(InteractionDesignerPlugin)
+        app
+            // .add_plugin(MatrixDesignerPlugin)
+            // .add_plugin(InteractionDesignerPlugin)
             // .add_startup_system(spawn_particles)
+            // .add_system(parallel_move_particles);
+            // .add_system(parallel_arc_move_particles);
             .add_system(move_particles);
-        // .add_system(parallel_move_particles);
-        // .add_system(parallel_arc_move_particles);
     }
 }
 

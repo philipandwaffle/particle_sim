@@ -2,11 +2,71 @@ use crate::floating_cam::controls::ControlState;
 use bevy::{math::vec3, prelude::*};
 use core::panic;
 
-use self::line::*;
-use self::point::*;
+// use self::line::*;
+use self::{
+    interaction_designer::InteractionDesigner,
+    line::{DesignerLine, LineBundle},
+    point::*,
+};
 
+mod interaction_designer;
 mod line;
-pub mod point;
+mod point;
+
+fn update_display(
+    mut designers: Query<&mut InteractionDesigner, Changed<InteractionDesigner>>,
+    mut points: Query<&mut Transform, (With<DesignerPoint>, Without<DesignerLine>)>,
+    mut lines: Query<&mut Transform, (With<DesignerLine>, Without<DesignerPoint>)>,
+) {
+    for mut designer in designers.iter_mut() {
+        let point_entities = &mut designer.point_entities;
+        let line_entities = &mut designer.line_entities;
+        let point_positions = &mut designer.point_positions;
+
+        let num_points = designer.num_points.clone();
+
+        for i in 0..num_points.clone() {
+            let translation = point_positions[i];
+            let mut transform = if let Ok(transform) = points.get_mut(point_entities[i]) {
+                transform
+            } else {
+                panic!();
+            };
+
+            if transform.translation.truncate() != translation {
+                transform.translation = translation.extend(transform.translation.y);
+            }
+        }
+
+        for i in 0..num_points.clone() - 1 {
+            let cur = point_positions[i];
+            let next = point_positions[i + 1];
+
+            if cur.x > next.y {
+                point_entities.swap(i, i + 1);
+                point_positions.swap(i, i + 1);
+            }
+        }
+
+        for i in 0..num_points.clone() - 1 {
+            let mut transform = if let Ok(transform) = lines.get_mut(line_entities[i]) {
+                transform
+            } else {
+                panic!();
+            };
+
+            let z = transform.translation.z.clone();
+            let from = point_positions[i].extend(z);
+            let to = point_positions[i + 1].extend(z);
+
+            let dir = to - from;
+            let dist = dir.length();
+            transform.scale = vec3(1.0, dist, 1.0);
+            transform.translation = from + dir / 2.0;
+            transform.look_to(Vec3::NEG_Z, dir)
+        }
+    }
+}
 
 pub struct InteractionDesignerPlugin;
 impl Plugin for InteractionDesignerPlugin {
@@ -18,6 +78,8 @@ impl Plugin for InteractionDesignerPlugin {
             .add_system(move_lines)
             // .add_system(save_graph)
             .add_system(reorder_points_and_lines);
+
+        app.add_system(update_display);
     }
 }
 

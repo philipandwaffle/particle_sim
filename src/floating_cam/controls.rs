@@ -1,4 +1,4 @@
-use bevy::{input::mouse::MouseMotion, prelude::*};
+use bevy::{core::Zeroable, input::mouse::MouseMotion, prelude::*};
 
 pub struct ControlPlugin;
 impl Plugin for ControlPlugin {
@@ -61,7 +61,7 @@ impl Default for Bindings {
 
 #[derive(Resource)]
 pub struct ControlState {
-    pub move_dir: Vec3,
+    pub move_dir_delta: Vec3,
     pub mouse_look_delta: Vec2,
     pub button_look_delta: Vec2,
     pub designer_primary_nav_delta: Vec2,
@@ -69,10 +69,25 @@ pub struct ControlState {
     pub designer_primary_interact: bool,
     pub designer_secondary_interact: bool,
 }
+impl ControlState {
+    pub fn reset_move(&mut self) {
+        self.move_dir_delta = Vec3::ZERO;
+    }
+    pub fn reset_look(&mut self) {
+        self.mouse_look_delta = Vec2::ZERO;
+        self.button_look_delta = Vec2::ZERO;
+    }
+    pub fn reset_designer(&mut self) {
+        self.designer_primary_nav_delta = Vec2::ZERO;
+        self.designer_secondary_nav_delta = 0;
+        self.designer_primary_interact = false;
+        self.designer_secondary_interact = false;
+    }
+}
 impl Default for ControlState {
     fn default() -> Self {
         Self {
-            move_dir: Vec3::ZERO,
+            move_dir_delta: Vec3::ZERO,
             mouse_look_delta: Vec2::ZERO,
             button_look_delta: Vec2::ZERO,
             designer_primary_nav_delta: Vec2::ZERO,
@@ -89,35 +104,34 @@ fn update_control_state(
     input: Res<Input<KeyCode>>,
     bindings: Res<Bindings>,
 ) {
-    // Update movement keys
-    let cs = control_state.as_mut();
+    // Calculate movement delta
+    let mut move_dir_delta = Vec3::ZERO;
     if input.pressed(bindings.forward_key) {
-        cs.move_dir.z -= 1.0
+        move_dir_delta.z -= 1.0
     }
     if input.pressed(bindings.backward_key) {
-        cs.move_dir.z += 1.0
+        move_dir_delta.z += 1.0
     }
     if input.pressed(bindings.right_key) {
-        cs.move_dir.x += 1.0
+        move_dir_delta.x += 1.0
     }
     if input.pressed(bindings.left_key) {
-        cs.move_dir.x -= 1.0
+        move_dir_delta.x -= 1.0
     }
-
     if input.pressed(bindings.fly_up) {
-        cs.move_dir.y += 1.0
+        move_dir_delta.y += 1.0
     }
     if input.pressed(bindings.fly_down) {
-        cs.move_dir.y -= 1.0
+        move_dir_delta.y -= 1.0
     }
 
-    // Update mouse look
+    // Calculate mouse look delta
     let mut mouse_look_delta = Vec2::ZERO;
     for ev in motion_evr.iter() {
         mouse_look_delta += ev.delta;
     }
 
-    // Update mouse button
+    // Calculate button look delta
     let mut button_look_delta = Vec2::ZERO;
     if input.pressed(bindings.look_up) {
         button_look_delta.y -= 1.0;
@@ -131,10 +145,8 @@ fn update_control_state(
     if input.pressed(bindings.look_right) {
         button_look_delta.x += 1.0;
     }
-    control_state.button_look_delta = button_look_delta;
-    control_state.mouse_look_delta = mouse_look_delta;
 
-    // Update primary nav
+    // Calculate primary nav delta
     let mut design_primary_nav_delta = Vec2::ZERO;
     if input.pressed(bindings.designer_nav_up) {
         design_primary_nav_delta.y += 1.0;
@@ -148,9 +160,8 @@ fn update_control_state(
     if input.pressed(bindings.designer_nav_right) {
         design_primary_nav_delta.x += 1.0;
     }
-    control_state.designer_primary_nav_delta = design_primary_nav_delta;
 
-    // Update secondary nav
+    // Calculate secondary nav delta
     let mut design_secondary_nav_delta = 0;
     if input.just_pressed(bindings.designer_nav_next) {
         design_secondary_nav_delta += 1;
@@ -158,13 +169,55 @@ fn update_control_state(
     if input.just_pressed(bindings.designer_nav_prev) {
         design_secondary_nav_delta -= 1;
     }
-    control_state.designer_secondary_nav_delta += design_secondary_nav_delta;
 
-    // Update interaction
-    if input.just_pressed(bindings.designer_primary) {
-        control_state.designer_primary_interact = true;
+    apply_new_control_state(
+        &mut control_state,
+        move_dir_delta,
+        mouse_look_delta,
+        button_look_delta,
+        design_primary_nav_delta,
+        design_secondary_nav_delta,
+        input.just_pressed(bindings.designer_primary),
+        input.just_pressed(bindings.designer_secondary),
+    )
+}
+
+fn apply_new_control_state(
+    cs: &mut ControlState,
+    move_dir_delta: Vec3,
+    mouse_look_delta: Vec2,
+    button_look_delta: Vec2,
+    design_primary_nav_delta: Vec2,
+    design_secondary_nav_delta: isize,
+    designer_primary_interact: bool,
+    designer_secondary_interact: bool,
+) {
+    // Update move delta
+    if move_dir_delta != Vec3::ZERO {
+        cs.move_dir_delta += move_dir_delta;
     }
-    if input.just_pressed(bindings.designer_secondary) {
-        control_state.designer_secondary_interact = true;
+
+    // Update look delta
+    if mouse_look_delta != Vec2::ZERO {
+        cs.mouse_look_delta += mouse_look_delta;
+    }
+    if button_look_delta != Vec2::ZERO {
+        cs.button_look_delta += button_look_delta;
+    }
+
+    // Update designer navigation
+    if design_primary_nav_delta != Vec2::ZERO {
+        cs.designer_primary_nav_delta += design_primary_nav_delta;
+    }
+    if design_secondary_nav_delta != 0 {
+        cs.designer_secondary_nav_delta += design_secondary_nav_delta;
+    }
+
+    // Update designer interact
+    if cs.designer_primary_interact != designer_primary_interact {
+        cs.designer_primary_interact = designer_primary_interact;
+    }
+    if cs.designer_secondary_interact != designer_secondary_interact {
+        cs.designer_secondary_interact = designer_secondary_interact;
     }
 }

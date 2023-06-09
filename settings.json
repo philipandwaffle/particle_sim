@@ -1,7 +1,7 @@
 {
     "camera":{
-        "mouse_look_sen": 0.001,
-        "button_look_sen": 0.025, 
+        "mouse_look_sen": 0.005,
+        "button_look_sen": 0.05, 
         "move_speed": 0.1
     },
     "spawn": {

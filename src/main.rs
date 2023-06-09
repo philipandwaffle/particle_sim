@@ -9,7 +9,7 @@ use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_rapier3d::prelude::*;
 use config::structs::*;
 use floating_cam::FloatingCamPlugin;
-use particles::{interaction_designer::InteractionDesignerPlugin, ParticlesPlugin};
+use particles::ParticlesPlugin;
 use wall_bundles::{init_clear_box, init_opaque_box};
 
 mod config;
