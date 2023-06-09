@@ -4,24 +4,22 @@ use bevy::prelude::*;
 use serde::__private::de;
 
 use crate::floating_cam::controls::ControlState;
+
+use self::{
+    designer::Designer,
+    interaction::{interaction_designer::InteractionDesigner, InteractionDesignerPlugin},
+};
+mod designer;
 mod interaction;
 
 pub struct DesignerPlugin;
 impl Plugin for DesignerPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(DesignerStates::new())
-            .add_system(spawn_designers)
+            .add_plugin(InteractionDesignerPlugin)
+            .add_startup_system(spawn_designers)
             .add_system(update_designer);
     }
-}
-
-pub trait Designer {
-    fn apply_primary_nav_delta(&mut self, delta: Vec2);
-    fn apply_secondary_nav_delta(&self, delta: isize);
-    fn apply_primary_interact(&self, interact: bool);
-    fn apply_secondary_interact(&self, interact: bool);
-    fn spawn(&self, commands: &mut Commands);
-    fn despawn(&self, commands: &mut Commands);
 }
 
 #[derive(Resource)]
@@ -33,12 +31,15 @@ impl DesignerStates {
     pub fn new() -> Self {
         return Self {
             designers: vec![],
-            cur_designer: -1,
+            cur_designer: 0,
         };
+    }
+    pub fn add(&mut self) {
+        self.push(Box::new(InteractionDesigner::new(6)))
     }
     pub fn update_state(&mut self, cs: &mut ControlState) {
         let i = self.cur_designer;
-        if i == -1 {
+        if i == -1 || self.designers.is_empty() {
             return;
         }
 
@@ -48,8 +49,6 @@ impl DesignerStates {
         designer.apply_primary_interact(cs.designer_primary_interact);
         designer.apply_secondary_interact(cs.designer_secondary_interact);
     }
-
-    pub fn spawn_designers(&self, commands: &mut Commands) {}
 }
 
 fn update_designer(
@@ -60,8 +59,15 @@ fn update_designer(
     control_state.reset_designer();
 }
 
-fn spawn_designers(mut designer_states: ResMut<DesignerStates>, mut commands: Commands) {
+pub fn spawn_designers(
+    mut designer_states: ResMut<DesignerStates>,
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
+) {
     for designer in designer_states.designers.iter_mut() {
-        designer.spawn(&mut commands);
+        designer.spawn(&mut commands, &asset_server, &mut meshes, &mut materials);
+        println!("hello");
     }
 }

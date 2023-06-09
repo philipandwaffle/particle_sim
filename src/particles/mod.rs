@@ -5,7 +5,10 @@ use serde::{Deserialize, Serialize};
 
 use crate::config::structs::{ParticleProperties, Spawn};
 
-use self::{matrix::Matrix, movement_functions::move_particles, particle::ParticleBundle};
+use self::{
+    designers::DesignerPlugin, matrix::Matrix, movement_functions::move_particles,
+    particle::ParticleBundle,
+};
 
 mod designers;
 mod interaction_rule;
@@ -31,6 +34,7 @@ impl Plugin for ParticlesPlugin {
     fn build(&self, app: &mut App) {
         let num_particles = 6;
         app.insert_resource(Matrix::new(num_particles))
+            .add_plugin(DesignerPlugin)
             // .add_plugin(MatrixDesignerPlugin)
             // .add_plugin(InteractionDesignerPlugin)
             // .add_startup_system(spawn_particles)

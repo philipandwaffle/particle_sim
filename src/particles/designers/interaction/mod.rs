@@ -2,18 +2,21 @@ use crate::floating_cam::controls::ControlState;
 use bevy::{math::vec3, prelude::*};
 use core::panic;
 
-// use self::line::*;
-use self::{
-    interaction_designer::InteractionDesigner,
-    line::{DesignerLine, LineBundle},
-    point::*,
-};
+pub struct InteractionDesignerPlugin;
+impl Plugin for InteractionDesignerPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_system(update_display);
+    }
+}
 
-mod interaction_designer;
+// use self::line::*;
+use self::{interaction_designer::InteractionDesigner, line::DesignerLine, point::*};
+
+pub mod interaction_designer;
 mod line;
 mod point;
 
-fn update_display(
+pub fn update_display(
     mut designers: Query<&mut InteractionDesigner, Changed<InteractionDesigner>>,
     mut points: Query<&mut Transform, (With<DesignerPoint>, Without<DesignerLine>)>,
     mut lines: Query<&mut Transform, (With<DesignerLine>, Without<DesignerPoint>)>,
@@ -26,15 +29,15 @@ fn update_display(
         let num_points = designer.num_points.clone();
 
         for i in 0..num_points.clone() {
-            let translation = point_positions[i];
+            let point_translation = point_positions[i];
             let mut transform = if let Ok(transform) = points.get_mut(point_entities[i]) {
                 transform
             } else {
                 panic!();
             };
 
-            if transform.translation.truncate() != translation {
-                transform.translation = translation.extend(transform.translation.y);
+            if transform.translation != point_translation {
+                transform.translation = point_translation;
             }
         }
 
@@ -55,9 +58,8 @@ fn update_display(
                 panic!();
             };
 
-            let z = transform.translation.z.clone();
-            let from = point_positions[i].extend(z);
-            let to = point_positions[i + 1].extend(z);
+            let from = point_positions[i];
+            let to = point_positions[i + 1];
 
             let dir = to - from;
             let dist = dir.length();
@@ -68,21 +70,6 @@ fn update_display(
 
         designer.point_entities = point_entities;
         designer.point_positions = point_positions;
-    }
-}
-
-pub struct InteractionDesignerPlugin;
-impl Plugin for InteractionDesignerPlugin {
-    fn build(&self, app: &mut App) {
-        app.insert_resource(InteractionDesignerState::new(6))
-            // .add_startup_system(spawn_design_room)
-            .add_startup_system(spawn_design_terminal)
-            .add_system(move_point)
-            .add_system(move_lines)
-            // .add_system(save_graph)
-            .add_system(reorder_points_and_lines);
-
-        app.add_system(update_display);
     }
 }
 
@@ -113,51 +100,6 @@ impl InteractionDesignerState {
 //     asset_server: Res<AssetServer>,
 // ) {
 // }
-
-fn spawn_design_terminal(
-    mut commands: Commands,
-    mut materials: ResMut<Assets<StandardMaterial>>,
-    mut meshes: ResMut<Assets<Mesh>>,
-    asset_server: Res<AssetServer>,
-    mut designer_mode_state: ResMut<InteractionDesignerState>,
-) {
-    let radius = 0.5;
-    let num_points = designer_mode_state.num_points;
-
-    let min = vec3(-5.0, 1.0, -5.0);
-    let max = vec3(5.0, 1.0, -5.0);
-
-    let dir = max - min;
-    for id in 0..num_points {
-        let point = commands
-            .spawn(DesignerPointBundle::new(
-                "point_1".into(),
-                id,
-                radius,
-                min + dir * (id as f32 / (num_points - 1) as f32),
-                &asset_server,
-                &mut meshes,
-                &mut materials,
-            ))
-            .id();
-        designer_mode_state.point_entities.push(point);
-    }
-
-    for id in 0..num_points - 1 {
-        let line = commands
-            .spawn(LineBundle::new(
-                "".into(),
-                id,
-                designer_mode_state.point_entities[id],
-                designer_mode_state.point_entities[id + 1],
-                0.05,
-                &mut meshes,
-                &mut materials,
-            ))
-            .id();
-        designer_mode_state.line_entities.push(line);
-    }
-}
 
 fn move_lines(
     mut designer_lines: Query<&mut Transform, (With<DesignerLine>, Without<DesignerPoint>)>,
