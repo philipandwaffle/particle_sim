@@ -35,9 +35,13 @@ impl CellBundle {
 #[derive(Component)]
 pub struct Cell {
     pub id: usize,
+    pub color: Color,
 }
 impl Cell {
     pub fn new(id: usize) -> Self {
-        return Self { id: id };
+        return Self {
+            id: id,
+            color: Color::RED,
+        };
     }
 }

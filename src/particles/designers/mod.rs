@@ -6,9 +6,11 @@ use crate::floating_cam::controls::ControlState;
 use self::{
     designer::{Designer, RegisterTraitPlugin},
     interaction::{interaction_designer::InteractionDesigner, InteractionDesignerPlugin},
+    matrix::{matrix_designer::MatrixDesigner, MatrixDesignerPlugin},
 };
 mod designer;
 mod interaction;
+mod matrix;
 
 pub struct DesignerPlugin;
 impl Plugin for DesignerPlugin {
@@ -22,9 +24,15 @@ impl Plugin for DesignerPlugin {
             vec3(5.0, 0.0, 0.0),
             0.5,
         )));
+        ds.spawn_list.push(DesignerType::Matrix((
+            6,
+            vec3(0.0, 0.0, 5.0),
+            vec3(5.0, 5.0, 1.0),
+        )));
 
         app.insert_resource(ds)
             .add_plugin(InteractionDesignerPlugin)
+            .add_plugin(MatrixDesignerPlugin)
             .add_startup_system(spawn_designers)
             .add_system(update_designer);
     }
@@ -32,6 +40,7 @@ impl Plugin for DesignerPlugin {
 
 enum DesignerType {
     Interaction((usize, Vec3, Vec3, f32)),
+    Matrix((usize, Vec3, Vec3)),
 }
 impl DesignerType {
     pub fn spawn_designer(
@@ -41,7 +50,7 @@ impl DesignerType {
         meshes: &mut Assets<Mesh>,
         materials: &mut Assets<StandardMaterial>,
     ) -> Entity {
-        match self {
+        let designer_entity = match self {
             DesignerType::Interaction((num_points, translation, size, point_radius)) => {
                 let designer = InteractionDesigner::new(
                     num_points.clone(),
@@ -53,9 +62,21 @@ impl DesignerType {
                     meshes,
                     materials,
                 );
-                return commands.spawn(designer).id();
+                commands.spawn(designer).id()
             }
-        }
+            DesignerType::Matrix((num_particles, translation, size)) => {
+                let designer = MatrixDesigner::new(
+                    num_particles.clone(),
+                    translation.clone(),
+                    size.clone(),
+                    commands,
+                    meshes,
+                    materials,
+                );
+                commands.spawn(designer).id()
+            }
+        };
+        return designer_entity;
     }
 }
 
@@ -101,7 +122,9 @@ fn update_designer(
         };
 
     let sen = 0.25;
-    designer.apply_primary_nav_delta(control_state.designer_primary_nav_delta * sen);
+    if control_state.designer_primary_nav_delta != Vec2::ZERO {
+        designer.apply_primary_nav_delta(control_state.designer_primary_nav_delta * sen);
+    }
     designer.apply_secondary_nav_delta(control_state.designer_secondary_nav_delta);
     designer.apply_primary_interact(control_state.designer_primary_interact);
     designer.apply_secondary_interact(control_state.designer_secondary_interact);
