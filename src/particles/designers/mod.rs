@@ -89,7 +89,6 @@ fn update_designer(
     mut control_state: ResMut<ControlState>,
     mut designers: Query<One<&mut dyn Designer>>,
 ) {
-    return;
     if designer_states.cur_designer == -1 {
         return;
     }
