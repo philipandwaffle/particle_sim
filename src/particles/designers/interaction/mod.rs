@@ -1,4 +1,3 @@
-use crate::floating_cam::controls::ControlState;
 use bevy::{math::vec3, prelude::*};
 use core::panic;
 
@@ -9,7 +8,6 @@ impl Plugin for InteractionDesignerPlugin {
     }
 }
 
-// use self::line::*;
 use self::{interaction_designer::InteractionDesigner, line::DesignerLine, point::*};
 
 pub mod interaction_designer;
