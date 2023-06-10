@@ -92,10 +92,18 @@ impl Designer for InteractionDesigner {
 impl Designer for MatrixDesigner {
     fn apply_primary_nav_delta(&mut self, delta: Vec2) {
         // Normalise delta so each component is either -1, 0 or 1
-        let delta = IVec2::new(
-            (delta.x > 0.0) as i32 * 2 - 1,
-            (delta.y > 0.0) as i32 * 2 - 1,
-        );
+        let normalise = |x: f32| {
+            if x > 0.0 {
+                return 1;
+            } else if x < 0.0 {
+                return -1;
+            } else {
+                return 0;
+            }
+        };
+
+        let delta = IVec2::new(normalise(delta.x), normalise(delta.y));
+        println!("delta {:?}", delta);
 
         // Stop if there is no delta to apply
         if delta == IVec2::ZERO {
@@ -104,19 +112,21 @@ impl Designer for MatrixDesigner {
 
         // Stop of delta results in out of bounds
         let num_particles = self.num_particles as i32;
-        let new_edit_point = self.edit_point + delta;
+        let new_edit_point = self.cur_edit_point + delta;
         if new_edit_point.x < 0
             || new_edit_point.x > num_particles - 1
             || new_edit_point.y < 0
             || new_edit_point.y > num_particles - 1
         {
+            println!("invalid delta {:?} results in {:?}", delta, new_edit_point);
             return;
         }
+        println!("applying delta {:?}", delta);
 
-        self.edit_point += delta;
+        self.cur_edit_point += delta;
     }
 
-    fn apply_secondary_nav_delta(&mut self, delta: isize) {
+    fn apply_secondary_nav_delta(&mut self, _: isize) {
         return;
     }
 

@@ -5,7 +5,8 @@ use super::cell::CellBundle;
 #[derive(Component)]
 pub struct MatrixDesigner {
     pub cell_entities: Vec<Vec<Entity>>,
-    pub edit_point: IVec2,
+    pub cur_edit_point: IVec2,
+    pub prev_edit_point: IVec2,
     pub num_particles: usize,
 }
 impl MatrixDesigner {
@@ -50,7 +51,8 @@ impl MatrixDesigner {
 
         Self {
             cell_entities: cells,
-            edit_point: IVec2::ZERO,
+            cur_edit_point: IVec2::ZERO,
+            prev_edit_point: IVec2::new(-1, -1),
             num_particles,
         }
     }

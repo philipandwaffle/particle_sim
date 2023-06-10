@@ -6,7 +6,7 @@ use crate::floating_cam::controls::ControlState;
 use self::{
     designer::{Designer, RegisterTraitPlugin},
     interaction::{interaction_designer::InteractionDesigner, InteractionDesignerPlugin},
-    matrix::matrix_designer::MatrixDesigner,
+    matrix::{matrix_designer::MatrixDesigner, MatrixDesignerPlugin},
 };
 mod designer;
 mod interaction;
@@ -32,6 +32,7 @@ impl Plugin for DesignerPlugin {
 
         app.insert_resource(ds)
             .add_plugin(InteractionDesignerPlugin)
+            .add_plugin(MatrixDesignerPlugin)
             .add_startup_system(spawn_designers)
             .add_system(update_designer);
     }
@@ -121,7 +122,9 @@ fn update_designer(
         };
 
     let sen = 0.25;
-    designer.apply_primary_nav_delta(control_state.designer_primary_nav_delta * sen);
+    if control_state.designer_primary_nav_delta != Vec2::ZERO {
+        designer.apply_primary_nav_delta(control_state.designer_primary_nav_delta * sen);
+    }
     designer.apply_secondary_nav_delta(control_state.designer_secondary_nav_delta);
     designer.apply_primary_interact(control_state.designer_primary_interact);
     designer.apply_secondary_interact(control_state.designer_secondary_interact);
