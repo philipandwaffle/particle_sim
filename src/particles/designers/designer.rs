@@ -2,6 +2,15 @@ use bevy::{math::vec3, prelude::*};
 
 use super::interaction::interaction_designer::InteractionDesigner;
 
+pub struct RegisterTraitPlugin;
+impl Plugin for RegisterTraitPlugin {
+    fn build(&self, app: &mut App) {
+        use bevy_trait_query::RegisterExt;
+        app.register_component_as::<dyn Designer, InteractionDesigner>();
+    }
+}
+
+#[bevy_trait_query::queryable]
 pub trait Designer {
     fn apply_primary_nav_delta(&mut self, delta: Vec2);
     fn apply_secondary_nav_delta(&mut self, delta: isize);
@@ -13,7 +22,7 @@ pub trait Designer {
         asset_server: &Res<AssetServer>,
         meshes: &mut Assets<Mesh>,
         materials: &mut Assets<StandardMaterial>,
-    );
+    ) -> Entity;
     fn despawn(&self, commands: &mut Commands);
 }
 
@@ -57,18 +66,19 @@ impl Designer for InteractionDesigner {
         asset_server: &Res<AssetServer>,
         meshes: &mut Assets<Mesh>,
         materials: &mut Assets<StandardMaterial>,
-    ) {
+    ) -> Entity {
         let designer_bundle = InteractionDesigner::new(
+            5,
             vec3(0.0, 0.0, -0.5),
             vec3(5.0, 5.0, 0.0),
-            5,
             0.5,
             commands,
             asset_server,
             meshes,
             materials,
         );
-        commands.spawn(designer_bundle);
+        let entity = commands.spawn(designer_bundle).id();
+        return entity;
     }
 
     fn despawn(&self, commands: &mut Commands) {

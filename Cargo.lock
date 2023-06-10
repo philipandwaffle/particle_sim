@@ -431,6 +431,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "bevy-trait-query"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7719167dcccafd74b9a095040b0ec607b4122c456997bb4627a077327d28efd7"
+dependencies = [
+ "bevy 0.10.1",
+ "bevy-trait-query-impl",
+]
+
+[[package]]
+name = "bevy-trait-query-impl"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "94409af279211961a171e773c66b8c174dcfc17929d884ac9826531601912986"
+dependencies = [
+ "proc-macro-crate",
+ "proc-macro2",
+ "quote",
+ "syn 1.0.109",
+]
+
+[[package]]
 name = "bevy_a11y"
 version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2183,12 +2205,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9ea835d29036a4087793836fa931b08837ad5e957da9e23886b29586fb9b6650"
 
 [[package]]
-name = "dyn-clone"
-version = "1.0.11"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "68b0cf012f1230e43cd00ebb729c6bb58707ecfa8ad08b52ef3a4ccd2697fc30"
-
-[[package]]
 name = "ecolor"
 version = "0.20.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3787,10 +3803,10 @@ dependencies = [
  "bevy 0.10.1",
  "bevy-inspector-egui 0.18.3",
  "bevy-inspector-egui-rapier",
+ "bevy-trait-query",
  "bevy_rapier3d",
  "confy",
  "crossbeam",
- "dyn-clone",
  "random",
  "serde",
  "serde_json",
