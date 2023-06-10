@@ -6,15 +6,15 @@ use serde::{Deserialize, Serialize};
 use crate::config::structs::{ParticleProperties, Spawn};
 
 use self::{
-    interaction_rule::matrix::InteractionMatrix,
-    movement_functions::move_particles,
-    particle_bundle::{Particle, ParticleBundle},
+    designers::DesignerPlugin, matrix::Matrix, movement_functions::move_particles,
+    particle::ParticleBundle,
 };
 
-pub mod interaction_designer;
+mod designers;
 mod interaction_rule;
+pub mod matrix;
 mod movement_functions;
-mod particle_bundle;
+mod particle;
 
 #[allow(dead_code)]
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -32,12 +32,15 @@ impl Default for Count {
 pub struct ParticlesPlugin;
 impl Plugin for ParticlesPlugin {
     fn build(&self, app: &mut App) {
-        app.insert_resource(InteractionMatrix::new(6))
-            .add_startup_system(spawn_particles)
-            // .add_system(constrain_particles)
+        let num_particles = 6;
+        app.insert_resource(Matrix::new(num_particles))
+            .add_plugin(DesignerPlugin)
+            // .add_plugin(MatrixDesignerPlugin)
+            // .add_plugin(InteractionDesignerPlugin)
+            // .add_startup_system(spawn_particles)
+            // .add_system(parallel_move_particles);
+            // .add_system(parallel_arc_move_particles);
             .add_system(move_particles);
-        // .add_system(parallel_move_particles);
-        // .add_system(parallel_arc_move_particles);
     }
 }
 

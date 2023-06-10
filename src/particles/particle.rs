@@ -41,7 +41,8 @@ impl ParticleBundle {
                     .unwrap(),
                 ),
                 material: materials.add(StandardMaterial {
-                    base_color: Color::WHITE,
+                    // base_color: Color::WHITE,
+                    base_color: color,
                     base_color_texture: Some(asset_server.load("textures/pickle.png")),
                     ..default()
                 }),

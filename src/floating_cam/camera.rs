@@ -37,10 +37,12 @@ pub fn transform_camera(
             player_state.rotation *= yaw;
             transform.rotate(yaw);
 
-            transform.translation +=
-                player_state.rotation.mul_vec3(control_state.move_dir) * cam_settings.move_speed;
+            transform.translation += player_state.rotation.mul_vec3(control_state.move_dir_delta)
+                * cam_settings.move_speed;
 
-            control_state.move_dir = Vec3::ZERO
+            control_state.move_dir_delta = Vec3::ZERO;
+            control_state.mouse_look_delta = Vec2::ZERO;
+            control_state.button_look_delta = Vec2::ZERO;
         }
         Err(_) => warn!("There is no player camera in the scene"),
     }
