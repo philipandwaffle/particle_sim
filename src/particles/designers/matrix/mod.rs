@@ -18,15 +18,15 @@ fn update_display(
 ) {
     for mut designer in designers.iter_mut() {
         let cur_edit_point = designer.cur_edit_point;
-        if cur_edit_point == designer.prev_edit_point {
-            continue;
-        }
+        // if cur_edit_point == designer.prev_edit_point {
+        //     continue;
+        // }
 
         let cur_cell_entity =
             designer.cell_entities[cur_edit_point.x as usize][cur_edit_point.y as usize];
         cells.get_mut(cur_cell_entity).unwrap().color = Color::GREEN;
 
-        designer.prev_edit_point = designer.cur_edit_point;
+        // designer.prev_edit_point = designer.cur_edit_point;
     }
 }
 

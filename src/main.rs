@@ -64,8 +64,8 @@ fn main() {
     } else {
         app.add_plugin(ParticlesPlugin);
     }
-    app.add_startup_system(init_opaque_box);
-    // app.add_startup_system(init_clear_box);
+    // app.add_startup_system(init_opaque_box);
+    app.add_startup_system(init_clear_box);
 
     app.run();
 }

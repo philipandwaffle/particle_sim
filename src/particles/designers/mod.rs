@@ -122,9 +122,8 @@ fn update_designer(
         };
 
     let sen = 0.25;
-    if control_state.designer_primary_nav_delta != Vec2::ZERO {
-        designer.apply_primary_nav_delta(control_state.designer_primary_nav_delta * sen);
-    }
+
+    designer.apply_primary_nav_delta(control_state.designer_primary_nav_delta * sen);
     designer.apply_secondary_nav_delta(control_state.designer_secondary_nav_delta);
     designer.apply_primary_interact(control_state.designer_primary_interact);
     designer.apply_secondary_interact(control_state.designer_secondary_interact);

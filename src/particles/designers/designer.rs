@@ -91,6 +91,13 @@ impl Designer for InteractionDesigner {
 
 impl Designer for MatrixDesigner {
     fn apply_primary_nav_delta(&mut self, delta: Vec2) {
+        // Filter out input that is continuous
+        if self.prev_delta != Vec2::ZERO {
+            self.prev_delta = delta;
+            return;
+        }
+        self.prev_delta = delta;
+
         // Normalise delta so each component is either -1, 0 or 1
         let normalise = |x: f32| {
             if x > 0.0 {
