@@ -98,6 +98,10 @@ impl Designer for MatrixDesigner {
         }
         self.prev_delta = delta;
 
+        // if !self.needs_update(){
+        //     return;
+        // }
+
         // Normalise delta so each component is either -1, 0 or 1
         let normalise = |x: f32| {
             if x > 0.0 {
@@ -108,9 +112,7 @@ impl Designer for MatrixDesigner {
                 return 0;
             }
         };
-
         let delta = IVec2::new(normalise(delta.x), normalise(delta.y));
-        println!("delta {:?}", delta);
 
         // Stop if there is no delta to apply
         if delta == IVec2::ZERO {
@@ -128,8 +130,8 @@ impl Designer for MatrixDesigner {
             println!("invalid delta {:?} results in {:?}", delta, new_edit_point);
             return;
         }
-        println!("applying delta {:?}", delta);
 
+        self.prev_edit_point = self.prev_edit_point;
         self.cur_edit_point += delta;
     }
 
