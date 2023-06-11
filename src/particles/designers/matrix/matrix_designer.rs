@@ -8,6 +8,7 @@ pub struct MatrixDesigner {
     pub cur_edit_point: IVec2,
     pub prev_edit_point: IVec2,
     pub num_particles: usize,
+    pub prev_delta: Vec2,
 }
 impl MatrixDesigner {
     pub fn new(
@@ -52,8 +53,9 @@ impl MatrixDesigner {
         Self {
             cell_entities: cells,
             cur_edit_point: IVec2::ZERO,
-            prev_edit_point: IVec2::new(-1, -1),
+            prev_edit_point: IVec2::ZERO,
             num_particles,
+            prev_delta: Vec2::ZERO,
         }
     }
 }

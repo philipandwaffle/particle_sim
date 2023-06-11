@@ -17,14 +17,17 @@ fn update_display(
     mut cells: Query<&mut Cell>,
 ) {
     for mut designer in designers.iter_mut() {
-        let cur_edit_point = designer.cur_edit_point;
-        if cur_edit_point == designer.prev_edit_point {
+        let cur = designer.cur_edit_point;
+        let prev = designer.prev_edit_point;
+        if cur == prev {
             continue;
         }
 
-        let cur_cell_entity =
-            designer.cell_entities[cur_edit_point.x as usize][cur_edit_point.y as usize];
+        let cur_cell_entity = designer.cell_entities[cur.x as usize][cur.y as usize];
         cells.get_mut(cur_cell_entity).unwrap().color = Color::GREEN;
+
+        let prev_cell_entity = designer.cell_entities[prev.x as usize][prev.y as usize];
+        cells.get_mut(prev_cell_entity).unwrap().color = Color::RED;
 
         designer.prev_edit_point = designer.cur_edit_point;
     }
