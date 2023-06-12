@@ -27,13 +27,16 @@ impl InteractionDesigner {
 
         let mut dir = translation;
         dir.x += scale.x * 0.5;
+        dir -= min;
+        println!("min: {:?} dir: {:?}", min, dir);
 
         let mut point_entities = vec![];
         let mut point_positions = vec![];
         let mut line_entities = vec![];
 
         for id in 0..num_points {
-            let pos = min + dir * (id as f32 / (num_points - 1) as f32);
+            let mut pos = min + (dir * (id as f32 / (num_points - 1) as f32));
+            pos.z = translation.z;
             let point = commands
                 .spawn(DesignerPointBundle::new(
                     "point_1".into(),

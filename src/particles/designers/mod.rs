@@ -27,8 +27,8 @@ impl Plugin for DesignerPlugin {
         // )));
         ds.spawn_list.push(DesignerType::Matrix((
             3,
-            vec3(0.0, 0.0, 5.0),
-            vec3(5.0, 5.0, 1.0),
+            vec3(0.0, 0.0, -5.0),
+            vec3(10.0, 10.0, 1.0),
         )));
 
         app.insert_resource(ds)
