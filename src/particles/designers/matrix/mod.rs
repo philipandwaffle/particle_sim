@@ -24,10 +24,10 @@ fn update_display(
         }
 
         let cur_cell_entity = designer.cell_entities[cur.x as usize][cur.y as usize];
-        cells.get_mut(cur_cell_entity).unwrap().color = Color::GREEN;
+        cells.get_mut(cur_cell_entity).unwrap().color = Color::rgba(0.0, 1.0, 0.0, 0.1);
 
         let prev_cell_entity = designer.cell_entities[prev.x as usize][prev.y as usize];
-        cells.get_mut(prev_cell_entity).unwrap().color = Color::RED;
+        cells.get_mut(prev_cell_entity).unwrap().color = Color::rgba(1.0, 0.0, 0.0, 0.1);
 
         designer.prev_edit_point = designer.cur_edit_point;
     }

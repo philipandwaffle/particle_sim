@@ -75,6 +75,7 @@ impl Designer for InteractionDesigner {
             vec3(0.0, 0.0, -0.5),
             vec3(5.0, 5.0, 0.0),
             0.5,
+            0.05,
             commands,
             asset_server,
             meshes,
@@ -112,7 +113,7 @@ impl Designer for MatrixDesigner {
                 return 0;
             }
         };
-        let delta = IVec2::new(normalise(delta.x), normalise(delta.y));
+        let delta = IVec2::new(normalise(delta.x), -normalise(delta.y));
 
         // Stop if there is no delta to apply
         if delta == IVec2::ZERO {
@@ -159,6 +160,7 @@ impl Designer for MatrixDesigner {
             vec3(0.0, 0.0, -0.5),
             vec3(5.0, 5.0, 0.0),
             0.5,
+            0.05,
             commands,
             asset_server,
             meshes,

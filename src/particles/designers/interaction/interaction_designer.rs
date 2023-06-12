@@ -14,22 +14,29 @@ impl InteractionDesigner {
     pub fn new(
         num_points: usize,
         translation: Vec3,
-        size: Vec3,
+        scale: Vec3,
         point_radius: f32,
+        line_thickness: f32,
         commands: &mut Commands,
         asset_server: &Res<AssetServer>,
         meshes: &mut Assets<Mesh>,
         materials: &mut Assets<StandardMaterial>,
     ) -> Self {
-        let min = translation - size * 0.5;
-        let dir = translation + (size * 0.5) - min;
+        let mut min = translation;
+        min.x -= scale.x * 0.5;
+
+        let mut dir = translation;
+        dir.x += scale.x * 0.5;
+        dir -= min;
+        println!("min: {:?} dir: {:?}", min, dir);
 
         let mut point_entities = vec![];
         let mut point_positions = vec![];
         let mut line_entities = vec![];
 
         for id in 0..num_points {
-            let pos = min + dir * (id as f32 / (num_points - 1) as f32);
+            let mut pos = min + (dir * (id as f32 / (num_points - 1) as f32));
+            pos.z = translation.z;
             let point = commands
                 .spawn(DesignerPointBundle::new(
                     "point_1".into(),
@@ -54,7 +61,7 @@ impl InteractionDesigner {
                     id,
                     point_entities[id],
                     point_entities[id + 1],
-                    0.05,
+                    line_thickness,
                     meshes,
                     materials,
                 ))
