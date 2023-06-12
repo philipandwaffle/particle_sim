@@ -68,7 +68,7 @@ impl MatrixDesigner {
                     3,
                     cell_translation,
                     cell_scale,
-                    0.005,
+                    0.01,
                     0.005,
                     commands,
                     asset_server,

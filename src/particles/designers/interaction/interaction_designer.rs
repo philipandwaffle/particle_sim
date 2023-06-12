@@ -22,8 +22,11 @@ impl InteractionDesigner {
         meshes: &mut Assets<Mesh>,
         materials: &mut Assets<StandardMaterial>,
     ) -> Self {
-        let min = translation - scale * 0.5;
-        let dir = translation + (scale * 0.5) - min;
+        let mut min = translation;
+        min.x -= scale.x * 0.5;
+
+        let mut dir = translation;
+        dir.x += scale.x * 0.5;
 
         let mut point_entities = vec![];
         let mut point_positions = vec![];
