@@ -28,6 +28,7 @@ impl MatrixDesigner {
         for i in 0..num_particles {
             let mut row = Vec::with_capacity(num_particles);
             for j in 0..num_particles {
+                let j = num_particles - (1 + j);
                 let id = (i * num_particles) + j;
                 let translation = vec3(
                     i as f32 - (num_particles - 1) as f32 / 2.0,

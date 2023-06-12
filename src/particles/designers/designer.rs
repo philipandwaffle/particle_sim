@@ -112,7 +112,7 @@ impl Designer for MatrixDesigner {
                 return 0;
             }
         };
-        let delta = IVec2::new(normalise(delta.x), normalise(delta.y));
+        let delta = IVec2::new(normalise(delta.x), -normalise(delta.y));
 
         // Stop if there is no delta to apply
         if delta == IVec2::ZERO {
