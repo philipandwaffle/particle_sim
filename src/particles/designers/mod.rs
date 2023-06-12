@@ -18,14 +18,15 @@ impl Plugin for DesignerPlugin {
         app.add_plugin(RegisterTraitPlugin);
 
         let mut ds = DesignerStates::new();
-        ds.spawn_list.push(DesignerType::Interaction((
-            5,
-            vec3(0.0, 0.0, -5.0),
-            vec3(5.0, 0.0, 0.0),
-            0.5,
-        )));
+        // ds.spawn_list.push(DesignerType::Interaction((
+        //     5,
+        //     vec3(0.0, 0.0, -5.0),
+        //     vec3(5.0, 0.0, 0.0),
+        //     0.5,
+        //     0.05,
+        // )));
         ds.spawn_list.push(DesignerType::Matrix((
-            6,
+            3,
             vec3(0.0, 0.0, 5.0),
             vec3(5.0, 5.0, 1.0),
         )));
@@ -39,7 +40,7 @@ impl Plugin for DesignerPlugin {
 }
 
 enum DesignerType {
-    Interaction((usize, Vec3, Vec3, f32)),
+    Interaction((usize, Vec3, Vec3, f32, f32)),
     Matrix((usize, Vec3, Vec3)),
 }
 impl DesignerType {
@@ -49,14 +50,22 @@ impl DesignerType {
         asset_server: &Res<AssetServer>,
         meshes: &mut Assets<Mesh>,
         materials: &mut Assets<StandardMaterial>,
-    ) -> Entity {
+    ) -> (Entity, Vec<Entity>) {
+        let mut extra_data = vec![];
         let designer_entity = match self {
-            DesignerType::Interaction((num_points, translation, size, point_radius)) => {
+            DesignerType::Interaction((
+                num_points,
+                translation,
+                size,
+                point_radius,
+                line_radius,
+            )) => {
                 let designer = InteractionDesigner::new(
                     num_points.clone(),
                     translation.clone(),
                     size.clone(),
                     point_radius.clone(),
+                    line_radius.clone(),
                     commands,
                     asset_server,
                     meshes,
@@ -70,13 +79,15 @@ impl DesignerType {
                     translation.clone(),
                     size.clone(),
                     commands,
+                    asset_server,
                     meshes,
                     materials,
                 );
+                extra_data = designer.cell_values.clone().into_iter().flatten().collect();
                 commands.spawn(designer).id()
             }
         };
-        return designer_entity;
+        return (designer_entity, extra_data);
     }
 }
 
@@ -140,11 +151,9 @@ pub fn spawn_designers(
 ) {
     while !designer_states.spawn_list.is_empty() {
         let designer = designer_states.spawn_list.pop().unwrap();
-        designer_states.designers.push(designer.spawn_designer(
-            &mut commands,
-            &asset_server,
-            &mut meshes,
-            &mut materials,
-        ));
+        let mut spawn_data =
+            designer.spawn_designer(&mut commands, &asset_server, &mut meshes, &mut materials);
+        designer_states.designers.push(spawn_data.0);
+        designer_states.designers.append(&mut spawn_data.1);
     }
 }

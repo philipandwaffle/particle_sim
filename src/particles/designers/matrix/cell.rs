@@ -20,8 +20,10 @@ impl CellBundle {
                 mesh: meshes.add(shape::Cube { size: 1.0 }.try_into().unwrap()),
                 material: materials.add(StandardMaterial {
                     base_color: color,
+                    alpha_mode: AlphaMode::Blend,
                     ..default()
                 }),
+
                 transform: Transform {
                     translation,
                     scale,
@@ -41,7 +43,12 @@ impl Cell {
     pub fn new(id: usize) -> Self {
         return Self {
             id: id,
-            color: Color::RED,
+            color: Color::Rgba {
+                red: 1.0,
+                green: 0.0,
+                blue: 0.0,
+                alpha: 0.1,
+            },
         };
     }
 }

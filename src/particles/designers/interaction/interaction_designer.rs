@@ -14,15 +14,16 @@ impl InteractionDesigner {
     pub fn new(
         num_points: usize,
         translation: Vec3,
-        size: Vec3,
+        scale: Vec3,
         point_radius: f32,
+        line_thickness: f32,
         commands: &mut Commands,
         asset_server: &Res<AssetServer>,
         meshes: &mut Assets<Mesh>,
         materials: &mut Assets<StandardMaterial>,
     ) -> Self {
-        let min = translation - size * 0.5;
-        let dir = translation + (size * 0.5) - min;
+        let min = translation - scale * 0.5;
+        let dir = translation + (scale * 0.5) - min;
 
         let mut point_entities = vec![];
         let mut point_positions = vec![];
@@ -54,7 +55,7 @@ impl InteractionDesigner {
                     id,
                     point_entities[id],
                     point_entities[id + 1],
-                    0.05,
+                    line_thickness,
                     meshes,
                     materials,
                 ))
