@@ -8,8 +8,8 @@ use self::{
     interaction::{interaction_designer::InteractionDesigner, InteractionDesignerPlugin},
     matrix::{matrix_designer::MatrixDesigner, MatrixDesignerPlugin},
 };
-mod designer;
-mod interaction;
+pub mod designer;
+pub mod interaction;
 mod matrix;
 
 pub struct DesignerPlugin;

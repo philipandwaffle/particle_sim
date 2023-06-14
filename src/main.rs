@@ -1,4 +1,5 @@
 use std::arch::x86_64::_mm256_zeroupper;
+mod register_trait;
 
 use bevy::{
     diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},

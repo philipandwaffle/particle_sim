@@ -10,11 +10,12 @@ use self::{
     particle::ParticleBundle,
 };
 
-mod designers;
+pub mod designers;
 mod interaction_rule;
 pub mod matrix;
 mod movement_functions;
 mod particle;
+pub mod trickle_down_state;
 
 #[allow(dead_code)]
 #[derive(Debug, Serialize, Deserialize, Clone)]
