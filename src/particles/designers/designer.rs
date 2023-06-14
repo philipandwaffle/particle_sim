@@ -92,6 +92,10 @@ impl Designer for InteractionDesigner {
 
 impl Designer for MatrixDesigner {
     fn apply_primary_nav_delta(&mut self, delta: Vec2) {
+        if self.edit {
+            return;
+        }
+
         // Filter out input that is continuous
         if self.prev_delta != Vec2::ZERO {
             self.prev_delta = delta;
@@ -137,15 +141,17 @@ impl Designer for MatrixDesigner {
     }
 
     fn apply_secondary_nav_delta(&mut self, _: isize) {
-        return;
+        if self.edit {
+            return;
+        }
     }
 
     fn apply_primary_interact(&mut self, _: bool) {
-        return;
+        self.edit = true;
     }
 
     fn apply_secondary_interact(&mut self, _: bool) {
-        return;
+        self.edit = false;
     }
 
     fn spawn(

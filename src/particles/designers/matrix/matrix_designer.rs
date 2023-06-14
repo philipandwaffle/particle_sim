@@ -1,15 +1,6 @@
-use core::num;
+use bevy::{math::vec3, prelude::*};
 
-use bevy::{
-    math::{vec2, vec3},
-    prelude::*,
-};
-use bevy_rapier3d::na::Translation;
-use serde::de::value;
-
-use crate::particles::designers::{
-    interaction::interaction_designer::InteractionDesigner, DesignerStates,
-};
+use crate::particles::designers::interaction::interaction_designer::InteractionDesigner;
 
 use super::cell::CellBundle;
 
@@ -21,6 +12,7 @@ pub struct MatrixDesigner {
     pub prev_edit_point: IVec2,
     pub num_particles: usize,
     pub prev_delta: Vec2,
+    pub edit: bool,
 }
 impl MatrixDesigner {
     pub fn new(
@@ -91,6 +83,7 @@ impl MatrixDesigner {
             prev_edit_point: IVec2::ZERO,
             num_particles,
             prev_delta: Vec2::ZERO,
+            edit: false,
         }
     }
 }
