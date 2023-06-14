@@ -18,16 +18,16 @@ impl Trickles for Root {
         todo!()
     }
 
-    fn peek(&self) {
+    fn peek(&self) -> &Dreg {
         todo!()
     }
 }
 
 pub struct Dreg {
-    primary_nav: Vec2,
-    secondary_nav: isize,
-    primary_interact: bool,
-    secondary_interact: bool,
+    pub primary_nav: Vec2,
+    pub secondary_nav: isize,
+    pub primary_interact: bool,
+    pub secondary_interact: bool,
 }
 impl Dreg {
     pub fn new(
