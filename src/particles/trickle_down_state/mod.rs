@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{math::vec3, prelude::*};
 
 use self::root::Dreg;
 
@@ -28,13 +28,17 @@ impl Trickles for Contents {
 
 #[derive(Component)]
 pub struct Grid {
-    cur_edit: UVec2,
+    width: usize,
+    height: usize,
+    cur_edit: IVec2,
+    prev_edit: IVec2,
     data: Vec<Vec<Box<dyn Trickles + Send + Sync>>>,
-    is_drippy: bool,
+    prev_delta: Vec2,
+    consuming: bool,
 }
 impl Grid {
     fn apply_primary_nav_delta(&mut self, delta: Vec2) {
-        if self.edit {
+        if self.consuming {
             return;
         }
 
@@ -44,10 +48,6 @@ impl Grid {
             return;
         }
         self.prev_delta = delta;
-
-        // if !self.needs_update(){
-        //     return;
-        // }
 
         // Normalise delta so each component is either -1, 0 or 1
         let normalise = |x: f32| {
@@ -67,33 +67,29 @@ impl Grid {
         }
 
         // Stop of delta results in out of bounds
-        let num_particles = self.num_particles as i32;
-        let new_edit_point = self.cur_edit_point + delta;
+        let new_edit_point = self.cur_edit + delta;
         if new_edit_point.x < 0
-            || new_edit_point.x > num_particles - 1
+            || new_edit_point.x > self.width as i32 - 1
             || new_edit_point.y < 0
-            || new_edit_point.y > num_particles - 1
+            || new_edit_point.y > self.height as i32 - 1
         {
             println!("invalid delta {:?} results in {:?}", delta, new_edit_point);
             return;
         }
-
-        self.prev_edit_point = self.prev_edit_point;
-        self.cur_edit_point += delta;
+        self.prev_edit = self.cur_edit;
+        self.cur_edit += new_edit_point;
     }
 
     fn apply_secondary_nav_delta(&mut self, _: isize) {
-        if self.edit {
-            return;
-        }
+        todo!();
     }
 
     fn apply_primary_interact(&mut self, _: bool) {
-        self.edit = true;
+        todo!();
     }
 
     fn apply_secondary_interact(&mut self, _: bool) {
-        self.edit = false;
+        todo!();
     }
 
     fn spawn(
@@ -124,7 +120,7 @@ impl Grid {
 }
 impl Trickles for Grid {
     fn drip(&mut self, dreg: Dreg) {
-        if self.is_drippy {
+        if self.consuming {
             (self.data[self.cur_edit.y as usize][self.cur_edit.x as usize]).drip(dreg);
         }
     }
