@@ -2,7 +2,7 @@ use bevy::prelude::{App, Plugin};
 
 use crate::particles::{
     designers::{designer::Designer, interaction::interaction_designer::InteractionDesigner},
-    trickle_down_state::{Grid, Trickles},
+    spatial_ui::{grid::Grid, Trickles},
 };
 
 pub struct RegisterTraitPlugin;

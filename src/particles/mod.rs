@@ -15,7 +15,7 @@ mod interaction_rule;
 pub mod matrix;
 mod movement_functions;
 mod particle;
-pub mod trickle_down_state;
+pub mod spatial_ui;
 
 #[allow(dead_code)]
 #[derive(Debug, Serialize, Deserialize, Clone)]
