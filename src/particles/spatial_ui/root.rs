@@ -1,25 +1,29 @@
 use crate::floating_cam::controls::ControlState;
 
-use super::Trickles;
+use super::{Contents, Trickles};
 use bevy::prelude::*;
+use bevy_trait_query::One;
 
 #[derive(Resource)]
 pub struct Root {
-    vessel: Box<dyn Trickles + Send + Sync>,
+    contents: Entity,
 }
 
 impl Root {
-    pub fn new() -> Self {
-        return Self { vessel: todo!() };
+    pub fn new(contents: Entity) -> Self {
+        return Self { contents };
     }
 }
+impl Root {}
 impl Trickles for Root {
-    fn drip(&mut self, dreg: Dreg) {
-        todo!()
-    }
-
-    fn peek(&self) -> &Dreg {
-        todo!()
+    fn drip(&mut self, vessels: &mut Query<One<&mut dyn Trickles>>, dreg: Dreg) {
+        let mut vessel = match vessels.get_mut(self.contents) {
+            Ok(vessel) => vessel,
+            Err(err) => {
+                panic!("attempted to get vessel entity that doesn't exist {}", err);
+            }
+        };
+        vessel.drip(vessels, dreg);
     }
 }
 
@@ -48,7 +52,7 @@ impl Dreg {
 fn update_root(
     mut root: ResMut<Root>,
     mut control_state: ResMut<ControlState>,
-    mut vessels: Query<&mut dyn Trickles>,
+    mut vessels: Query<One<&mut dyn Trickles>>,
 ) {
     let sen = 0.25;
     let dreg = Dreg::new(
@@ -57,7 +61,7 @@ fn update_root(
         control_state.designer_primary_interact,
         control_state.designer_secondary_interact,
     );
-    root.drip(dreg);
+    root.drip(&mut vessels, dreg);
 
     control_state.reset_designer();
 }

@@ -1,4 +1,5 @@
 use bevy::{math::vec3, prelude::*};
+use bevy_trait_query::One;
 
 use self::root::Dreg;
 
@@ -12,19 +13,14 @@ mod vertex_line;
 
 #[bevy_trait_query::queryable]
 pub trait Trickles {
-    fn drip(&mut self, dreg: Dreg);
-    fn peek(&self) -> &Dreg;
+    fn drip(&mut self, vessels: &mut Query<One<&mut dyn Trickles>>, dreg: Dreg);
 }
 
 pub enum Contents {
     Vessel(Box<dyn Trickles + Send + Sync>),
 }
 impl Trickles for Contents {
-    fn drip(&mut self, dreg: Dreg) {
-        todo!()
-    }
-
-    fn peek(&self) -> &Dreg {
+    fn drip(&mut self, vessels: &mut Query<One<&mut dyn Trickles>>, dreg: Dreg) {
         todo!()
     }
 }

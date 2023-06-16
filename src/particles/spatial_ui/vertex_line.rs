@@ -1,4 +1,7 @@
 use bevy::{math::vec3, prelude::*};
+use bevy_trait_query::One;
+
+use super::{root::Dreg, Trickles};
 
 #[derive(Component)]
 pub struct VertexLine {
@@ -7,6 +10,84 @@ pub struct VertexLine {
     pub point_positions: Vec<Vec3>,
     pub cur_point_id: isize,
     pub num_points: usize,
+}
+impl Trickles for VertexLine {
+    fn drip(&mut self, _: &mut Query<One<&mut dyn Trickles>>, dreg: Dreg) {
+        
+    }
+}
+impl VertexLine {
+    pub fn new(
+        vertices: usize,
+        translation: Vec3,
+        scale: Vec3,
+        vertex_radius: f32,
+        line_thickness: f32,
+        commands: &mut Commands,
+        asset_server: &Res<AssetServer>,
+        meshes: &mut Assets<Mesh>,
+        materials: &mut Assets<StandardMaterial>,
+    ) -> Self {
+        // Calculate the pos of the first vertex in a line
+        let mut start = translation;
+        start.x -= scale.x * 0.5;
+
+        // Calculate the pos of the last vertex in a line
+        let mut stop = translation;
+        stop.x += scale.x * 0.5;
+        // Relative to the start position
+        stop -= start;
+
+        // Pre-allocate vectors
+        let mut point_entities = Vec::with_capacity(vertices);
+        let mut point_positions = Vec::with_capacity(vertices);
+        let mut line_entities = Vec::with_capacity(vertices - 1);
+
+        // Spawn each vertex
+        for i in 0..vertices {
+            // Linearly interpolate between start and stop to get vertex pos
+            let mut pos = start + (stop * (i as f32 / (vertices - 1) as f32));
+            pos.z = translation.z;
+
+            // Spawn vertex
+            let vertex = commands
+                .spawn(VertexBundle::new(
+                    i as usize,
+                    vertex_radius,
+                    pos,
+                    &asset_server,
+                    meshes,
+                    materials,
+                ))
+                .id();
+
+            point_entities.push(vertex);
+            point_positions.push(pos);
+        }
+
+        // Spawn each line
+        for i in 0..vertices - 1 {
+            let line = commands
+                .spawn(LineBundle::new(
+                    i,
+                    point_entities[i],
+                    point_entities[i + 1],
+                    line_thickness,
+                    meshes,
+                    materials,
+                ))
+                .id();
+            line_entities.push(line);
+        }
+
+        return Self {
+            point_entities: point_entities,
+            line_entities: line_entities,
+            point_positions: point_positions,
+            cur_point_id: -1,
+            num_points: vertices,
+        };
+    }
 }
 
 #[derive(Bundle)]
@@ -51,13 +132,11 @@ pub struct Vertex;
 
 #[derive(Bundle)]
 pub struct LineBundle {
-    name: Name,
-    line: DesignerLine,
+    line: Line,
     mat: MaterialMeshBundle<StandardMaterial>,
 }
 impl LineBundle {
     pub fn new(
-        name: String,
         id: usize,
         from: Entity,
         to: Entity,
@@ -66,8 +145,7 @@ impl LineBundle {
         materials: &mut Assets<StandardMaterial>,
     ) -> Self {
         return Self {
-            name: Name::new(name),
-            line: DesignerLine::new(id, from, to),
+            line: Line::new(id, from, to),
             mat: MaterialMeshBundle {
                 mesh: meshes.add(
                     shape::Cylinder {
@@ -89,12 +167,12 @@ impl LineBundle {
     }
 }
 #[derive(Component)]
-pub struct DesignerLine {
+pub struct Line {
     pub id: usize,
     pub from: Entity,
     pub to: Entity,
 }
-impl DesignerLine {
+impl Line {
     pub fn new(id: usize, from: Entity, to: Entity) -> Self {
         return Self { id, from, to };
     }

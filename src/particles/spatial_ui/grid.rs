@@ -1,7 +1,7 @@
 use bevy::{math::vec3, prelude::*};
-use bevy_inspector_egui::egui::containers;
+use bevy_trait_query::One;
 
-use super::{root::Dreg, shaped_container::ShapedContainer, Trickles};
+use super::{root::Dreg, shaped_container::ShapedContainer, vertex_line::VertexLine, Trickles};
 use crate::particles::{
     designers::interaction::interaction_designer::InteractionDesigner,
     spatial_ui::shaped_container::ShapedContainerBundle,
@@ -23,24 +23,32 @@ impl GridBundle {
         meshes: &mut Assets<Mesh>,
         materials: &mut Assets<StandardMaterial>,
     ) -> Self {
-        // let mut cur_spawn = matrix_designer_state.centre
-        let mut cell_scale = scale / vec3(width as f32, height as f32, 1.0);
+        // calculate container scale and offset so that the containers use their centre as the anchor point
+        let container_scale = scale / vec3(width as f32, height as f32, 1.0);
+        let container_offset = (translation + (scale / 2.0)) - (container_scale / 2.0);
 
+        // Pre-allocate container and contents vec
         let mut containers = Vec::with_capacity(height);
-        let cell_offset = (translation + (scale / 2.0)) - (cell_scale / 2.0);
+        let mut contents = Vec::with_capacity(height);
+
+        // Init each container in the grid
         for i in 0..height {
-            let mut row = Vec::with_capacity(width);
+            // Pre-allocate container and contents row
+            let mut container_row = Vec::with_capacity(width);
+            let mut contents_row = Vec::with_capacity(width);
             for j in 0..width {
-                let cell_translation = vec3(
+                // Calculate the containers position
+                let container_translation = vec3(
                     scale.x * (i as f32 / width as f32),
                     scale.y * (j as f32 / height as f32),
-                    cell_offset.z * 1.5,
-                ) - cell_offset;
+                    container_offset.z * 1.5,
+                ) - container_offset;
 
-                let cell = commands
+                // Spawn container
+                let container = commands
                     .spawn(ShapedContainerBundle::new(
-                        cell_translation,
-                        cell_scale,
+                        container_translation,
+                        container_scale,
                         Color::rgba(i as f32, j as f32, 0.0, 0.1),
                         meshes,
                         materials,
@@ -48,10 +56,10 @@ impl GridBundle {
                     .id();
 
                 //todo! Implement loading pre-made matrices
-                let cell_designer = InteractionDesigner::new(
+                let vertex_line = VertexLine::new(
                     5,
-                    cell_translation,
-                    cell_scale,
+                    container_translation,
+                    container_scale,
                     0.01,
                     0.005,
                     commands,
@@ -59,11 +67,13 @@ impl GridBundle {
                     meshes,
                     materials,
                 );
-                let value_entity = commands.spawn(cell_designer).id();
+                let vessel = commands.spawn(vertex_line).id();
 
-                row.push(cell);
+                container_row.push(container);
+                contents_row.push(vessel);
             }
-            containers.push(row);
+            containers.push(container_row);
+            contents.push(contents_row);
         }
 
         return Self {
@@ -72,7 +82,7 @@ impl GridBundle {
                 height: height,
                 cur_edit: IVec2::ZERO,
                 prev_edit: IVec2::ZERO,
-                data: (),
+                contents,
                 containers: containers,
                 prev_delta: Vec2::ZERO,
                 consuming: false,
@@ -88,7 +98,7 @@ pub struct Grid {
     height: usize,
     cur_edit: IVec2,
     prev_edit: IVec2,
-    data: Vec<Vec<Box<dyn Trickles + Send + Sync>>>,
+    contents: Vec<Vec<Entity>>,
     containers: Vec<Vec<Entity>>,
     prev_delta: Vec2,
     consuming: bool,
@@ -176,14 +186,16 @@ impl Grid {
     }
 }
 impl Trickles for Grid {
-    fn drip(&mut self, dreg: Dreg) {
+    fn drip(&mut self, vessels: &mut Query<One<&mut dyn Trickles>>, dreg: Dreg) {
         if self.consuming {
-            (self.data[self.cur_edit.y as usize][self.cur_edit.x as usize]).drip(dreg);
+            let vessel_entity = self.contents[self.cur_edit.y as usize][self.cur_edit.x as usize];
+            let mut vessel = if let Ok(v) = vessels.get_mut(vessel_entity) {
+                v
+            } else {
+                panic!();
+            };
+            vessel.drip(vessels, dreg);
         }
-    }
-
-    fn peek(&self) -> &Dreg {
-        todo!()
     }
 }
 
