@@ -50,7 +50,7 @@ impl ShapedContainer {
     }
 }
 
-fn change_colors(
+pub fn update_shaped_containers(
     containers: Query<(&Handle<StandardMaterial>, &ShapedContainer), Changed<ShapedContainer>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {

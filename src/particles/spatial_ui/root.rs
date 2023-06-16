@@ -1,8 +1,8 @@
-use std::{borrow::BorrowMut, cell::RefCell};
+use std::cell::RefCell;
 
 use crate::floating_cam::controls::ControlState;
 
-use super::{Contents, Trickles};
+use super::Trickles;
 use bevy::prelude::*;
 use bevy_trait_query::One;
 
@@ -54,10 +54,10 @@ impl Dreg {
     }
 }
 
-fn update_root(
+pub fn update_root(
     mut root: ResMut<Root>,
     mut control_state: ResMut<ControlState>,
-    mut vessels: Query<One<&mut dyn Trickles>>,
+    vessels: Query<One<&mut dyn Trickles>>,
 ) {
     let sen = 0.25;
     let dreg = Dreg::new(

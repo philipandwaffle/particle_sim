@@ -11,6 +11,7 @@ use bevy_rapier3d::prelude::*;
 use config::structs::*;
 use floating_cam::FloatingCamPlugin;
 use particles::ParticlesPlugin;
+use register_trait::RegisterTraitPlugin;
 use wall_bundles::{init_clear_box, init_opaque_box};
 
 mod config;
@@ -52,6 +53,7 @@ fn main() {
             .set(ImagePlugin::default_nearest()),
     )
     .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
+    .add_plugin(RegisterTraitPlugin)
     .add_plugin(FloatingCamPlugin);
 
     if profiling_mode {

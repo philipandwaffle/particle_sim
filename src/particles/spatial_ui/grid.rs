@@ -201,6 +201,6 @@ impl Trickles for Grid {
     }
 }
 
-fn update_grid_containers(grids: Query<&Grid>, mut containers: Query<&mut ShapedContainer>) {
+pub fn update_grid_containers(grids: Query<&Grid>, mut containers: Query<&mut ShapedContainer>) {
     for grid in grids.iter() {}
 }
