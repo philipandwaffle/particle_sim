@@ -1,9 +1,6 @@
 use bevy::prelude::{App, Plugin};
 
-use crate::particles::{
-    designers::{designer::Designer, interaction::interaction_designer::InteractionDesigner},
-    spatial_ui::{grid::Grid, Trickles},
-};
+use crate::spatial_ui::{grid::Grid, Trickles};
 
 pub struct RegisterTraitPlugin;
 impl Plugin for RegisterTraitPlugin {

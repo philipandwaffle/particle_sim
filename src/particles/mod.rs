@@ -7,7 +7,7 @@ use crate::config::structs::{ParticleProperties, Spawn};
 
 use self::{
     designers::DesignerPlugin, matrix::Matrix, movement_functions::move_particles,
-    particle::ParticleBundle, spatial_ui::SpatialUIPlugin,
+    particle::ParticleBundle,
 };
 
 pub mod designers;
@@ -15,7 +15,6 @@ mod interaction_rule;
 pub mod matrix;
 mod movement_functions;
 mod particle;
-pub mod spatial_ui;
 
 #[allow(dead_code)]
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -34,8 +33,7 @@ pub struct ParticlesPlugin;
 impl Plugin for ParticlesPlugin {
     fn build(&self, app: &mut App) {
         let num_particles = 6;
-        app.insert_resource(Matrix::new(num_particles))
-            .add_plugin(SpatialUIPlugin)
+        app.insert_resource(Matrix::new(num_particles))            
             // .add_plugin(DesignerPlugin)
             // .add_plugin(MatrixDesignerPlugin)
             // .add_plugin(InteractionDesignerPlugin)

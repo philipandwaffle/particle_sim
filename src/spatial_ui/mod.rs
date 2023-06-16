@@ -29,3 +29,7 @@ impl Plugin for SpatialUIPlugin {
 pub trait Trickles {
     fn drip(&mut self, vessels: &RefCell<Query<One<&mut dyn Trickles>>>, dreg: Dreg);
 }
+
+fn spawn() {
+    
+}

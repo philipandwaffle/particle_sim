@@ -12,11 +12,13 @@ use config::structs::*;
 use floating_cam::FloatingCamPlugin;
 use particles::ParticlesPlugin;
 use register_trait::RegisterTraitPlugin;
+use spatial_ui::SpatialUIPlugin;
 use wall_bundles::{init_clear_box, init_opaque_box};
 
 mod config;
 mod floating_cam;
 mod particles;
+mod spatial_ui;
 mod wall_bundles;
 
 fn main() {
@@ -54,6 +56,7 @@ fn main() {
     )
     .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
     .add_plugin(RegisterTraitPlugin)
+    .add_plugin(SpatialUIPlugin)
     .add_plugin(FloatingCamPlugin);
 
     if profiling_mode {
