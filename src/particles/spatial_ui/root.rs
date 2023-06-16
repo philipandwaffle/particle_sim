@@ -1,3 +1,5 @@
+use std::{borrow::BorrowMut, cell::RefCell};
+
 use crate::floating_cam::controls::ControlState;
 
 use super::{Contents, Trickles};
@@ -16,14 +18,17 @@ impl Root {
 }
 impl Root {}
 impl Trickles for Root {
-    fn drip(&mut self, vessels: &mut Query<One<&mut dyn Trickles>>, dreg: Dreg) {
-        let mut vessel = match vessels.get_mut(self.contents) {
-            Ok(vessel) => vessel,
+    fn drip(&mut self, vessels: &RefCell<Query<One<&mut dyn Trickles>>>, dreg: Dreg) {
+        let mut binding = vessels.borrow_mut();
+
+        match binding.get_mut(self.contents) {
+            Ok(mut v) => {
+                v.drip(vessels, dreg);
+            }
             Err(err) => {
-                panic!("attempted to get vessel entity that doesn't exist {}", err);
+                panic!("attempted to get vessel that doesn't exist {}", err);
             }
         };
-        vessel.drip(vessels, dreg);
     }
 }
 
@@ -61,7 +66,7 @@ fn update_root(
         control_state.designer_primary_interact,
         control_state.designer_secondary_interact,
     );
-    root.drip(&mut vessels, dreg);
+    root.drip(&RefCell::new(vessels), dreg);
 
     control_state.reset_designer();
 }

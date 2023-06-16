@@ -1,3 +1,5 @@
+use std::cell::RefCell;
+
 use bevy::{math::vec3, prelude::*};
 use bevy_trait_query::One;
 
@@ -186,15 +188,15 @@ impl Grid {
     }
 }
 impl Trickles for Grid {
-    fn drip(&mut self, vessels: &mut Query<One<&mut dyn Trickles>>, dreg: Dreg) {
-        if self.consuming {
+    fn drip(&mut self, vessels: &RefCell<Query<One<&mut dyn Trickles>>>, dreg: Dreg) {
+        if !self.consuming {
             let vessel_entity = self.contents[self.cur_edit.y as usize][self.cur_edit.x as usize];
-            let mut vessel = if let Ok(v) = vessels.get_mut(vessel_entity) {
-                v
+            let mut binding = vessels.borrow_mut();
+            if let Ok(mut v) = binding.get_mut(vessel_entity) {
+                v.drip(vessels, dreg);
             } else {
                 panic!();
             };
-            vessel.drip(vessels, dreg);
         }
     }
 }
