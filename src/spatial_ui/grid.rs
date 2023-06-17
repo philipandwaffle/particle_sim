@@ -162,28 +162,6 @@ impl Grid {
         todo!();
     }
 
-    // fn spawn(
-    //     &mut self,
-    //     commands: &mut Commands,
-    //     asset_server: &Res<AssetServer>,
-    //     meshes: &mut Assets<Mesh>,
-    //     materials: &mut Assets<StandardMaterial>,
-    // ) -> Entity {
-    //     let designer_bundle = InteractionDesigner::new(
-    //         5,
-    //         vec3(0.0, 0.0, -0.5),
-    //         vec3(5.0, 5.0, 0.0),
-    //         0.5,
-    //         0.05,
-    //         commands,
-    //         asset_server,
-    //         meshes,
-    //         materials,
-    //     );
-    //     let entity = commands.spawn(designer_bundle).id();
-    //     return entity;
-    // }
-
     fn despawn(&self, commands: &mut Commands) {
         todo!()
     }
@@ -196,8 +174,10 @@ impl Trickles for Grid {
             if let Ok(mut v) = binding.get_mut(vessel_entity) {
                 v.drip(vessels, dreg);
             } else {
-                panic!();
+                panic!("Grid panic");
             };
+        } else {
+            self.apply_primary_nav_delta(dreg.primary_nav);
         }
     }
 }

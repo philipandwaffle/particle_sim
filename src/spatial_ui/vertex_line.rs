@@ -1,9 +1,43 @@
 use std::cell::RefCell;
 
-use bevy::{math::vec3, prelude::*};
+use bevy::{math::vec3, prelude::*, render::mesh};
 use bevy_trait_query::One;
 
 use super::{root::Dreg, Trickles};
+
+#[derive(Bundle)]
+pub struct VertexLineBundle {
+    pub vertex_line: VertexLine,
+    pub transform: Transform,
+}
+impl VertexLineBundle {
+    pub fn new(
+        vertices: usize,
+        translation: Vec3,
+        scale: Vec3,
+        vertex_radius: f32,
+        line_thickness: f32,
+        commands: &mut Commands,
+        asset_server: &Res<AssetServer>,
+        meshes: &mut Assets<Mesh>,
+        materials: &mut Assets<StandardMaterial>,
+    ) -> Self {
+        return Self {
+            vertex_line: VertexLine::new(
+                vertices,
+                translation,
+                scale,
+                vertex_radius,
+                line_thickness,
+                commands,
+                asset_server,
+                meshes,
+                materials,
+            ),
+            transform: Transform::from_translation(translation),
+        };
+    }
+}
 
 #[derive(Component)]
 pub struct VertexLine {
@@ -52,7 +86,6 @@ impl VertexLine {
             // Spawn vertex
             let vertex = commands
                 .spawn(VertexBundle::new(
-                    i as usize,
                     vertex_radius,
                     pos,
                     &asset_server,
@@ -69,7 +102,6 @@ impl VertexLine {
         for i in 0..vertices - 1 {
             let line = commands
                 .spawn(LineBundle::new(
-                    i,
                     point_entities[i],
                     point_entities[i + 1],
                     line_thickness,
@@ -84,7 +116,7 @@ impl VertexLine {
             point_entities: point_entities,
             line_entities: line_entities,
             point_positions: point_positions,
-            cur_point_id: -1,
+            cur_point_id: 0,
             num_points: vertices,
         };
     }
@@ -97,7 +129,6 @@ pub struct VertexBundle {
 }
 impl VertexBundle {
     pub fn new(
-        id: usize,
         radius: f32,
         translation: Vec3,
         asset_server: &Res<AssetServer>,
@@ -137,7 +168,6 @@ pub struct LineBundle {
 }
 impl LineBundle {
     pub fn new(
-        id: usize,
         from: Entity,
         to: Entity,
         thickness: f32,
@@ -145,7 +175,7 @@ impl LineBundle {
         materials: &mut Assets<StandardMaterial>,
     ) -> Self {
         return Self {
-            line: Line::new(id, from, to),
+            line: Line::new(from, to),
             mat: MaterialMeshBundle {
                 mesh: meshes.add(
                     shape::Cylinder {
@@ -168,20 +198,19 @@ impl LineBundle {
 }
 #[derive(Component)]
 pub struct Line {
-    pub id: usize,
     pub from: Entity,
     pub to: Entity,
 }
 impl Line {
-    pub fn new(id: usize, from: Entity, to: Entity) -> Self {
-        return Self { id, from, to };
+    pub fn new(from: Entity, to: Entity) -> Self {
+        return Self { from, to };
     }
 }
 
 pub fn update_vertex_lines(
     mut vertex_lines: Query<&mut VertexLine, Changed<VertexLine>>,
-    mut points: Query<&mut Transform, (With<Vertex>, Without<VertexLine>)>,
-    mut lines: Query<&mut Transform, (With<VertexLine>, Without<Vertex>)>,
+    mut points: Query<&mut Transform, (With<Vertex>, Without<Line>)>,
+    mut lines: Query<&mut Transform, (With<Line>, Without<Vertex>)>,
 ) {
     for mut designer in vertex_lines.iter_mut() {
         let mut point_entities = designer.point_entities.clone();
@@ -195,7 +224,7 @@ pub fn update_vertex_lines(
             let mut transform = if let Ok(transform) = points.get_mut(point_entities[i]) {
                 transform
             } else {
-                panic!();
+                panic!("Update vertex line panic");
             };
 
             if transform.translation != point_translation {
@@ -204,10 +233,15 @@ pub fn update_vertex_lines(
         }
 
         for i in 0..num_points.clone() - 1 {
-            let mut transform = if let Ok(transform) = lines.get_mut(line_entities[i]) {
-                transform
-            } else {
-                panic!();
+            // let mut transform = if let Ok(transform) = lines.get_mut(line_entities[i]) {
+            //     transform
+            // } else {
+            //     panic!();
+            // };
+
+            let mut transform = match lines.get_mut(line_entities[i]) {
+                Ok(t) => t,
+                Err(err) => panic!("{:?}", err),
             };
 
             let from = point_positions[i];
