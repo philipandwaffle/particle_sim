@@ -167,11 +167,11 @@ impl Grid {
     }
 }
 impl Trickles for Grid {
-    fn drip(&mut self, vessels: &RefCell<Query<One<&mut dyn Trickles>>>, dreg: Dreg) {
+    fn drip(&mut self, vessels: &mut Query<One<&mut dyn Trickles>>, dreg: Dreg) {
         if !self.consuming {
             let vessel_entity = self.contents[self.cur_edit.y as usize][self.cur_edit.x as usize];
-            let mut binding = vessels.borrow_mut();
-            if let Ok(mut v) = binding.get_mut(vessel_entity) {
+
+            if let Ok(mut v) = vessels.get_mut(vessel_entity) {
                 v.drip(vessels, dreg);
             } else {
                 panic!("Grid panic");

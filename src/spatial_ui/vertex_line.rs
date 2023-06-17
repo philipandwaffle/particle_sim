@@ -48,7 +48,7 @@ pub struct VertexLine {
     pub num_points: usize,
 }
 impl Trickles for VertexLine {
-    fn drip(&mut self, _: &RefCell<Query<One<&mut dyn Trickles>>>, dreg: Dreg) {}
+    fn drip(&mut self, _: &mut Query<One<&mut dyn Trickles>>, dreg: Dreg) {}
 }
 impl VertexLine {
     pub fn new(

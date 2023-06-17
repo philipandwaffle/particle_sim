@@ -34,7 +34,7 @@ impl Plugin for SpatialUIPlugin {
 
 #[bevy_trait_query::queryable]
 pub trait Trickles {
-    fn drip(&mut self, vessels: &RefCell<Query<One<&mut dyn Trickles>>>, dreg: Dreg);
+    fn drip(&mut self, vessels: &mut Query<One<&mut dyn Trickles>>, dreg: Dreg);
 }
 
 fn spawn(
