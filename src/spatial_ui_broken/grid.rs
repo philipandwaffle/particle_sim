@@ -167,7 +167,7 @@ impl Grid {
     }
 }
 impl Trickles for Grid {
-    fn drip(&mut self, vessels: &mut Query<One<&mut dyn Trickles>>, dreg: Dreg) {
+    fn drip(&mut self, mut vessels: Query<One<&mut dyn Trickles>>, dreg: Dreg) {
         if !self.consuming {
             let vessel_entity = self.contents[self.cur_edit.y as usize][self.cur_edit.x as usize];
 

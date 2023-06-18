@@ -18,17 +18,17 @@ impl Root {
 }
 impl Root {}
 impl Trickles for Root {
-    fn drip(&mut self, vessels: &mut Query<One<&mut dyn Trickles>>, dreg: Dreg) {
-        // let mut binding = vessels.borrow_mut();
-
+    fn drip(&mut self, mut vessels: Query<One<&mut dyn Trickles>>, dreg: Dreg) {
+        let mut vessel;
         match vessels.get_mut(self.contents) {
-            Ok(mut v) => {
-                v.drip(vessels, dreg);
+            Ok(v) => {
+                vessel = v;
             }
             Err(err) => {
                 panic!("attempted to get vessel that doesn't exist {}", err);
             }
         };
+        vessel.drip(vessels, dreg);
     }
 }
 
@@ -66,7 +66,7 @@ pub fn update_root(
         control_state.designer_primary_interact,
         control_state.designer_secondary_interact,
     );
-    root.drip(&mut vessels, dreg);
+    root.drip(vessels, dreg);
 
     control_state.reset_designer();
 }
