@@ -1,5 +1,12 @@
 use bevy::prelude::*;
 
+use self::{dreg::Dreg, grid::Grid};
+
+mod dreg;
+mod grid;
+mod shaped_container;
+mod vertex_line;
+
 #[derive(Resource)]
 pub struct Node {
     pub leaves: Option<Vec<Node>>,
@@ -35,4 +42,18 @@ impl Node {
             None => return vec![self.content],
         }
     }
+}
+
+pub struct SpatialUIPlugin;
+impl Plugin for SpatialUIPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_system(apply_nav_control);
+    }
+}
+
+pub fn apply_nav_control() {}
+
+#[bevy_trait_query::queryable]
+pub trait NavControlled {
+    fn trickle(&mut self, dreg: Dreg);
 }

@@ -4,10 +4,10 @@ use bevy::{math::vec3, prelude::*};
 use bevy_trait_query::One;
 
 use super::{
-    root::Dreg,
+    dreg::{self, Dreg},
     shaped_container::{ShapedContainer, ShapedContainerBundle},
     vertex_line::VertexLine,
-    Trickles,
+    NavControlled,
 };
 
 #[derive(Bundle)]
@@ -166,22 +166,14 @@ impl Grid {
         todo!()
     }
 }
-impl Trickles for Grid {
-    fn drip(&mut self, mut vessels: Query<One<&mut dyn Trickles>>, dreg: Dreg) {
-        if !self.consuming {
-            let vessel_entity = self.contents[self.cur_edit.y as usize][self.cur_edit.x as usize];
-
-            if let Ok(mut v) = vessels.get_mut(vessel_entity) {
-                v.drip(vessels, dreg);
-            } else {
-                panic!("Grid panic");
-            };
-        } else {
-            self.apply_primary_nav_delta(dreg.primary_nav);
-        }
+impl NavControlled for Grid {
+    fn trickle(&mut self, dreg: Dreg) {
+        self.apply_primary_interact(dreg.primary_interact);
     }
 }
 
 pub fn update_grid_containers(grids: Query<&Grid>, mut containers: Query<&mut ShapedContainer>) {
-    for grid in grids.iter() {}
+    for grid in grids.iter() {
+        
+    }
 }

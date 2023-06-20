@@ -1,6 +1,9 @@
 use bevy::prelude::{App, Plugin};
 
-use crate::spatial_ui_broken::{grid::Grid, vertex_line::VertexLine, Trickles};
+use crate::{
+    spatial_ui::{Grid as OtherGrid, NavControlled},
+    spatial_ui_broken::{grid::Grid, vertex_line::VertexLine, Trickles},
+};
 
 pub struct RegisterTraitPlugin;
 impl Plugin for RegisterTraitPlugin {
@@ -8,5 +11,6 @@ impl Plugin for RegisterTraitPlugin {
         use bevy_trait_query::RegisterExt;
         app.register_component_as::<dyn Trickles, Grid>();
         app.register_component_as::<dyn Trickles, VertexLine>();
+        app.register_component_as::<dyn NavControlled, OtherGrid>();
     }
 }

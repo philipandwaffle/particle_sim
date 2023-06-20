@@ -3,7 +3,7 @@ use std::cell::RefCell;
 use bevy::{math::vec3, prelude::*, render::mesh};
 use bevy_trait_query::One;
 
-use super::{root::Dreg, Trickles};
+use super::{Dreg, NavControlled};
 
 #[derive(Bundle)]
 pub struct VertexLineBundle {
@@ -47,9 +47,12 @@ pub struct VertexLine {
     pub cur_point_id: isize,
     pub num_points: usize,
 }
-impl Trickles for VertexLine {
-    fn drip(&mut self, _: Query<One<&mut dyn Trickles>>, dreg: Dreg) {}
+impl NavControlled for VertexLine {
+    fn trickle(&mut self, dreg: Dreg) {
+        self.apply_primary_nav(dreg.primary_nav);
+    }
 }
+
 impl VertexLine {
     pub fn new(
         vertices: usize,
@@ -119,6 +122,39 @@ impl VertexLine {
             cur_point_id: 0,
             num_points: vertices,
         };
+    }
+
+    fn apply_primary_nav(&mut self, delta: Vec2) {
+        if self.cur_point_id == -1 || self.point_positions.is_empty() {
+            return;
+        }
+        //todo! better error handling and logging
+        self.point_positions[self.cur_point_id as usize].x += delta.x;
+        self.point_positions[self.cur_point_id as usize].y += delta.y;
+    }
+
+    fn apply_secondary_nav_delta(&mut self, delta: isize) {
+        if delta == 0 {
+            return;
+        }
+
+        // Aggregate current id with delta id
+        self.cur_point_id += delta;
+
+        // Check if new id is out of bounds and fix
+        if self.cur_point_id == -1 {
+            self.cur_point_id = self.num_points as isize - 1;
+        } else if self.cur_point_id == self.num_points as isize {
+            self.cur_point_id = 0;
+        }
+    }
+
+    fn apply_primary_interact(&mut self, _: bool) {
+        return;
+    }
+
+    fn apply_secondary_interact(&mut self, _: bool) {
+        return;
     }
 }
 
