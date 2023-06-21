@@ -7,6 +7,7 @@ use self::{
 };
 
 mod camera;
+pub mod control_state;
 pub mod controls;
 
 pub struct FloatingCamPlugin;

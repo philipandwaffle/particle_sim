@@ -1,9 +1,9 @@
 use bevy::prelude::*;
 use bevy_trait_query::One;
 
-use crate::floating_cam::controls::ControlState;
+use crate::floating_cam::control_state::ControlState;
 
-use super::{nav::Nav, NavControlled, ReceiveNav};
+use super::{NavControlled, ReceiveNav};
 
 pub struct SpatialUIPlugin;
 impl Plugin for SpatialUIPlugin {
@@ -16,13 +16,7 @@ pub fn apply_nav_control(
     mut receivers: Query<One<&mut dyn NavControlled>, With<ReceiveNav>>,
     mut cs: ResMut<ControlState>,
 ) {
-    let nav = Nav::new(
-        cs.designer_primary_nav_delta,
-        cs.designer_secondary_nav_delta,
-        cs.designer_primary_interact,
-        cs.designer_secondary_interact,
-    );
     for mut receiver in receivers.iter_mut() {
-        receiver.trickle(nav.clone());
+        receiver.trickle(cs.nd.clone());
     }
 }

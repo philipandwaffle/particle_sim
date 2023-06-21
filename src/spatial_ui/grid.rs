@@ -1,8 +1,9 @@
 use bevy::{math::vec3, prelude::*};
 use bevy_trait_query::One;
 
+use crate::floating_cam::control_state::NavDelta;
+
 use super::{
-    nav::Nav,
     shaped_container::{ShapedContainer, ShapedContainerBundle},
     vertex_line::VertexLine,
     NavControlled,
@@ -165,7 +166,7 @@ impl Grid {
     }
 }
 impl NavControlled for Grid {
-    fn trickle(&mut self, dreg: Nav) {
+    fn trickle(&mut self, dreg: NavDelta) {
         self.apply_primary_interact(dreg.primary_interact);
     }
 }

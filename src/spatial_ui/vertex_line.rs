@@ -3,7 +3,9 @@ use std::cell::RefCell;
 use bevy::{math::vec3, prelude::*, render::mesh};
 use bevy_trait_query::One;
 
-use super::{Nav, NavControlled};
+use crate::floating_cam::control_state::NavDelta;
+
+use super::NavControlled;
 
 #[derive(Bundle)]
 pub struct VertexLineBundle {
@@ -48,7 +50,7 @@ pub struct VertexLine {
     pub num_points: usize,
 }
 impl NavControlled for VertexLine {
-    fn trickle(&mut self, nav: Nav) {
+    fn trickle(&mut self, nav: NavDelta) {
         self.apply_primary_nav(nav.primary_nav);
     }
 }

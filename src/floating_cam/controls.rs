@@ -1,5 +1,7 @@
 use bevy::{core::Zeroable, input::mouse::MouseMotion, prelude::*};
 
+use super::control_state::ControlState;
+
 pub struct ControlPlugin;
 impl Plugin for ControlPlugin {
     fn build(&self, app: &mut App) {
@@ -23,14 +25,14 @@ pub struct Bindings {
     look_right: KeyCode,
     next_mode: KeyCode,
     prev_mode: KeyCode,
-    designer_nav_up: KeyCode,
-    designer_nav_down: KeyCode,
-    designer_nav_left: KeyCode,
-    designer_nav_right: KeyCode,
-    designer_nav_next: KeyCode,
-    designer_nav_prev: KeyCode,
-    designer_primary: KeyCode,
-    designer_secondary: KeyCode,
+    primary_nav_up: KeyCode,
+    primary_nav_down: KeyCode,
+    primary_nav_left: KeyCode,
+    primary_nav_right: KeyCode,
+    secondary_nav_next: KeyCode,
+    secondary_nav_prev: KeyCode,
+    primary_interact: KeyCode,
+    secondary_interact: KeyCode,
 }
 impl Default for Bindings {
     fn default() -> Self {
@@ -47,53 +49,14 @@ impl Default for Bindings {
             look_right: KeyCode::Right,
             next_mode: KeyCode::Key1,
             prev_mode: KeyCode::Key2,
-            designer_nav_up: KeyCode::I,
-            designer_nav_down: KeyCode::K,
-            designer_nav_left: KeyCode::J,
-            designer_nav_right: KeyCode::L,
-            designer_nav_next: KeyCode::O,
-            designer_nav_prev: KeyCode::U,
-            designer_primary: KeyCode::Return,
-            designer_secondary: KeyCode::Escape,
-        }
-    }
-}
-
-#[derive(Resource)]
-pub struct ControlState {
-    pub move_dir_delta: Vec3,
-    pub mouse_look_delta: Vec2,
-    pub button_look_delta: Vec2,
-    pub designer_primary_nav_delta: Vec2,
-    pub designer_secondary_nav_delta: isize,
-    pub designer_primary_interact: bool,
-    pub designer_secondary_interact: bool,
-}
-impl ControlState {
-    pub fn reset_move(&mut self) {
-        self.move_dir_delta = Vec3::ZERO;
-    }
-    pub fn reset_look(&mut self) {
-        self.mouse_look_delta = Vec2::ZERO;
-        self.button_look_delta = Vec2::ZERO;
-    }
-    pub fn reset_designer(&mut self) {
-        self.designer_primary_nav_delta = Vec2::ZERO;
-        self.designer_secondary_nav_delta = 0;
-        self.designer_primary_interact = false;
-        self.designer_secondary_interact = false;
-    }
-}
-impl Default for ControlState {
-    fn default() -> Self {
-        Self {
-            move_dir_delta: Vec3::ZERO,
-            mouse_look_delta: Vec2::ZERO,
-            button_look_delta: Vec2::ZERO,
-            designer_primary_nav_delta: Vec2::ZERO,
-            designer_secondary_nav_delta: 0,
-            designer_primary_interact: false,
-            designer_secondary_interact: false,
+            primary_nav_up: KeyCode::I,
+            primary_nav_down: KeyCode::K,
+            primary_nav_left: KeyCode::J,
+            primary_nav_right: KeyCode::L,
+            secondary_nav_next: KeyCode::O,
+            secondary_nav_prev: KeyCode::U,
+            primary_interact: KeyCode::Return,
+            secondary_interact: KeyCode::Escape,
         }
     }
 }
@@ -148,25 +111,25 @@ fn update_control_state(
 
     // Calculate primary nav delta
     let mut design_primary_nav_delta = Vec2::ZERO;
-    if input.pressed(bindings.designer_nav_up) {
+    if input.pressed(bindings.primary_nav_up) {
         design_primary_nav_delta.y += 1.0;
     }
-    if input.pressed(bindings.designer_nav_down) {
+    if input.pressed(bindings.primary_nav_down) {
         design_primary_nav_delta.y -= 1.0;
     }
-    if input.pressed(bindings.designer_nav_left) {
+    if input.pressed(bindings.primary_nav_left) {
         design_primary_nav_delta.x -= 1.0;
     }
-    if input.pressed(bindings.designer_nav_right) {
+    if input.pressed(bindings.primary_nav_right) {
         design_primary_nav_delta.x += 1.0;
     }
 
     // Calculate secondary nav delta
     let mut design_secondary_nav_delta = 0;
-    if input.just_pressed(bindings.designer_nav_next) {
+    if input.just_pressed(bindings.secondary_nav_next) {
         design_secondary_nav_delta += 1;
     }
-    if input.just_pressed(bindings.designer_nav_prev) {
+    if input.just_pressed(bindings.secondary_nav_prev) {
         design_secondary_nav_delta -= 1;
     }
 
@@ -177,47 +140,47 @@ fn update_control_state(
         button_look_delta,
         design_primary_nav_delta,
         design_secondary_nav_delta,
-        input.just_pressed(bindings.designer_primary),
-        input.just_pressed(bindings.designer_secondary),
+        input.just_pressed(bindings.primary_interact),
+        input.just_pressed(bindings.secondary_interact),
     )
 }
 
 fn apply_new_control_state(
     cs: &mut ControlState,
-    move_dir_delta: Vec3,
-    mouse_look_delta: Vec2,
-    button_look_delta: Vec2,
-    design_primary_nav_delta: Vec2,
-    design_secondary_nav_delta: isize,
-    designer_primary_interact: bool,
-    designer_secondary_interact: bool,
+    move_dir: Vec3,
+    mouse_look: Vec2,
+    button_look: Vec2,
+    primary_nav: Vec2,
+    secondary_nav: isize,
+    primary_interact: bool,
+    secondary_interact: bool,
 ) {
     // Update move delta
-    if move_dir_delta != Vec3::ZERO {
-        cs.move_dir_delta += move_dir_delta;
+    if move_dir != Vec3::ZERO {
+        cs.td.move_dir += move_dir;
     }
 
     // Update look delta
-    if mouse_look_delta != Vec2::ZERO {
-        cs.mouse_look_delta += mouse_look_delta;
+    if mouse_look != Vec2::ZERO {
+        cs.td.mouse_look += mouse_look;
     }
-    if button_look_delta != Vec2::ZERO {
-        cs.button_look_delta += button_look_delta;
+    if button_look != Vec2::ZERO {
+        cs.td.button_look += button_look;
     }
 
     // Update designer navigation
-    if design_primary_nav_delta != Vec2::ZERO {
-        cs.designer_primary_nav_delta += design_primary_nav_delta;
+    if primary_nav != Vec2::ZERO {
+        cs.nd.primary_nav += primary_nav;
     }
-    if design_secondary_nav_delta != 0 {
-        cs.designer_secondary_nav_delta += design_secondary_nav_delta;
+    if secondary_nav != 0 {
+        cs.nd.secondary_nav += secondary_nav;
     }
 
     // Update designer interact
-    if cs.designer_primary_interact != designer_primary_interact {
-        cs.designer_primary_interact = designer_primary_interact;
+    if cs.nd.primary_interact != primary_interact {
+        cs.nd.primary_interact = primary_interact;
     }
-    if cs.designer_secondary_interact != designer_secondary_interact {
-        cs.designer_secondary_interact = designer_secondary_interact;
+    if cs.nd.secondary_interact != secondary_interact {
+        cs.nd.secondary_interact = secondary_interact;
     }
 }

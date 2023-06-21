@@ -1,9 +1,10 @@
 use bevy::prelude::*;
 
-use self::{grid::Grid, nav::Nav};
+use crate::floating_cam::control_state::NavDelta;
+
+use self::grid::Grid;
 
 pub mod grid;
-mod nav;
 mod node;
 pub mod plugin;
 mod shaped_container;
@@ -15,5 +16,5 @@ pub struct ReceiveNav;
 
 #[bevy_trait_query::queryable]
 pub trait NavControlled {
-    fn trickle(&mut self, nav: Nav);
+    fn trickle(&mut self, nav: NavDelta);
 }
