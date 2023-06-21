@@ -12,14 +12,13 @@ use config::structs::*;
 use floating_cam::FloatingCamPlugin;
 use particles::ParticlesPlugin;
 use register_trait::RegisterTraitPlugin;
-use spatial_ui_broken::SpatialUIPlugin;
+use spatial_ui::plugin::*;
 use wall_bundles::{init_clear_box, init_opaque_box};
 
 mod config;
 mod floating_cam;
 mod particles;
 mod spatial_ui;
-mod spatial_ui_broken;
 mod wall_bundles;
 
 fn main() {

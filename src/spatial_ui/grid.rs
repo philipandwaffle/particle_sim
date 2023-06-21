@@ -1,10 +1,8 @@
-use std::cell::RefCell;
-
 use bevy::{math::vec3, prelude::*};
 use bevy_trait_query::One;
 
 use super::{
-    dreg::{self, Dreg},
+    nav::Nav,
     shaped_container::{ShapedContainer, ShapedContainerBundle},
     vertex_line::VertexLine,
     NavControlled,
@@ -167,13 +165,11 @@ impl Grid {
     }
 }
 impl NavControlled for Grid {
-    fn trickle(&mut self, dreg: Dreg) {
+    fn trickle(&mut self, dreg: Nav) {
         self.apply_primary_interact(dreg.primary_interact);
     }
 }
 
 pub fn update_grid_containers(grids: Query<&Grid>, mut containers: Query<&mut ShapedContainer>) {
-    for grid in grids.iter() {
-        
-    }
+    for grid in grids.iter() {}
 }

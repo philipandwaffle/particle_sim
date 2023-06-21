@@ -1,12 +1,13 @@
 use bevy::prelude::Vec2;
 
-pub struct Dreg {
+#[derive(Clone)]
+pub struct Nav {
     pub primary_nav: Vec2,
     pub secondary_nav: isize,
     pub primary_interact: bool,
     pub secondary_interact: bool,
 }
-impl Dreg {
+impl Nav {
     pub fn new(
         primary_nav: Vec2,
         secondary_nav: isize,
