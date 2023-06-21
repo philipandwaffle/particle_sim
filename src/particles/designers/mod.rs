@@ -1,15 +1,15 @@
 use bevy::{math::vec3, prelude::*};
 use bevy_trait_query::One;
 
-use crate::floating_cam::controls::ControlState;
+use crate::floating_cam::control_state::ControlState;
 
 use self::{
     designer::{Designer, RegisterTraitPlugin},
     interaction::{interaction_designer::InteractionDesigner, InteractionDesignerPlugin},
     matrix::{matrix_designer::MatrixDesigner, MatrixDesignerPlugin},
 };
-mod designer;
-mod interaction;
+pub mod designer;
+pub mod interaction;
 mod matrix;
 
 pub struct DesignerPlugin;
@@ -134,12 +134,12 @@ fn update_designer(
 
     let sen = 0.25;
 
-    designer.apply_primary_nav_delta(control_state.designer_primary_nav_delta * sen);
-    designer.apply_secondary_nav_delta(control_state.designer_secondary_nav_delta);
-    designer.apply_primary_interact(control_state.designer_primary_interact);
-    designer.apply_secondary_interact(control_state.designer_secondary_interact);
+    designer.apply_primary_nav_delta(control_state.nd.primary_nav * sen);
+    designer.apply_secondary_nav_delta(control_state.nd.secondary_nav);
+    designer.apply_primary_interact(control_state.nd.primary_interact);
+    designer.apply_secondary_interact(control_state.nd.secondary_interact);
 
-    control_state.reset_designer();
+    control_state.nd.reset();
 }
 
 pub fn spawn_designers(

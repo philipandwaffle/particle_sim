@@ -10,7 +10,7 @@ use self::{
     particle::ParticleBundle,
 };
 
-mod designers;
+pub mod designers;
 mod interaction_rule;
 pub mod matrix;
 mod movement_functions;
@@ -33,8 +33,8 @@ pub struct ParticlesPlugin;
 impl Plugin for ParticlesPlugin {
     fn build(&self, app: &mut App) {
         let num_particles = 6;
-        app.insert_resource(Matrix::new(num_particles))
-            .add_plugin(DesignerPlugin)
+        app.insert_resource(Matrix::new(num_particles))            
+            // .add_plugin(DesignerPlugin)
             // .add_plugin(MatrixDesignerPlugin)
             // .add_plugin(InteractionDesignerPlugin)
             // .add_startup_system(spawn_particles)

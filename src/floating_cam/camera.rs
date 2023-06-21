@@ -1,6 +1,6 @@
 use crate::config::structs::CameraSettings;
 
-use super::controls::ControlState;
+use crate::floating_cam::control_state::ControlState;
 
 use bevy::prelude::*;
 
@@ -27,8 +27,8 @@ pub fn transform_camera(
 ) {
     match cam.get_single_mut() {
         Ok(mut transform) => {
-            let total_look_delta = (control_state.mouse_look_delta * -cam_settings.mouse_look_sen)
-                + (control_state.button_look_delta * -cam_settings.button_look_sen);
+            let total_look_delta = (control_state.td.mouse_look * -cam_settings.mouse_look_sen)
+                + (control_state.td.button_look * -cam_settings.button_look_sen);
 
             let pitch = Quat::from_axis_angle(Vec3::X, total_look_delta.y);
             transform.rotate_local(pitch);
@@ -37,12 +37,11 @@ pub fn transform_camera(
             player_state.rotation *= yaw;
             transform.rotate(yaw);
 
-            transform.translation += player_state.rotation.mul_vec3(control_state.move_dir_delta)
-                * cam_settings.move_speed;
+            transform.translation +=
+                player_state.rotation.mul_vec3(control_state.td.move_dir) * cam_settings.move_speed;
 
-            control_state.move_dir_delta = Vec3::ZERO;
-            control_state.mouse_look_delta = Vec2::ZERO;
-            control_state.button_look_delta = Vec2::ZERO;
+            control_state.reset_look();
+            control_state.reset_move();
         }
         Err(_) => warn!("There is no player camera in the scene"),
     }

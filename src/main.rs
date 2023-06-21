@@ -1,4 +1,5 @@
 use std::arch::x86_64::_mm256_zeroupper;
+mod register_trait;
 
 use bevy::{
     diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
@@ -10,11 +11,14 @@ use bevy_rapier3d::prelude::*;
 use config::structs::*;
 use floating_cam::FloatingCamPlugin;
 use particles::ParticlesPlugin;
+use register_trait::RegisterTraitPlugin;
+use spatial_ui::plugin::*;
 use wall_bundles::{init_clear_box, init_opaque_box};
 
 mod config;
 mod floating_cam;
 mod particles;
+mod spatial_ui;
 mod wall_bundles;
 
 fn main() {
@@ -51,6 +55,8 @@ fn main() {
             .set(ImagePlugin::default_nearest()),
     )
     .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
+    .add_plugin(RegisterTraitPlugin)
+    .add_plugin(SpatialUIPlugin)
     .add_plugin(FloatingCamPlugin);
 
     if profiling_mode {

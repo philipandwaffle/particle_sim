@@ -1,4 +1,4 @@
-use std::{sync::Arc, vec};
+use std::vec;
 
 use bevy::{math::vec2, prelude::Vec2};
 
