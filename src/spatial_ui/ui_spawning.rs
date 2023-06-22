@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use super::{grid::GridBundle, vertex_line::VertexLineBundle};
+use super::{grid::GridBundle, vertex_line::VertexLineBundle, ReceiveNav};
 
 #[derive(Resource)]
 pub struct SpawnList {
@@ -9,11 +9,13 @@ pub struct SpawnList {
 
 pub enum UIType {
     Grid {
+        controllable: bool,
         translation: Vec3,
         scale: Vec3,
         dims: UVec2,
     },
     VertexLine {
+        controllable: bool,
         translation: Vec3,
         scale: Vec3,
         vertices: usize,
@@ -31,13 +33,13 @@ impl UIType {
     ) -> Entity {
         match self {
             UIType::Grid {
+                controllable,
                 translation,
                 scale,
                 dims,
             } => {
                 let grid = GridBundle::new(
-                    dims.x as usize,
-                    dims.y as usize,
+                    dims.clone(),
                     translation.clone(),
                     scale.clone(),
                     commands,
@@ -45,9 +47,14 @@ impl UIType {
                     meshes,
                     materials,
                 );
-                return commands.spawn(grid).id();
+                if controllable.clone() {
+                    return commands.spawn((grid, ReceiveNav)).id();
+                } else {
+                    return commands.spawn(grid).id();
+                }
             }
             UIType::VertexLine {
+                controllable,
                 translation,
                 scale,
                 vertices,
@@ -65,7 +72,12 @@ impl UIType {
                     meshes,
                     materials,
                 );
-                return commands.spawn(vertex_line).id();
+
+                if controllable.clone() {
+                    return commands.spawn((vertex_line, ReceiveNav)).id();
+                } else {
+                    return commands.spawn(vertex_line).id();
+                }
             }
         }
     }
