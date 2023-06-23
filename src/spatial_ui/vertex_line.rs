@@ -1,6 +1,10 @@
 use std::cell::RefCell;
 
-use bevy::{math::vec3, prelude::*, render::mesh};
+use bevy::{
+    math::{vec2, vec3},
+    prelude::*,
+    render::mesh,
+};
 use bevy_trait_query::One;
 
 use crate::floating_cam::control_state::NavDelta;
@@ -48,10 +52,12 @@ pub struct VertexLine {
     pub point_positions: Vec<Vec3>,
     pub cur_point_id: isize,
     pub num_points: usize,
+    scale: Vec3,
 }
 impl NavControlled for VertexLine {
     fn trickle(&mut self, nav: NavDelta) {
         self.apply_primary_nav(nav.primary_nav);
+        self.apply_secondary_nav(nav.secondary_nav);
     }
 }
 
@@ -123,6 +129,7 @@ impl VertexLine {
             point_positions: point_positions,
             cur_point_id: 0,
             num_points: vertices,
+            scale,
         };
     }
 
@@ -130,12 +137,14 @@ impl VertexLine {
         if self.cur_point_id == -1 || self.point_positions.is_empty() {
             return;
         }
+        println!("applying primary nav to vert line");
         //todo! better error handling and logging
-        self.point_positions[self.cur_point_id as usize].x += delta.x;
-        self.point_positions[self.cur_point_id as usize].y += delta.y;
+
+        let scaled_delta = vec2(delta.x * self.scale.x, delta.y * self.scale.y).extend(0.0);
+        self.point_positions[self.cur_point_id as usize] += scaled_delta;
     }
 
-    fn apply_secondary_nav_delta(&mut self, delta: isize) {
+    fn apply_secondary_nav(&mut self, delta: isize) {
         if delta == 0 {
             return;
         }

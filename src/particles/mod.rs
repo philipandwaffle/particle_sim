@@ -3,7 +3,7 @@ use bevy_rapier3d::prelude::*;
 use random::Source;
 use serde::{Deserialize, Serialize};
 
-use crate::config::structs::{ParticleProperties, Spawn};
+use crate::config::structs::{ParticleProperties, SpawnSettings};
 
 use self::{
     designers::DesignerPlugin, matrix::Matrix, movement_functions::move_particles,
@@ -33,7 +33,7 @@ pub struct ParticlesPlugin;
 impl Plugin for ParticlesPlugin {
     fn build(&self, app: &mut App) {
         let num_particles = 6;
-        app.insert_resource(Matrix::new(num_particles))            
+        app.insert_resource(Matrix::new(num_particles))
             // .add_plugin(DesignerPlugin)
             // .add_plugin(MatrixDesignerPlugin)
             // .add_plugin(InteractionDesignerPlugin)
@@ -73,7 +73,7 @@ fn spawn_particles(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
     asset_server: Res<AssetServer>,
-    spawn_info: Res<Spawn>,
+    spawn_info: Res<SpawnSettings>,
     particle_properties: Res<ParticleProperties>,
 ) {
     let seed = if let Some(s) = &spawn_info.seed {

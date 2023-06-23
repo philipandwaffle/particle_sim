@@ -10,11 +10,20 @@ impl ShapedContainerBundle {
         translation: Vec3,
         scale: Vec3,
         color: Color,
+        content: Entity,
         meshes: &mut Assets<Mesh>,
         materials: &mut Assets<StandardMaterial>,
     ) -> Self {
         return Self {
-            cell: ShapedContainer::new(),
+            cell: ShapedContainer::new(
+                Color::Rgba {
+                    red: 1.0,
+                    green: 0.0,
+                    blue: 0.0,
+                    alpha: 0.1,
+                },
+                content,
+            ),
             material_mesh_bundle: MaterialMeshBundle {
                 mesh: meshes.add(shape::Cube { size: 1.0 }.try_into().unwrap()),
                 material: materials.add(StandardMaterial {
@@ -36,17 +45,11 @@ impl ShapedContainerBundle {
 #[derive(Component)]
 pub struct ShapedContainer {
     pub color: Color,
+    pub content: Entity,
 }
 impl ShapedContainer {
-    pub fn new() -> Self {
-        return Self {
-            color: Color::Rgba {
-                red: 1.0,
-                green: 0.0,
-                blue: 0.0,
-                alpha: 0.1,
-            },
-        };
+    pub fn new(color: Color, content: Entity) -> Self {
+        return Self { color, content };
     }
 }
 

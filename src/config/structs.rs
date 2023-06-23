@@ -9,11 +9,12 @@ use std::io::BufReader;
 pub struct CameraSettings {
     pub mouse_look_sen: f32,
     pub button_look_sen: f32,
+    pub primary_nav_sen: f32,
     pub move_speed: f32,
 }
 
 #[derive(Resource, Debug, Default, Serialize, Deserialize, Clone)]
-pub struct Spawn {
+pub struct SpawnSettings {
     pub min: Vec3,
     pub max: Vec3,
     pub seed: Option<u64>,
@@ -30,7 +31,7 @@ pub struct ParticleProperties {
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
 pub struct Config {
     pub camera: CameraSettings,
-    pub spawn: Spawn,
+    pub spawn: SpawnSettings,
     pub particle_properties: ParticleProperties,
 }
 impl Config {

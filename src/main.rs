@@ -1,6 +1,3 @@
-use std::arch::x86_64::_mm256_zeroupper;
-mod register_trait;
-
 use bevy::{
     diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
     prelude::*,
@@ -18,6 +15,7 @@ use wall_bundles::{init_clear_box, init_opaque_box};
 mod config;
 mod floating_cam;
 mod particles;
+mod register_trait;
 mod spatial_ui;
 mod wall_bundles;
 

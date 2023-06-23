@@ -1,7 +1,4 @@
-use bevy::{
-    prelude::{Resource, Vec2, Vec3},
-    transform,
-};
+use bevy::prelude::{Resource, Vec2, Vec3};
 
 #[derive(Resource, Clone)]
 pub struct TransformDelta {
@@ -87,9 +84,6 @@ impl ControlState {
     }
     pub fn reset_look(&mut self) {
         self.td.reset_look()
-    }
-    pub fn reset_nav(&mut self) {
-        self.nd.reset()
     }
 }
 impl Default for ControlState {
