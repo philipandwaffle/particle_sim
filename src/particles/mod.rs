@@ -7,7 +7,7 @@ use crate::config::structs::{ParticleProperties, SpawnSettings};
 
 use self::{matrix::Matrix, movement_functions::move_particles, particle::ParticleBundle};
 
-mod interaction_rule;
+pub mod interaction_rule;
 pub mod matrix;
 mod movement_functions;
 mod particle;

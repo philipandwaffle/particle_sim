@@ -2,16 +2,22 @@ use bevy::{
     math::vec3,
     prelude::{
         AssetServer, Assets, Bundle, Changed, Color, Commands, Component, Entity, IVec2, Mesh,
-        Query, Res, StandardMaterial, Transform, UVec2, Vec2, Vec3,
+        Query, Res, ResMut, StandardMaterial, Transform, UVec2, Vec2, Vec3,
     },
 };
 
 use super::{
     shaped_container::{ShapedContainer, ShapedContainerBundle},
-    vertex_line::VertexLine,
+    vertex_line::{self, VertexLine},
     NavControlled, ReceiveNav,
 };
-use crate::floating_cam::control_state::NavDelta;
+use crate::{
+    floating_cam::control_state::NavDelta,
+    particles::{
+        interaction_rule::interaction::{CompThreshRule, InteractionRule},
+        matrix::Matrix,
+    },
+};
 
 #[derive(Bundle)]
 pub struct GridBundle {
@@ -183,6 +189,8 @@ pub fn update_grid_containers(
     mut commands: Commands,
     mut grids: Query<&mut Grid, Changed<Grid>>,
     mut containers: Query<&mut ShapedContainer>,
+    vertex_lines: Query<&VertexLine>,
+    mut matrix: ResMut<Matrix>,
 ) {
     // Loop through each grid
     for mut grid in grids.iter_mut() {
@@ -211,14 +219,26 @@ pub fn update_grid_containers(
         if grid.trickle_toggled {
             // Reset toggled
             grid.trickle_toggled = false;
-
-            let content = containers.get(cur_container_entity).unwrap().content;
+            let container = match containers.get(cur_container_entity) {
+                Ok(c) => c,
+                Err(err) => panic!("Tried to get a container that doesn't exist {}", err),
+            };
+            let content = container.content;
 
             // Manage what container contents are tagged to receive nav
             if grid.trickle {
                 commands.entity(content).insert(ReceiveNav);
             } else {
                 commands.entity(content).remove::<ReceiveNav>();
+                let mut points = vertex_lines.get(content).unwrap().vertex_positions.clone();
+                let points = points
+                    .iter_mut()
+                    .map(|x| x.truncate())
+                    .collect::<Vec<Vec2>>();
+
+                matrix.data[cur.y as usize][cur.x as usize] =
+                    Some(Box::new(CompThreshRule::from_points(points))
+                        as Box<dyn InteractionRule + Sync + Send>);
             }
         }
     }
