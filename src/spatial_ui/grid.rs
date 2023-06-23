@@ -193,7 +193,7 @@ pub fn update_grid_containers(
         let cur_container_entity = grid.containers[cur.y as usize][cur.x as usize];
         let prev_container_entity = grid.containers[prev.y as usize][prev.x as usize];
 
-        // Check the current edit point has changed
+        // Change the currently selected container
         if cur != prev {
             // Change the current container color
             let mut cur_container = containers.get_mut(cur_container_entity).unwrap();
@@ -207,18 +207,19 @@ pub fn update_grid_containers(
             grid.prev_edit = grid.cur_edit;
         }
 
-        // Check if the grid's trickle has been toggled
+        // Manage what entities are tagged to receive nav control
         if grid.trickle_toggled {
             // Reset toggled
             grid.trickle_toggled = false;
 
-            // Get current and previous container content
-            let cur_content = containers.get(cur_container_entity).unwrap().content;
-            let prev_content = containers.get(prev_container_entity).unwrap().content;
+            let content = containers.get(cur_container_entity).unwrap().content;
 
-            // Manage the component marking entities that can receive nav control
-            commands.entity(prev_content).remove::<ReceiveNav>();
-            commands.entity(cur_content).insert(ReceiveNav);
+            // Manage what container contents are tagged to receive nav
+            if grid.trickle {
+                commands.entity(content).insert(ReceiveNav);
+            } else {
+                commands.entity(content).remove::<ReceiveNav>();
+            }
         }
     }
 }
