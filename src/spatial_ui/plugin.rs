@@ -1,6 +1,6 @@
 use bevy::{
     math::{uvec2, vec3},
-    prelude::*,
+    prelude::{App, Plugin, Query, ResMut, With},
 };
 use bevy_trait_query::One;
 

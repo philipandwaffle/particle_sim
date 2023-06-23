@@ -1,15 +1,12 @@
-use bevy::prelude::*;
+use bevy::prelude::Component;
 
 use crate::floating_cam::control_state::NavDelta;
 
-use self::grid::Grid;
-
 pub mod grid;
-mod node;
 pub mod plugin;
 mod shaped_container;
-pub mod vertex_line;
 mod ui_spawning;
+pub mod vertex_line;
 
 #[derive(Component)]
 pub struct ReceiveNav;

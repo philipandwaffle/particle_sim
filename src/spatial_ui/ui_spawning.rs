@@ -1,4 +1,7 @@
-use bevy::prelude::*;
+use bevy::prelude::{
+    AssetServer, Assets, Commands, Entity, Mesh, Res, ResMut, Resource, StandardMaterial, UVec2,
+    Vec3,
+};
 
 use super::{grid::GridBundle, vertex_line::VertexLineBundle, ReceiveNav};
 

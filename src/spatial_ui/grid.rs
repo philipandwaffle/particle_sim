@@ -1,5 +1,10 @@
-use bevy::{math::vec3, prelude::*};
-use bevy_trait_query::One;
+use bevy::{
+    math::vec3,
+    prelude::{
+        AssetServer, Assets, Bundle, Changed, Color, Commands, Component, Entity, IVec2, Mesh,
+        Query, Res, StandardMaterial, Transform, UVec2, Vec2, Vec3,
+    },
+};
 
 use crate::floating_cam::control_state::NavDelta;
 
@@ -143,10 +148,6 @@ impl Grid {
             return;
         }
         self.cur_edit = new_edit_point;
-    }
-
-    fn apply_secondary_nav(&mut self, _: isize) {
-        todo!();
     }
 
     fn apply_primary_interact(&mut self, b: bool) {

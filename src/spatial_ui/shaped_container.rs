@@ -1,4 +1,7 @@
-use bevy::prelude::*;
+use bevy::prelude::{
+    default, shape, AlphaMode, Assets, Bundle, Changed, Color, Component, Entity, Handle,
+    MaterialMeshBundle, Mesh, Query, ResMut, StandardMaterial, Transform, Vec3,
+};
 
 #[derive(Bundle)]
 pub struct ShapedContainerBundle {

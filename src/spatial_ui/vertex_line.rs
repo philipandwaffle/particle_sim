@@ -1,11 +1,11 @@
-use std::cell::RefCell;
-
 use bevy::{
     math::{vec2, vec3},
-    prelude::*,
-    render::mesh,
+    prelude::{
+        default, shape, AssetServer, Assets, Bundle, Changed, Color, Commands, Component, Entity,
+        MaterialMeshBundle, Mesh, Query, Res, StandardMaterial, Transform, Vec2, Vec3, With,
+        Without,
+    },
 };
-use bevy_trait_query::One;
 
 use crate::floating_cam::control_state::NavDelta;
 
@@ -280,12 +280,6 @@ pub fn update_vertex_lines(
         }
 
         for i in 0..num_points.clone() - 1 {
-            // let mut transform = if let Ok(transform) = lines.get_mut(line_entities[i]) {
-            //     transform
-            // } else {
-            //     panic!();
-            // };
-
             let mut transform = match lines.get_mut(line_entities[i]) {
                 Ok(t) => t,
                 Err(err) => panic!("{:?}", err),
