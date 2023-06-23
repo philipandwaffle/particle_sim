@@ -2,7 +2,7 @@
     "camera":{
         "mouse_look_sen": 0.005,
         "button_look_sen": 0.05, 
-        "primary_nav_sen": 0.05, 
+        "primary_nav_sen": 0.02, 
         "move_speed": 0.1
     },
     "spawn": {

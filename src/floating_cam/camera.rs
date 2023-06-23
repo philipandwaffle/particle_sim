@@ -23,12 +23,10 @@ pub fn transform_camera(
     mut cam: Query<&mut Transform, With<FloatingCam>>,
     mut control_state: ResMut<ControlState>,
     mut player_state: ResMut<PlayerState>,
-    cam_settings: Res<CameraSettings>,
 ) {
     match cam.get_single_mut() {
         Ok(mut transform) => {
-            let total_look_delta = (control_state.td.mouse_look * -cam_settings.mouse_look_sen)
-                + (control_state.td.button_look * -cam_settings.button_look_sen);
+            let total_look_delta = -(control_state.td.mouse_look + control_state.td.button_look);
 
             let pitch = Quat::from_axis_angle(Vec3::X, total_look_delta.y);
             transform.rotate_local(pitch);
@@ -37,8 +35,7 @@ pub fn transform_camera(
             player_state.rotation *= yaw;
             transform.rotate(yaw);
 
-            transform.translation +=
-                player_state.rotation.mul_vec3(control_state.td.move_dir) * cam_settings.move_speed;
+            transform.translation += player_state.rotation.mul_vec3(control_state.td.move_dir);
 
             control_state.reset_look();
             control_state.reset_move();

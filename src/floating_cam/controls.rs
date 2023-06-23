@@ -1,5 +1,7 @@
 use bevy::{core::Zeroable, input::mouse::MouseMotion, prelude::*};
 
+use crate::config::structs::CameraSettings;
+
 use super::control_state::ControlState;
 
 pub struct ControlPlugin;
@@ -66,6 +68,7 @@ fn update_control_state(
     mut motion_evr: EventReader<MouseMotion>,
     input: Res<Input<KeyCode>>,
     bindings: Res<Bindings>,
+    camera_settings: Res<CameraSettings>,
 ) {
     // Calculate movement delta
     let mut move_dir_delta = Vec3::ZERO;
@@ -135,10 +138,10 @@ fn update_control_state(
 
     apply_new_control_state(
         &mut control_state,
-        move_dir_delta,
-        mouse_look_delta,
-        button_look_delta,
-        design_primary_nav_delta,
+        move_dir_delta * camera_settings.move_speed,
+        mouse_look_delta * camera_settings.mouse_look_sen,
+        button_look_delta * camera_settings.button_look_sen,
+        design_primary_nav_delta * camera_settings.primary_nav_sen,
         design_secondary_nav_delta,
         input.just_pressed(bindings.primary_interact),
         input.just_pressed(bindings.secondary_interact),
