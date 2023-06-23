@@ -6,13 +6,12 @@ use bevy::{
     },
 };
 
-use crate::floating_cam::control_state::NavDelta;
-
 use super::{
     shaped_container::{ShapedContainer, ShapedContainerBundle},
     vertex_line::VertexLine,
     NavControlled, ReceiveNav,
 };
+use crate::floating_cam::control_state::NavDelta;
 
 #[derive(Bundle)]
 pub struct GridBundle {
@@ -51,6 +50,7 @@ impl GridBundle {
                 ) - container_offset;
 
                 //todo! Implement loading pre-made matrices
+                // Create a vertex line
                 let vertex_line = VertexLine::new(
                     5,
                     container_translation,
@@ -62,9 +62,10 @@ impl GridBundle {
                     meshes,
                     materials,
                 );
+                // Spawn vertex line
                 let vertex_line_entity = commands.spawn(vertex_line).id();
 
-                // Spawn container
+                // Spawn container with the vertex line inside it
                 let container_entity = commands
                     .spawn(ShapedContainerBundle::new(
                         container_translation,
@@ -80,6 +81,7 @@ impl GridBundle {
             }
             containers.push(container_row);
         }
+        // Reverse along the y-axis
         containers.reverse();
 
         return Self {
@@ -109,6 +111,7 @@ pub struct Grid {
 }
 impl Grid {
     fn apply_primary_nav(&mut self, delta: Vec2) {
+        // Check if the primary nav needs applied
         if self.trickle {
             return;
         }
@@ -151,16 +154,16 @@ impl Grid {
     }
 
     fn apply_primary_interact(&mut self, b: bool) {
+        // Set flags if they need set
         if b && !self.trickle {
-            println!("primary int");
             self.trickle = true;
             self.trickle_toggled = true;
         }
     }
 
     fn apply_secondary_interact(&mut self, b: bool) {
+        // Set flags if they need set
         if b && self.trickle {
-            println!("secondary int");
             self.trickle = false;
             self.trickle_toggled = true;
         }
@@ -168,6 +171,7 @@ impl Grid {
 }
 impl NavControlled for Grid {
     fn trickle(&mut self, nav: NavDelta) {
+        // Apply ui navigation
         self.apply_primary_nav(nav.primary_nav);
 
         self.apply_primary_interact(nav.primary_interact);
@@ -180,28 +184,39 @@ pub fn update_grid_containers(
     mut grids: Query<&mut Grid, Changed<Grid>>,
     mut containers: Query<&mut ShapedContainer>,
 ) {
+    // Loop through each grid
     for mut grid in grids.iter_mut() {
         let cur = grid.cur_edit;
         let prev = grid.prev_edit;
 
+        // Get current and previous container entity
         let cur_container_entity = grid.containers[cur.y as usize][cur.x as usize];
         let prev_container_entity = grid.containers[prev.y as usize][prev.x as usize];
 
+        // Check the current edit point has changed
         if cur != prev {
+            // Change the current container color
             let mut cur_container = containers.get_mut(cur_container_entity).unwrap();
             cur_container.color = Color::rgba(0.0, 1.0, 0.0, 0.1);
 
+            // Change the previous container color
             let mut prev_container = containers.get_mut(prev_container_entity).unwrap();
             prev_container.color = Color::rgba(1.0, 0.0, 0.0, 0.1);
 
+            // Update previous edit point
             grid.prev_edit = grid.cur_edit;
         }
 
+        // Check if the grid's trickle has been toggled
         if grid.trickle_toggled {
+            // Reset toggled
             grid.trickle_toggled = false;
+
+            // Get current and previous container content
             let cur_content = containers.get(cur_container_entity).unwrap().content;
             let prev_content = containers.get(prev_container_entity).unwrap().content;
 
+            // Manage the component marking entities that can receive nav control
             commands.entity(prev_content).remove::<ReceiveNav>();
             commands.entity(cur_content).insert(ReceiveNav);
         }

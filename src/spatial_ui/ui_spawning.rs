@@ -27,7 +27,7 @@ pub enum UIType {
     },
 }
 impl UIType {
-    pub fn spawn_vessel(
+    pub fn spawn_element(
         &self,
         commands: &mut Commands,
         asset_server: &Res<AssetServer>,
@@ -86,6 +86,7 @@ impl UIType {
     }
 }
 
+// Spawn the initial UI
 pub fn spawn_ui(
     mut sp: ResMut<SpawnList>,
     mut commands: Commands,
@@ -93,8 +94,12 @@ pub fn spawn_ui(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
+    // Loop through each UI element to spawn
     for ui in sp.spawn.iter() {
-        ui.spawn_vessel(&mut commands, &asset_server, &mut meshes, &mut materials);
+        // Spawn UI
+        ui.spawn_element(&mut commands, &asset_server, &mut meshes, &mut materials);
     }
+
+    // Clear spawn list
     sp.spawn.clear();
 }

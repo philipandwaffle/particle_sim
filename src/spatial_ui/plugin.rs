@@ -4,8 +4,6 @@ use bevy::{
 };
 use bevy_trait_query::One;
 
-use crate::floating_cam::control_state::ControlState;
-
 use super::{
     grid::update_grid_containers,
     shaped_container::update_shaped_containers,
@@ -13,7 +11,9 @@ use super::{
     vertex_line::update_vertex_lines,
     NavControlled, ReceiveNav,
 };
+use crate::floating_cam::control_state::ControlState;
 
+// Sets up the spatial UI
 pub struct SpatialUIPlugin;
 impl Plugin for SpatialUIPlugin {
     fn build(&self, app: &mut App) {
@@ -33,12 +33,16 @@ impl Plugin for SpatialUIPlugin {
     }
 }
 
+// Applies control state to each receiver
 pub fn apply_nav_control(
     mut receivers: Query<One<&mut dyn NavControlled>, With<ReceiveNav>>,
     mut cs: ResMut<ControlState>,
 ) {
+    // loop through each receiver
     for mut receiver in receivers.iter_mut() {
+        // Pass nav delta
         receiver.trickle(cs.nd.clone());
     }
+    // Reset nav delta
     cs.nd.reset();
 }

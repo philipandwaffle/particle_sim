@@ -3,6 +3,7 @@ use bevy::prelude::{
     MaterialMeshBundle, Mesh, Query, ResMut, StandardMaterial, Transform, Vec3,
 };
 
+// UI container to hold other UI elements
 #[derive(Bundle)]
 pub struct ShapedContainerBundle {
     pub cell: ShapedContainer,
@@ -45,6 +46,8 @@ impl ShapedContainerBundle {
         };
     }
 }
+
+// Contains color and contained entity
 #[derive(Component)]
 pub struct ShapedContainer {
     pub color: Color,
@@ -56,6 +59,7 @@ impl ShapedContainer {
     }
 }
 
+// Update the colors of shaped containers
 pub fn update_shaped_containers(
     containers: Query<(&Handle<StandardMaterial>, &ShapedContainer), Changed<ShapedContainer>>,
     mut materials: ResMut<Assets<StandardMaterial>>,

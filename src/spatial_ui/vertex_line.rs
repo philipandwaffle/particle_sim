@@ -7,9 +7,8 @@ use bevy::{
     },
 };
 
-use crate::floating_cam::control_state::NavDelta;
-
 use super::NavControlled;
+use crate::floating_cam::control_state::NavDelta;
 
 #[derive(Bundle)]
 pub struct VertexLineBundle {
@@ -47,11 +46,11 @@ impl VertexLineBundle {
 
 #[derive(Component)]
 pub struct VertexLine {
-    pub point_entities: Vec<Entity>,
+    pub vertex_entities: Vec<Entity>,
     pub line_entities: Vec<Entity>,
-    pub point_positions: Vec<Vec3>,
+    pub vertex_positions: Vec<Vec3>,
     pub cur_point_id: isize,
-    pub num_points: usize,
+    pub num_vertices: usize,
     scale: Vec3,
 }
 impl NavControlled for VertexLine {
@@ -124,24 +123,23 @@ impl VertexLine {
         }
 
         return Self {
-            point_entities: point_entities,
+            vertex_entities: point_entities,
             line_entities: line_entities,
-            point_positions: point_positions,
+            vertex_positions: point_positions,
             cur_point_id: 0,
-            num_points: vertices,
+            num_vertices: vertices,
             scale,
         };
     }
 
     fn apply_primary_nav(&mut self, delta: Vec2) {
-        if self.cur_point_id == -1 || self.point_positions.is_empty() {
+        if self.cur_point_id == -1 || self.vertex_positions.is_empty() {
             return;
         }
-        println!("applying primary nav to vert line");
-        //todo! better error handling and logging
 
+        //todo! better error handling and logging
         let scaled_delta = vec2(delta.x * self.scale.x, delta.y * self.scale.y).extend(0.0);
-        self.point_positions[self.cur_point_id as usize] += scaled_delta;
+        self.vertex_positions[self.cur_point_id as usize] += scaled_delta;
     }
 
     fn apply_secondary_nav(&mut self, delta: isize) {
@@ -154,8 +152,8 @@ impl VertexLine {
 
         // Check if new id is out of bounds and fix
         if self.cur_point_id == -1 {
-            self.cur_point_id = self.num_points as isize - 1;
-        } else if self.cur_point_id == self.num_points as isize {
+            self.cur_point_id = self.num_vertices as isize - 1;
+        } else if self.cur_point_id == self.num_vertices as isize {
             self.cur_point_id = 0;
         }
     }
@@ -254,59 +252,68 @@ impl Line {
     }
 }
 
+// Update each vertex and line constituting a vertex line
 pub fn update_vertex_lines(
     mut vertex_lines: Query<&mut VertexLine, Changed<VertexLine>>,
     mut points: Query<&mut Transform, (With<Vertex>, Without<Line>)>,
     mut lines: Query<&mut Transform, (With<Line>, Without<Vertex>)>,
 ) {
-    for mut designer in vertex_lines.iter_mut() {
-        let mut point_entities = designer.point_entities.clone();
-        let line_entities = designer.line_entities.clone();
-        let mut point_positions = designer.point_positions.clone();
+    // Loop through each vertex line
+    for mut vertex_line in vertex_lines.iter_mut() {
+        // Temp bindings
+        let mut vertex_entities = vertex_line.vertex_entities.clone();
+        let line_entities = vertex_line.line_entities.clone();
+        let mut vertex_positions = vertex_line.vertex_positions.clone();
+        let num_vertices = vertex_line.num_vertices.clone();
 
-        let num_points = designer.num_points.clone();
-
-        for i in 0..num_points.clone() {
-            let point_translation = point_positions[i];
-            let mut transform = if let Ok(transform) = points.get_mut(point_entities[i]) {
-                transform
-            } else {
-                panic!("Update vertex line panic");
+        // Loop through each vertex
+        for i in 0..num_vertices.clone() {
+            // Get vertex transform
+            let vertex_translation = vertex_positions[i];
+            let mut transform = match points.get_mut(vertex_entities[i]) {
+                Ok(t) => t,
+                Err(err) => panic!("Attempted to get a vertex that doesn't exist, {}", err),
             };
 
-            if transform.translation != point_translation {
-                transform.translation = point_translation;
+            // Update vertex translation if needs changed
+            if transform.translation != vertex_translation {
+                transform.translation = vertex_translation;
             }
         }
 
-        for i in 0..num_points.clone() - 1 {
+        // Loop through each line
+        for i in 0..num_vertices.clone() - 1 {
+            // Get line transform
             let mut transform = match lines.get_mut(line_entities[i]) {
                 Ok(t) => t,
-                Err(err) => panic!("{:?}", err),
+                Err(err) => panic!("Attempted to get a line that doesn't exist, {}", err),
             };
 
-            let from = point_positions[i];
-            let to = point_positions[i + 1];
+            // Get line's to and from translations
+            let from = vertex_positions[i];
+            let to = vertex_positions[i + 1];
 
             let dir = to - from;
             let dist = dir.length();
+
+            // Update transform
             transform.scale = vec3(1.0, dist, 1.0);
             transform.translation = from + dir / 2.0;
             transform.look_to(Vec3::NEG_Z, dir)
         }
 
-        let cur_id = designer.cur_point_id;
+        let cur_id = vertex_line.cur_point_id;
 
         // Don't reorder the first and last point
-        if cur_id < 1 || cur_id > (num_points - 2) as isize {
+        if cur_id < 1 || cur_id > (num_vertices - 2) as isize {
             continue;
         }
         let cur_id = cur_id as usize;
 
         // Get current and surrounding points
-        let cur = point_positions[cur_id];
-        let prev = point_positions[cur_id - 1];
-        let next = point_positions[cur_id + 1];
+        let cur = vertex_positions[cur_id];
+        let prev = vertex_positions[cur_id - 1];
+        let next = vertex_positions[cur_id + 1];
 
         let mut swap_id_delta = 0;
         if cur.x > next.x {
@@ -315,15 +322,15 @@ pub fn update_vertex_lines(
             swap_id_delta = -1;
         }
 
+        // Check if vertices need swapped
         if swap_id_delta != 0 {
             let swap_id = (cur_id as isize + swap_id_delta) as usize;
-            point_entities.swap(cur_id, swap_id);
-            point_positions.swap(cur_id, swap_id);
+            vertex_entities.swap(cur_id, swap_id);
+            vertex_positions.swap(cur_id, swap_id);
+            vertex_line.cur_point_id += swap_id_delta;
 
-            designer.cur_point_id += swap_id_delta;
+            vertex_line.vertex_entities = vertex_entities;
+            vertex_line.vertex_positions = vertex_positions;
         }
-
-        designer.point_entities = point_entities;
-        designer.point_positions = point_positions;
     }
 }
