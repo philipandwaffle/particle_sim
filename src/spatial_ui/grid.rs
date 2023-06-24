@@ -235,7 +235,7 @@ pub fn update_grid_containers(
                     .iter_mut()
                     .map(|x| x.truncate())
                     .collect::<Vec<Vec2>>();
-
+                println!("{:?}", points);
                 matrix.data[cur.y as usize][cur.x as usize] =
                     Some(Box::new(CompThreshRule::from_points(points))
                         as Box<dyn InteractionRule + Sync + Send>);

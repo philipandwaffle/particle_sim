@@ -49,9 +49,10 @@ pub struct VertexLine {
     pub vertex_entities: Vec<Entity>,
     pub line_entities: Vec<Entity>,
     pub vertex_positions: Vec<Vec3>,
-    pub cur_point_id: isize,
+    pub cur_vertex_id: isize,
     pub num_vertices: usize,
     scale: Vec3,
+    centre: Vec3,
 }
 impl NavControlled for VertexLine {
     fn trickle(&mut self, nav: NavDelta) {
@@ -126,20 +127,28 @@ impl VertexLine {
             vertex_entities: point_entities,
             line_entities: line_entities,
             vertex_positions: point_positions,
-            cur_point_id: 0,
+            cur_vertex_id: 0,
             num_vertices: vertices,
             scale,
+            centre: translation,
         };
     }
 
     fn apply_primary_nav(&mut self, delta: Vec2) {
-        if self.cur_point_id == -1 || self.vertex_positions.is_empty() {
+        if self.cur_vertex_id == -1 || self.vertex_positions.is_empty() {
             return;
         }
 
         //todo! better error handling and logging
         let scaled_delta = vec2(delta.x * self.scale.x, delta.y * self.scale.y).extend(0.0);
-        self.vertex_positions[self.cur_point_id as usize] += scaled_delta;
+
+        let vertex_id = self.cur_vertex_id as usize;
+        let mut cur_pos = &mut self.vertex_positions[vertex_id];
+        if vertex_id == 0 || vertex_id == self.num_vertices - 1 {
+            cur_pos.y += scaled_delta.y;
+        } else {
+            *cur_pos += scaled_delta;
+        }
     }
 
     fn apply_secondary_nav(&mut self, delta: isize) {
@@ -148,13 +157,13 @@ impl VertexLine {
         }
 
         // Aggregate current id with delta id
-        self.cur_point_id += delta;
+        self.cur_vertex_id += delta;
 
         // Check if new id is out of bounds and fix
-        if self.cur_point_id == -1 {
-            self.cur_point_id = self.num_vertices as isize - 1;
-        } else if self.cur_point_id == self.num_vertices as isize {
-            self.cur_point_id = 0;
+        if self.cur_vertex_id == -1 {
+            self.cur_vertex_id = self.num_vertices as isize - 1;
+        } else if self.cur_vertex_id == self.num_vertices as isize {
+            self.cur_vertex_id = 0;
         }
     }
 
@@ -302,7 +311,7 @@ pub fn update_vertex_lines(
             transform.look_to(Vec3::NEG_Z, dir)
         }
 
-        let cur_id = vertex_line.cur_point_id;
+        let cur_id = vertex_line.cur_vertex_id;
 
         // Don't reorder the first and last point
         if cur_id < 1 || cur_id > (num_vertices - 2) as isize {
@@ -327,7 +336,7 @@ pub fn update_vertex_lines(
             let swap_id = (cur_id as isize + swap_id_delta) as usize;
             vertex_entities.swap(cur_id, swap_id);
             vertex_positions.swap(cur_id, swap_id);
-            vertex_line.cur_point_id += swap_id_delta;
+            vertex_line.cur_vertex_id += swap_id_delta;
 
             vertex_line.vertex_entities = vertex_entities;
             vertex_line.vertex_positions = vertex_positions;
