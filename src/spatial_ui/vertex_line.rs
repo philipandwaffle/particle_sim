@@ -1,3 +1,5 @@
+use std::collections::vec_deque;
+
 use bevy::{
     math::{vec2, vec3},
     prelude::{
@@ -54,6 +56,8 @@ pub struct VertexLine {
     pub num_vertices: usize,
     scale: Vec3,
     offset: Vec2,
+    lower_bound: Vec2,
+    upper_bound: Vec2,
 }
 impl NavControlled for VertexLine {
     fn trickle(&mut self, nav: NavDelta) {
@@ -123,8 +127,11 @@ impl VertexLine {
                 .id();
             line_entities.push(line);
         }
+
         let mut offset = translation.truncate();
         offset.x -= scale.x * 0.5;
+        let lower_bound = (translation - scale / 2.0).truncate();
+        let upper_bound = (translation + scale / 2.0).truncate();
         return Self {
             vertex_entities: point_entities,
             line_entities: line_entities,
@@ -133,6 +140,8 @@ impl VertexLine {
             num_vertices: vertices,
             scale,
             offset,
+            lower_bound,
+            upper_bound,
         };
     }
 
@@ -150,14 +159,30 @@ impl VertexLine {
         }
 
         //todo! better error handling and logging
+        let vertex_id = self.cur_vertex_id as usize;
+        let cur_pos = &mut self.vertex_positions[vertex_id];
         let scaled_delta = vec2(delta.x * self.scale.x, delta.y * self.scale.y).extend(0.0);
 
-        let vertex_id = self.cur_vertex_id as usize;
-        let mut cur_pos = &mut self.vertex_positions[vertex_id];
         if vertex_id == 0 || vertex_id == self.num_vertices - 1 {
             cur_pos.y += scaled_delta.y;
         } else {
             *cur_pos += scaled_delta;
+        }
+
+        VertexLine::constrain_point(cur_pos, self.lower_bound, self.upper_bound);
+    }
+
+    fn constrain_point(pos: &mut Vec3, lower: Vec2, upper: Vec2) {
+        if pos.x < lower.x {
+            pos.x = lower.x;
+        } else if pos.x > upper.x {
+            pos.x = upper.x;
+        }
+
+        if pos.y < lower.y {
+            pos.y = lower.y;
+        } else if pos.y > upper.y {
+            pos.y = upper.y;
         }
     }
 
