@@ -6,6 +6,7 @@ use bevy::{
         Without,
     },
 };
+use bevy_rapier3d::parry::utils::center;
 
 use super::NavControlled;
 use crate::floating_cam::control_state::NavDelta;
@@ -52,7 +53,7 @@ pub struct VertexLine {
     pub cur_vertex_id: isize,
     pub num_vertices: usize,
     scale: Vec3,
-    centre: Vec3,
+    offset: Vec2,
 }
 impl NavControlled for VertexLine {
     fn trickle(&mut self, nav: NavDelta) {
@@ -122,7 +123,8 @@ impl VertexLine {
                 .id();
             line_entities.push(line);
         }
-
+        let mut offset = translation.truncate();
+        offset.x -= scale.x * 0.5;
         return Self {
             vertex_entities: point_entities,
             line_entities: line_entities,
@@ -130,8 +132,16 @@ impl VertexLine {
             cur_vertex_id: 0,
             num_vertices: vertices,
             scale,
-            centre: translation,
+            offset,
         };
+    }
+
+    pub fn get_vertices(&self) -> Vec<Vec2> {
+        return self
+            .vertex_positions
+            .iter()
+            .map(|x| x.truncate() - self.offset)
+            .collect::<Vec<Vec2>>();
     }
 
     fn apply_primary_nav(&mut self, delta: Vec2) {

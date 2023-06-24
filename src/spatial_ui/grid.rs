@@ -230,11 +230,8 @@ pub fn update_grid_containers(
                 commands.entity(content).insert(ReceiveNav);
             } else {
                 commands.entity(content).remove::<ReceiveNav>();
-                let mut points = vertex_lines.get(content).unwrap().vertex_positions.clone();
-                let points = points
-                    .iter_mut()
-                    .map(|x| x.truncate())
-                    .collect::<Vec<Vec2>>();
+                let points = vertex_lines.get(content).unwrap().get_vertices();
+
                 println!("{:?}", points);
                 matrix.data[cur.y as usize][cur.x as usize] =
                     Some(Box::new(CompThreshRule::from_points(points))
