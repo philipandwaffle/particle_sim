@@ -17,6 +17,7 @@ use crate::{
         interaction_rule::interaction::{CompThreshRule, InteractionRule},
         matrix::Matrix,
     },
+    spatial_ui::vertex_line::VertexLineBundle,
 };
 
 #[derive(Bundle)]
@@ -57,7 +58,9 @@ impl GridBundle {
 
                 //todo! Implement loading pre-made matrices
                 // Create a vertex line
-                let vertex_line = VertexLine::new(
+                println!("Spawning vertex line from grid");
+
+                let vertex_line = VertexLineBundle::new(
                     5,
                     container_translation,
                     container_scale,
@@ -232,7 +235,6 @@ pub fn update_grid_containers(
                 commands.entity(content).remove::<ReceiveNav>();
                 let points = vertex_lines.get(content).unwrap().get_vertices();
 
-                println!("{:?}", points);
                 matrix.data[cur.y as usize][cur.x as usize] =
                     Some(Box::new(CompThreshRule::from_points(points))
                         as Box<dyn InteractionRule + Sync + Send>);

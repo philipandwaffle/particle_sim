@@ -10,13 +10,14 @@ use bevy::{
 };
 use bevy_rapier3d::parry::utils::center;
 
-use super::NavControlled;
+use super::{scale::ScaleBundle, NavControlled};
 use crate::floating_cam::control_state::NavDelta;
 
 #[derive(Bundle)]
 pub struct VertexLineBundle {
     pub vertex_line: VertexLine,
-    pub transform: Transform,
+    #[bundle]
+    pub scale_bundle: ScaleBundle,
 }
 impl VertexLineBundle {
     pub fn new(
@@ -30,19 +31,23 @@ impl VertexLineBundle {
         meshes: &mut Assets<Mesh>,
         materials: &mut Assets<StandardMaterial>,
     ) -> Self {
+        println!("Spawning vertex line");
+        let vertex_line = VertexLine::new(
+            vertices,
+            translation,
+            scale,
+            vertex_radius,
+            line_thickness,
+            commands,
+            asset_server,
+            meshes,
+            materials,
+        );
+        let scale_bundle =
+            ScaleBundle::new(translation, scale, 0, 5, 3, Color::WHITE, meshes, materials);
         return Self {
-            vertex_line: VertexLine::new(
-                vertices,
-                translation,
-                scale,
-                vertex_radius,
-                line_thickness,
-                commands,
-                asset_server,
-                meshes,
-                materials,
-            ),
-            transform: Transform::from_translation(translation),
+            vertex_line,
+            scale_bundle: scale_bundle,
         };
     }
 }
