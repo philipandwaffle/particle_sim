@@ -58,27 +58,24 @@ impl ScaleBundle {
         let mut vertices = vec![];
 
         let mut x = 0.0;
-        ScaleBundle::add_rect_fb(
+        ScaleBundle::add_tube(
             &mut vertices,
-            &[x, gap_height],
-            &[x + gap_width, -gap_height],
-            scale_depth,
+            &[x, notch_height, scale_depth],
+            &[x + notch_thickness, -notch_height, -scale_depth],
         );
         x += notch_thickness;
 
         for _ in 0..notches - 1 {
-            ScaleBundle::add_rect_fb(
+            ScaleBundle::add_tube(
                 &mut vertices,
-                &[x, gap_height],
-                &[x + gap_width, -gap_height],
-                scale_depth,
+                &[x, gap_height, scale_depth],
+                &[x + gap_width, -gap_height, -scale_depth],
             );
             x += gap_width;
-            ScaleBundle::add_rect_fb(
+            ScaleBundle::add_tube(
                 &mut vertices,
-                &[x, notch_height],
-                &[x + notch_thickness, -notch_height],
-                scale_depth,
+                &[x, notch_height, scale_depth],
+                &[x + notch_thickness, -notch_height, -scale_depth],
             );
             x += notch_thickness;
         }
@@ -96,18 +93,41 @@ impl ScaleBundle {
         mesh
     }
 
-    fn add_rectangle(vertices: &mut Vec<[f32; 3]>, tl: &[f32; 2], br: &[f32; 2], z: f32) {
-        vertices.push([br[0], br[1], z]);
-        vertices.push([tl[0], tl[1], z]);
-        vertices.push([tl[0], br[1], z]);
-        vertices.push([br[0], br[1], z]);
-        vertices.push([br[0], tl[1], z]);
-        vertices.push([tl[0], tl[1], z]);
+    // fn add_rectangle(vertices: &mut Vec<[f32; 3]>, tl: &[f32; 2], br: &[f32; 2], z: f32) {
+    //     vertices.push([br[0], br[1], z]);
+    //     vertices.push([tl[0], tl[1], z]);
+    //     vertices.push([tl[0], br[1], z]);
+    //     vertices.push([br[0], br[1], z]);
+    //     vertices.push([br[0], tl[1], z]);
+    //     vertices.push([tl[0], tl[1], z]);
+    // }
+    fn add_rectangle(
+        vertices: &mut Vec<[f32; 3]>,
+        tl: &[f32; 3],
+        bl: &[f32; 3],
+        br: &[f32; 3],
+        tr: &[f32; 3],
+    ) {
+        vertices.push(tl.clone());
+        vertices.push(bl.clone());
+        vertices.push(br.clone());
+        vertices.push(tl.clone());
+        vertices.push(br.clone());
+        vertices.push(tr.clone());
     }
 
-    fn add_rect_fb(vertices: &mut Vec<[f32; 3]>, tl: &[f32; 2], br: &[f32; 2], z: f32) {
-        ScaleBundle::add_rectangle(vertices, tl, br, z);
-        ScaleBundle::add_rectangle(vertices, &[br[0], tl[1]], &[tl[0], br[1]], -z);
+    fn add_tube(vertices: &mut Vec<[f32; 3]>, ftl: &[f32; 3], bbr: &[f32; 3]) {
+        let fbl = [ftl[0], bbr[1], ftl[2]];
+        let fbr = [bbr[0], bbr[1], ftl[2]];
+        let ftr = [bbr[0], ftl[1], ftl[2]];
+        let btr = [bbr[0], ftl[1], bbr[2]];
+        let btl = [ftl[0], ftl[1], bbr[2]];
+        let bbl = [ftl[0], bbr[1], bbr[2]];
+
+        ScaleBundle::add_rectangle(vertices, ftl, &fbl, &fbr, &ftr);
+        ScaleBundle::add_rectangle(vertices, &btr, bbr, &bbl, &btl);
+        ScaleBundle::add_rectangle(vertices, ftl, &ftr, &btr, &btl);
+        ScaleBundle::add_rectangle(vertices, &bbl, bbr, &fbr, &fbl);
     }
 }
 
