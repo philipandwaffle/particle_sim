@@ -1,4 +1,5 @@
 use bevy::{
+    a11y::accesskit::Vec2,
     prelude::{
         default, shape, AlphaMode, Assets, Bundle, Color, Component, MaterialMeshBundle, Mesh,
         StandardMaterial, Transform, Vec3,
@@ -48,14 +49,10 @@ impl ScaleBundle {
 
         let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
 
-        let vertices = vec![
-            [1.0, 0.0, 0.0],
-            [0.0, 1.0, 0.0],
-            [0.0, 0.0, 0.0],
-            [1.0, 0.0, 0.0],
-            [0.0, 1.0, 0.0],
-            [1.0, 1.0, 0.0],
-        ];
+        let notch_thickness = 0.01;
+        let mut vertices = vec![];
+
+        ScaleBundle::add_rectangle(&mut vertices, &[0.0, 0.0], &[1.0, 1.0]);
         let vertices = vertices
             .iter()
             .map(|x| [x[0] - 0.5, x[1] - 0.5, x[2] - 0.5])
@@ -67,6 +64,15 @@ impl ScaleBundle {
             (0..num_vertices).map(|x| x as u32).collect(),
         )));
         mesh
+    }
+
+    fn add_rectangle(vertices: &mut Vec<[f32; 3]>, tl: &[f32; 2], br: &[f32; 2]) {
+        vertices.push([br[0], br[1], 0.0]);
+        vertices.push([tl[0], br[0], 0.0]);
+        vertices.push([tl[0], tl[1], 0.0]);
+        vertices.push([br[0], br[1], 0.0]);
+        vertices.push([tl[0], tl[0], 0.0]);
+        vertices.push([br[0], tl[1], 0.0]);
     }
 }
 
