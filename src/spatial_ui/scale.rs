@@ -49,6 +49,7 @@ impl ScaleBundle {
 
         let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
 
+        let scale_depth = 0.01;
         let notches = 10;
         let notch_thickness = 0.01;
         let notch_height = 0.05;
@@ -57,26 +58,27 @@ impl ScaleBundle {
         let mut vertices = vec![];
 
         let mut x = 0.0;
-
-        ScaleBundle::add_rectangle(
+        ScaleBundle::add_rect_fb(
             &mut vertices,
-            &[x, notch_height],
-            &[x + notch_thickness, -notch_height],
+            &[x, gap_height],
+            &[x + gap_width, -gap_height],
+            scale_depth,
         );
         x += notch_thickness;
 
         for _ in 0..notches - 1 {
-            ScaleBundle::add_rectangle(
+            ScaleBundle::add_rect_fb(
                 &mut vertices,
                 &[x, gap_height],
                 &[x + gap_width, -gap_height],
+                scale_depth,
             );
             x += gap_width;
-
-            ScaleBundle::add_rectangle(
+            ScaleBundle::add_rect_fb(
                 &mut vertices,
                 &[x, notch_height],
                 &[x + notch_thickness, -notch_height],
+                scale_depth,
             );
             x += notch_thickness;
         }
@@ -94,13 +96,18 @@ impl ScaleBundle {
         mesh
     }
 
-    fn add_rectangle(vertices: &mut Vec<[f32; 3]>, tl: &[f32; 2], br: &[f32; 2]) {
-        vertices.push([br[0], br[1], 0.0]);
-        vertices.push([tl[0], tl[1], 0.0]);
-        vertices.push([tl[0], br[1], 0.0]);
-        vertices.push([br[0], br[1], 0.0]);
-        vertices.push([br[0], tl[1], 0.0]);
-        vertices.push([tl[0], tl[1], 0.0]);
+    fn add_rectangle(vertices: &mut Vec<[f32; 3]>, tl: &[f32; 2], br: &[f32; 2], z: f32) {
+        vertices.push([br[0], br[1], z]);
+        vertices.push([tl[0], tl[1], z]);
+        vertices.push([tl[0], br[1], z]);
+        vertices.push([br[0], br[1], z]);
+        vertices.push([br[0], tl[1], z]);
+        vertices.push([tl[0], tl[1], z]);
+    }
+
+    fn add_rect_fb(vertices: &mut Vec<[f32; 3]>, tl: &[f32; 2], br: &[f32; 2], z: f32) {
+        ScaleBundle::add_rectangle(vertices, tl, br, z);
+        ScaleBundle::add_rectangle(vertices, &[br[0], tl[1]], &[tl[0], br[1]], -z);
     }
 }
 
