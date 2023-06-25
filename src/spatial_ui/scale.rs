@@ -49,13 +49,41 @@ impl ScaleBundle {
 
         let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
 
+        let notches = 10;
         let notch_thickness = 0.01;
+        let notch_height = 0.05;
+        let gap_width = (1.0 - (notch_thickness * notches as f32)) / (notches as f32 - 1.0);
+        let gap_height = 0.02;
         let mut vertices = vec![];
 
-        ScaleBundle::add_rectangle(&mut vertices, &[0.0, 0.0], &[1.0, 1.0]);
+        let mut x = 0.0;
+
+        ScaleBundle::add_rectangle(
+            &mut vertices,
+            &[x, notch_height],
+            &[x + notch_thickness, -notch_height],
+        );
+        x += notch_thickness;
+
+        for _ in 0..notches - 1 {
+            ScaleBundle::add_rectangle(
+                &mut vertices,
+                &[x, gap_height],
+                &[x + gap_width, -gap_height],
+            );
+            x += gap_width;
+
+            ScaleBundle::add_rectangle(
+                &mut vertices,
+                &[x, notch_height],
+                &[x + notch_thickness, -notch_height],
+            );
+            x += notch_thickness;
+        }
+
         let vertices = vertices
             .iter()
-            .map(|x| [x[0] - 0.5, x[1] - 0.5, x[2] - 0.5])
+            .map(|x| [x[0] - 0.5, x[1], x[2]])
             .collect::<Vec<[f32; 3]>>();
         let num_vertices = vertices.len();
 
@@ -68,11 +96,11 @@ impl ScaleBundle {
 
     fn add_rectangle(vertices: &mut Vec<[f32; 3]>, tl: &[f32; 2], br: &[f32; 2]) {
         vertices.push([br[0], br[1], 0.0]);
-        vertices.push([tl[0], br[0], 0.0]);
         vertices.push([tl[0], tl[1], 0.0]);
+        vertices.push([tl[0], br[1], 0.0]);
         vertices.push([br[0], br[1], 0.0]);
-        vertices.push([tl[0], tl[0], 0.0]);
         vertices.push([br[0], tl[1], 0.0]);
+        vertices.push([tl[0], tl[1], 0.0]);
     }
 }
 
