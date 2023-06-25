@@ -7,7 +7,7 @@ use bevy_trait_query::One;
 use super::{
     grid::update_grid_containers,
     shaped_container::update_shaped_containers,
-    ui_spawning::{spawn_ui, SpawnList, UIType},
+    ui_spawning::{spawn_ui, SpawnList, UIElement},
     vertex_line::update_vertex_lines,
     NavControlled, ReceiveNav,
 };
@@ -18,10 +18,10 @@ pub struct SpatialUIPlugin;
 impl Plugin for SpatialUIPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(SpawnList {
-            spawn: vec![UIType::Grid {
+            spawn: vec![UIElement::Grid {
                 controllable: true,
-                translation: vec3(0.0, 0.0, -2.5),
-                scale: vec3(5.0, 5.0, 1.0),
+                translation: vec3(0.0, 0.0, -10.0),
+                scale: vec3(20.0, 20.0, 3.0),
                 dims: uvec2(5, 5),
             }],
         })

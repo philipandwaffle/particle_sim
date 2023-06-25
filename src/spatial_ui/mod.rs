@@ -4,6 +4,7 @@ use crate::floating_cam::control_state::NavDelta;
 
 pub mod grid;
 pub mod plugin;
+mod scale;
 mod shaped_container;
 mod ui_spawning;
 pub mod vertex_line;

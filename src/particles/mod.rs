@@ -5,13 +5,9 @@ use serde::{Deserialize, Serialize};
 
 use crate::config::structs::{ParticleProperties, SpawnSettings};
 
-use self::{
-    designers::DesignerPlugin, matrix::Matrix, movement_functions::move_particles,
-    particle::ParticleBundle,
-};
+use self::{matrix::Matrix, movement_functions::move_particles, particle::ParticleBundle};
 
-pub mod designers;
-mod interaction_rule;
+pub mod interaction_rule;
 pub mod matrix;
 mod movement_functions;
 mod particle;
@@ -37,7 +33,7 @@ impl Plugin for ParticlesPlugin {
             // .add_plugin(DesignerPlugin)
             // .add_plugin(MatrixDesignerPlugin)
             // .add_plugin(InteractionDesignerPlugin)
-            // .add_startup_system(spawn_particles)
+            .add_startup_system(spawn_particles)
             // .add_system(parallel_move_particles);
             // .add_system(parallel_arc_move_particles);
             .add_system(move_particles);

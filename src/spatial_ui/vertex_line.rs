@@ -1,3 +1,5 @@
+use std::collections::vec_deque;
+
 use bevy::{
     math::{vec2, vec3},
     prelude::{
@@ -6,14 +8,16 @@ use bevy::{
         Without,
     },
 };
+use bevy_rapier3d::parry::utils::center;
 
-use super::NavControlled;
+use super::{scale::ScaleBundle, NavControlled};
 use crate::floating_cam::control_state::NavDelta;
 
 #[derive(Bundle)]
 pub struct VertexLineBundle {
     pub vertex_line: VertexLine,
-    pub transform: Transform,
+    #[bundle]
+    pub scale_bundle: ScaleBundle,
 }
 impl VertexLineBundle {
     pub fn new(
@@ -27,19 +31,23 @@ impl VertexLineBundle {
         meshes: &mut Assets<Mesh>,
         materials: &mut Assets<StandardMaterial>,
     ) -> Self {
+        println!("Spawning vertex line");
+        let vertex_line = VertexLine::new(
+            vertices,
+            translation,
+            scale,
+            vertex_radius,
+            line_thickness,
+            commands,
+            asset_server,
+            meshes,
+            materials,
+        );
+        let scale_bundle =
+            ScaleBundle::new(translation, scale, 0, 5, 3, Color::WHITE, meshes, materials);
         return Self {
-            vertex_line: VertexLine::new(
-                vertices,
-                translation,
-                scale,
-                vertex_radius,
-                line_thickness,
-                commands,
-                asset_server,
-                meshes,
-                materials,
-            ),
-            transform: Transform::from_translation(translation),
+            vertex_line,
+            scale_bundle: scale_bundle,
         };
     }
 }
@@ -49,9 +57,12 @@ pub struct VertexLine {
     pub vertex_entities: Vec<Entity>,
     pub line_entities: Vec<Entity>,
     pub vertex_positions: Vec<Vec3>,
-    pub cur_point_id: isize,
+    pub cur_vertex_id: isize,
     pub num_vertices: usize,
     scale: Vec3,
+    offset: Vec2,
+    lower_bound: Vec2,
+    upper_bound: Vec2,
 }
 impl NavControlled for VertexLine {
     fn trickle(&mut self, nav: NavDelta) {
@@ -122,24 +133,62 @@ impl VertexLine {
             line_entities.push(line);
         }
 
+        let mut offset = translation.truncate();
+        offset.x -= scale.x * 0.5;
+        let lower_bound = (translation - scale / 2.0).truncate();
+        let upper_bound = (translation + scale / 2.0).truncate();
         return Self {
             vertex_entities: point_entities,
             line_entities: line_entities,
             vertex_positions: point_positions,
-            cur_point_id: 0,
+            cur_vertex_id: 0,
             num_vertices: vertices,
             scale,
+            offset,
+            lower_bound,
+            upper_bound,
         };
     }
 
+    pub fn get_vertices(&self) -> Vec<Vec2> {
+        return self
+            .vertex_positions
+            .iter()
+            .map(|x| x.truncate() - self.offset)
+            .collect::<Vec<Vec2>>();
+    }
+
     fn apply_primary_nav(&mut self, delta: Vec2) {
-        if self.cur_point_id == -1 || self.vertex_positions.is_empty() {
+        if self.cur_vertex_id == -1 || self.vertex_positions.is_empty() {
             return;
         }
 
         //todo! better error handling and logging
+        let vertex_id = self.cur_vertex_id as usize;
+        let cur_pos = &mut self.vertex_positions[vertex_id];
         let scaled_delta = vec2(delta.x * self.scale.x, delta.y * self.scale.y).extend(0.0);
-        self.vertex_positions[self.cur_point_id as usize] += scaled_delta;
+
+        if vertex_id == 0 || vertex_id == self.num_vertices - 1 {
+            cur_pos.y += scaled_delta.y;
+        } else {
+            *cur_pos += scaled_delta;
+        }
+
+        VertexLine::constrain_point(cur_pos, self.lower_bound, self.upper_bound);
+    }
+
+    fn constrain_point(pos: &mut Vec3, lower: Vec2, upper: Vec2) {
+        if pos.x < lower.x {
+            pos.x = lower.x;
+        } else if pos.x > upper.x {
+            pos.x = upper.x;
+        }
+
+        if pos.y < lower.y {
+            pos.y = lower.y;
+        } else if pos.y > upper.y {
+            pos.y = upper.y;
+        }
     }
 
     fn apply_secondary_nav(&mut self, delta: isize) {
@@ -148,13 +197,13 @@ impl VertexLine {
         }
 
         // Aggregate current id with delta id
-        self.cur_point_id += delta;
+        self.cur_vertex_id += delta;
 
         // Check if new id is out of bounds and fix
-        if self.cur_point_id == -1 {
-            self.cur_point_id = self.num_vertices as isize - 1;
-        } else if self.cur_point_id == self.num_vertices as isize {
-            self.cur_point_id = 0;
+        if self.cur_vertex_id == -1 {
+            self.cur_vertex_id = self.num_vertices as isize - 1;
+        } else if self.cur_vertex_id == self.num_vertices as isize {
+            self.cur_vertex_id = 0;
         }
     }
 
@@ -302,7 +351,7 @@ pub fn update_vertex_lines(
             transform.look_to(Vec3::NEG_Z, dir)
         }
 
-        let cur_id = vertex_line.cur_point_id;
+        let cur_id = vertex_line.cur_vertex_id;
 
         // Don't reorder the first and last point
         if cur_id < 1 || cur_id > (num_vertices - 2) as isize {
@@ -327,7 +376,7 @@ pub fn update_vertex_lines(
             let swap_id = (cur_id as isize + swap_id_delta) as usize;
             vertex_entities.swap(cur_id, swap_id);
             vertex_positions.swap(cur_id, swap_id);
-            vertex_line.cur_point_id += swap_id_delta;
+            vertex_line.cur_vertex_id += swap_id_delta;
 
             vertex_line.vertex_entities = vertex_entities;
             vertex_line.vertex_positions = vertex_positions;

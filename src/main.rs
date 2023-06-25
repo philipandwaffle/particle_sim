@@ -20,7 +20,7 @@ mod spatial_ui;
 mod wall_bundles;
 
 fn main() {
-    let edit_mode = false;
+    let enable_particles = true;
     let profiling_mode = false;
 
     let cfg = Config::load_cfg("settings.json");
@@ -63,11 +63,10 @@ fn main() {
             .add_plugin(FrameTimeDiagnosticsPlugin::default());
     }
 
-    if edit_mode {
-        // app.add_plugin(InteractionDesignerPlugin);
-    } else {
+    if enable_particles {
         app.add_plugin(ParticlesPlugin);
     }
+
     // app.add_startup_system(init_opaque_box);
     app.add_startup_system(init_clear_box);
 

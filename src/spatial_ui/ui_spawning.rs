@@ -7,10 +7,10 @@ use super::{grid::GridBundle, vertex_line::VertexLineBundle, ReceiveNav};
 
 #[derive(Resource)]
 pub struct SpawnList {
-    pub spawn: Vec<UIType>,
+    pub spawn: Vec<UIElement>,
 }
 
-pub enum UIType {
+pub enum UIElement {
     Grid {
         controllable: bool,
         translation: Vec3,
@@ -26,7 +26,7 @@ pub enum UIType {
         line_thickness: f32,
     },
 }
-impl UIType {
+impl UIElement {
     pub fn spawn_element(
         &self,
         commands: &mut Commands,
@@ -35,7 +35,7 @@ impl UIType {
         materials: &mut Assets<StandardMaterial>,
     ) -> Entity {
         match self {
-            UIType::Grid {
+            UIElement::Grid {
                 controllable,
                 translation,
                 scale,
@@ -56,7 +56,7 @@ impl UIType {
                     return commands.spawn(grid).id();
                 }
             }
-            UIType::VertexLine {
+            UIElement::VertexLine {
                 controllable,
                 translation,
                 scale,
