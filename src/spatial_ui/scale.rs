@@ -23,7 +23,7 @@ impl ScaleBundle {
         materials: &mut Assets<StandardMaterial>,
     ) -> Self {
         println!("creating scale");
-        let mesh = ScaleBundle::create_mesh(start, stop, notches);
+        let mesh = ScaleBundle::create_mesh(notches);
         return Self {
             scale: Scale::new(start, stop, notches),
             material_mesh_bundle: MaterialMeshBundle {
@@ -43,17 +43,23 @@ impl ScaleBundle {
         };
     }
 
-    fn create_mesh(start: i32, stop: i32, notches: u32) -> Mesh {
+    fn create_mesh(notches: u32) -> Mesh {
         println!("creating scale mesh");
+
         let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
+
         let vertices = vec![
             [1.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0],
             [0.0, 1.0, 0.0],
+            [0.0, 0.0, 0.0],
             [1.0, 0.0, 0.0],
             [0.0, 1.0, 0.0],
             [1.0, 1.0, 0.0],
         ];
+        let vertices = vertices
+            .iter()
+            .map(|x| [x[0] - 0.5, x[1] - 0.5, x[2] - 0.5])
+            .collect::<Vec<[f32; 3]>>();
         let num_vertices = vertices.len();
 
         mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, vertices);
