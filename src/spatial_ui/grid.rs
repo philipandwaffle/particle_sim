@@ -7,6 +7,7 @@ use bevy::{
 };
 
 use super::{
+    scale::Scale,
     shaped_container::{ShapedContainer, ShapedContainerBundle},
     vertex_line::{self, VertexLine},
     NavControlled, ReceiveNav,
@@ -30,6 +31,7 @@ impl GridBundle {
         dims: UVec2,
         translation: Vec3,
         scale: Vec3,
+        scale_meta: Scale,
         commands: &mut Commands,
         asset_server: &Res<AssetServer>,
         meshes: &mut Assets<Mesh>,
@@ -58,12 +60,11 @@ impl GridBundle {
 
                 //todo! Implement loading pre-made matrices
                 // Create a vertex line
-                println!("Spawning vertex line from grid");
-
                 let vertex_line = VertexLineBundle::new(
                     5,
                     container_translation,
                     container_scale,
+                    scale_meta,
                     0.01,
                     0.005,
                     commands,

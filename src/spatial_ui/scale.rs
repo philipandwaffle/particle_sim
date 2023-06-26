@@ -8,33 +8,19 @@ use bevy::{
 
 #[derive(Bundle)]
 pub struct ScaleBundle {
-    pub scale: Scale,
     pub material_mesh_bundle: MaterialMeshBundle<StandardMaterial>,
 }
 impl ScaleBundle {
     pub fn new(
         translation: Vec3,
         scale: Vec3,
-        start: i32,
-        stop: i32,
-        scale_depth: f32,
-        notches: u32,
-        notch_thickness: f32,
-        notch_height: f32,
-        gap_height: f32,
+        scale_meta: Scale,
         color: Color,
         meshes: &mut Assets<Mesh>,
         materials: &mut Assets<StandardMaterial>,
     ) -> Self {
-        let mesh = ScaleBundle::create_mesh(
-            scale_depth,
-            notches,
-            notch_thickness,
-            notch_height,
-            gap_height,
-        );
+        let mesh = ScaleBundle::create_mesh(scale_meta);
         return Self {
-            scale: Scale::new(start, stop, notches),
             material_mesh_bundle: MaterialMeshBundle {
                 mesh: meshes.add(mesh),
                 material: materials.add(StandardMaterial {
@@ -52,13 +38,13 @@ impl ScaleBundle {
         };
     }
 
-    fn create_mesh(
-        scale_depth: f32,
-        notches: u32,
-        notch_thickness: f32,
-        notch_height: f32,
-        gap_height: f32,
-    ) -> Mesh {
+    fn create_mesh(scale: Scale) -> Mesh {
+        let scale_depth = scale.scale_depth;
+        let notches = scale.notches;
+        let notch_thickness = scale.notch_thickness;
+        let notch_height = scale.notch_height;
+        let gap_height = scale.gap_height;
+
         let gap_width = (1.0 - (notch_thickness * notches as f32)) / (notches as f32 - 1.0);
 
         let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
@@ -173,18 +159,28 @@ impl ScaleBundle {
     }
 }
 
-#[derive(Component)]
+#[derive(Clone, Copy)]
 pub struct Scale {
-    pub start: i32,
-    pub stop: i32,
     pub notches: u32,
+    pub scale_depth: f32,
+    pub notch_thickness: f32,
+    pub notch_height: f32,
+    pub gap_height: f32,
 }
 impl Scale {
-    pub fn new(start: i32, stop: i32, notches: u32) -> Self {
+    pub fn new(
+        notches: u32,
+        scale_depth: f32,
+        notch_thickness: f32,
+        notch_height: f32,
+        gap_height: f32,
+    ) -> Self {
         return Self {
-            start,
-            stop,
             notches,
+            scale_depth,
+            notch_thickness,
+            notch_height,
+            gap_height,
         };
     }
 }

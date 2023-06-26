@@ -6,6 +6,7 @@ use bevy_trait_query::One;
 
 use super::{
     grid::update_grid_containers,
+    scale::Scale,
     shaped_container::update_shaped_containers,
     ui_spawning::{spawn_ui, SpawnList, UIElement},
     vertex_line::update_vertex_lines,
@@ -22,6 +23,7 @@ impl Plugin for SpatialUIPlugin {
                 controllable: true,
                 translation: vec3(0.0, 0.0, -10.0),
                 scale: vec3(20.0, 20.0, 3.0),
+                scale_meta: Scale::new(10, 0.01, 0.01, 0.025, 0.01),
                 dims: uvec2(5, 5),
             }],
         })
