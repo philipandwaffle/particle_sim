@@ -17,17 +17,15 @@ impl ScaleBundle {
         scale: Vec3,
         start: i32,
         stop: i32,
+        scale_depth: f32,
         notches: u32,
+        notch_thickness: f32,
+        notch_height: f32,
+        gap_height: f32,
         color: Color,
         meshes: &mut Assets<Mesh>,
         materials: &mut Assets<StandardMaterial>,
     ) -> Self {
-        let scale_depth = 0.01;
-        let notches = 10;
-        let notch_thickness = 0.01;
-        let notch_height = 0.05;
-        let gap_height = 0.02;
-
         let mesh = ScaleBundle::create_mesh(
             scale_depth,
             notches,

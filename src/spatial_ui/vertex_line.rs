@@ -43,8 +43,25 @@ impl VertexLineBundle {
             meshes,
             materials,
         );
-        let scale_bundle =
-            ScaleBundle::new(translation, scale, 0, 5, 3, Color::WHITE, meshes, materials);
+        let notches = 10;
+        let scale_depth = 0.01;
+        let notch_thickness = 0.01;
+        let notch_height = 0.025;
+        let gap_height = 0.01;
+        let scale_bundle = ScaleBundle::new(
+            translation,
+            scale,
+            0,
+            1,
+            scale_depth,
+            notches,
+            notch_thickness,
+            notch_height,
+            gap_height,
+            Color::WHITE,
+            meshes,
+            materials,
+        );
         return Self {
             vertex_line,
             scale_bundle: scale_bundle,
