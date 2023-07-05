@@ -23,8 +23,9 @@ impl Plugin for SpatialUIPlugin {
                 controllable: true,
                 translation: vec3(0.0, 0.0, -10.0),
                 scale: vec3(20.0, 20.0, 3.0),
-                scale_meta: NotchedScale::new(10, 0.01, 0.01, 0.025, 0.01),
-                dims: uvec2(5, 5),
+                notched_scale: NotchedScale::new(10, 0.01, 0.01, 0.025, 0.01),
+                dims: uvec2(6, 6),
+                padding: 0.05,
             }],
         })
         .add_startup_system(spawn_ui)

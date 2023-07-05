@@ -32,6 +32,7 @@ impl GridBundle {
         translation: Vec3,
         scale: Vec3,
         notched_scale: NotchedScale,
+        padding: f32,
         commands: &mut Commands,
         asset_server: &Res<AssetServer>,
         meshes: &mut Assets<Mesh>,
@@ -39,7 +40,8 @@ impl GridBundle {
     ) -> Self {
         // calculate container scale and offset so that the containers use their centre as the anchor point
         let container_scale = scale / dims.extend(1).as_vec3();
-        let container_offset = (translation + (scale / 2.0)) - (container_scale / 2.0);
+        let padded_container_scale = container_scale * (1.0 - padding * 2.0);
+        let container_offset = (translation + (scale * 0.5)) - (container_scale * (1.0 - padding));
 
         // Pre-allocate container and contents vec
         let height = dims.y as usize;
@@ -63,7 +65,7 @@ impl GridBundle {
                 let vertex_line = VertexLineBundle::new(
                     5,
                     container_translation,
-                    container_scale,
+                    padded_container_scale,
                     notched_scale,
                     0.01,
                     0.005,
@@ -79,7 +81,7 @@ impl GridBundle {
                 let container_entity = commands
                     .spawn(ShapedContainerBundle::new(
                         container_translation,
-                        container_scale,
+                        padded_container_scale,
                         Color::rgba(i as f32, j as f32, 0.0, 0.1),
                         vertex_line_entity,
                         meshes,
