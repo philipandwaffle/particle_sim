@@ -1,7 +1,6 @@
 use bevy::{
-    a11y::accesskit::Vec2,
     prelude::{
-        default, shape, AlphaMode, Assets, Bundle, Color, Component, MaterialMeshBundle, Mesh,
+        default, AlphaMode, Assets, Bundle, Color, Component, MaterialMeshBundle, Mesh,
         StandardMaterial, Transform, Vec3,
     },
     render::{mesh::Indices, render_resource::PrimitiveTopology},
@@ -9,24 +8,19 @@ use bevy::{
 
 #[derive(Bundle)]
 pub struct ScaleBundle {
-    pub scale: Scale,
     pub material_mesh_bundle: MaterialMeshBundle<StandardMaterial>,
 }
 impl ScaleBundle {
     pub fn new(
         translation: Vec3,
         scale: Vec3,
-        start: i32,
-        stop: i32,
-        notches: u32,
+        scale_meta: NotchedScale,
         color: Color,
         meshes: &mut Assets<Mesh>,
         materials: &mut Assets<StandardMaterial>,
     ) -> Self {
-        println!("creating scale");
-        let mesh = ScaleBundle::create_mesh(notches);
+        let mesh = ScaleBundle::create_mesh(scale_meta);
         return Self {
-            scale: Scale::new(start, stop, notches),
             material_mesh_bundle: MaterialMeshBundle {
                 mesh: meshes.add(mesh),
                 material: materials.add(StandardMaterial {
@@ -44,34 +38,69 @@ impl ScaleBundle {
         };
     }
 
-    fn create_mesh(notches: u32) -> Mesh {
-        println!("creating scale mesh");
+    fn create_mesh(scale: NotchedScale) -> Mesh {
+        let scale_depth = scale.scale_depth;
+        let notches = scale.notches;
+        let notch_thickness = scale.notch_thickness;
+        let notch_height = scale.notch_height;
+        let gap_height = scale.gap_height;
+
+        let gap_width = (1.0 - (notch_thickness * notches as f32)) / (notches as f32 - 1.0);
 
         let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
-
-        let scale_depth = 0.01;
-        let notches = 10;
-        let notch_thickness = 0.01;
-        let notch_height = 0.05;
-        let gap_width = (1.0 - (notch_thickness * notches as f32)) / (notches as f32 - 1.0);
-        let gap_height = 0.02;
         let mut vertices = vec![];
 
         let mut x = 0.0;
-        ScaleBundle::add_tube(
+        let ftl = [x, notch_height, scale_depth];
+        let bbr = [x + notch_thickness, -notch_height, -scale_depth];
+        ScaleBundle::add_rectangle(
             &mut vertices,
+            &[x, notch_height, -scale_depth],
+            &[x, -notch_height, -scale_depth],
+            &[x, -notch_height, scale_depth],
             &[x, notch_height, scale_depth],
-            &[x + notch_thickness, -notch_height, -scale_depth],
         );
+        ScaleBundle::add_tube(&mut vertices, &ftl, &bbr);
         x += notch_thickness;
 
         for _ in 0..notches - 1 {
+            // Add gap
             ScaleBundle::add_tube(
                 &mut vertices,
                 &[x, gap_height, scale_depth],
                 &[x + gap_width, -gap_height, -scale_depth],
             );
+            ScaleBundle::add_rectangle(
+                &mut vertices,
+                &[x, notch_height, scale_depth],
+                &[x, gap_height, scale_depth],
+                &[x, gap_height, -scale_depth],
+                &[x, notch_height, -scale_depth],
+            );
+            ScaleBundle::add_rectangle(
+                &mut vertices,
+                &[x, -notch_height, -scale_depth],
+                &[x, -gap_height, -scale_depth],
+                &[x, -gap_height, scale_depth],
+                &[x, -notch_height, scale_depth],
+            );
             x += gap_width;
+
+            // Add notch
+            ScaleBundle::add_rectangle(
+                &mut vertices,
+                &[x, notch_height, -scale_depth],
+                &[x, gap_height, -scale_depth],
+                &[x, gap_height, scale_depth],
+                &[x, notch_height, scale_depth],
+            );
+            ScaleBundle::add_rectangle(
+                &mut vertices,
+                &[x, -notch_height, scale_depth],
+                &[x, -gap_height, scale_depth],
+                &[x, -gap_height, -scale_depth],
+                &[x, -notch_height, -scale_depth],
+            );
             ScaleBundle::add_tube(
                 &mut vertices,
                 &[x, notch_height, scale_depth],
@@ -79,6 +108,13 @@ impl ScaleBundle {
             );
             x += notch_thickness;
         }
+        ScaleBundle::add_rectangle(
+            &mut vertices,
+            &[x, notch_height, scale_depth],
+            &[x, -notch_height, scale_depth],
+            &[x, -notch_height, -scale_depth],
+            &[x, notch_height, -scale_depth],
+        );
 
         let vertices = vertices
             .iter()
@@ -93,14 +129,6 @@ impl ScaleBundle {
         mesh
     }
 
-    // fn add_rectangle(vertices: &mut Vec<[f32; 3]>, tl: &[f32; 2], br: &[f32; 2], z: f32) {
-    //     vertices.push([br[0], br[1], z]);
-    //     vertices.push([tl[0], tl[1], z]);
-    //     vertices.push([tl[0], br[1], z]);
-    //     vertices.push([br[0], br[1], z]);
-    //     vertices.push([br[0], tl[1], z]);
-    //     vertices.push([tl[0], tl[1], z]);
-    // }
     fn add_rectangle(
         vertices: &mut Vec<[f32; 3]>,
         tl: &[f32; 3],
@@ -131,18 +159,28 @@ impl ScaleBundle {
     }
 }
 
-#[derive(Component)]
-pub struct Scale {
-    pub start: i32,
-    pub stop: i32,
+#[derive(Clone, Copy)]
+pub struct NotchedScale {
     pub notches: u32,
+    pub scale_depth: f32,
+    pub notch_thickness: f32,
+    pub notch_height: f32,
+    pub gap_height: f32,
 }
-impl Scale {
-    pub fn new(start: i32, stop: i32, notches: u32) -> Self {
+impl NotchedScale {
+    pub fn new(
+        notches: u32,
+        scale_depth: f32,
+        notch_thickness: f32,
+        notch_height: f32,
+        gap_height: f32,
+    ) -> Self {
         return Self {
-            start,
-            stop,
             notches,
+            scale_depth,
+            notch_thickness,
+            notch_height,
+            gap_height,
         };
     }
 }

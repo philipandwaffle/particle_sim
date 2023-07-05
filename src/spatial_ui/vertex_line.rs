@@ -10,7 +10,10 @@ use bevy::{
 };
 use bevy_rapier3d::parry::utils::center;
 
-use super::{scale::ScaleBundle, NavControlled};
+use super::{
+    notched_scale::{NotchedScale, ScaleBundle},
+    NavControlled,
+};
 use crate::floating_cam::control_state::NavDelta;
 
 #[derive(Bundle)]
@@ -24,6 +27,7 @@ impl VertexLineBundle {
         vertices: usize,
         translation: Vec3,
         scale: Vec3,
+        scale_meta: NotchedScale,
         vertex_radius: f32,
         line_thickness: f32,
         commands: &mut Commands,
@@ -43,8 +47,14 @@ impl VertexLineBundle {
             meshes,
             materials,
         );
-        let scale_bundle =
-            ScaleBundle::new(translation, scale, 0, 5, 3, Color::WHITE, meshes, materials);
+        let scale_bundle = ScaleBundle::new(
+            translation,
+            scale,
+            scale_meta,
+            Color::WHITE,
+            meshes,
+            materials,
+        );
         return Self {
             vertex_line,
             scale_bundle: scale_bundle,

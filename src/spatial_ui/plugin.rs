@@ -6,6 +6,7 @@ use bevy_trait_query::One;
 
 use super::{
     grid::update_grid_containers,
+    notched_scale::NotchedScale,
     shaped_container::update_shaped_containers,
     ui_spawning::{spawn_ui, SpawnList, UIElement},
     vertex_line::update_vertex_lines,
@@ -21,8 +22,10 @@ impl Plugin for SpatialUIPlugin {
             spawn: vec![UIElement::Grid {
                 controllable: true,
                 translation: vec3(0.0, 0.0, -10.0),
-                scale: vec3(20.0, 20.0, 3.0),
-                dims: uvec2(5, 5),
+                scale: vec3(10.0, 10.0, 3.0),
+                notched_scale: NotchedScale::new(10, 0.01, 0.01, 0.025, 0.01),
+                dims: uvec2(6, 6),
+                padding: 0.05,
             }],
         })
         .add_startup_system(spawn_ui)

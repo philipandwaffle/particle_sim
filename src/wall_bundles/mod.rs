@@ -59,6 +59,15 @@ pub fn init_opaque_box(
         &mut materials,
     ));
 
+    commands.spawn(WallBundle::new(
+        "datum".into(),
+        vec3(10.0, 10.0, 0.5),
+        vec3(0.0, 0.0, -7.0),
+        &asset_server,
+        &mut meshes,
+        &mut materials,
+    ));
+
     // LET THERE BE LIGHT
     commands.insert_resource(AmbientLight {
         color: Color::WHITE,
