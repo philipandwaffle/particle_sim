@@ -238,10 +238,11 @@ pub fn update_grid_containers(
             } else {
                 commands.entity(content).remove::<ReceiveNav>();
                 let points = vertex_lines.get(content).unwrap().get_vertices();
-
-                matrix.data[cur.y as usize][cur.x as usize] =
+                matrix.set_cell(
                     Some(Box::new(CompThreshRule::from_points(points))
-                        as Box<dyn InteractionRule + Sync + Send>);
+                        as Box<dyn InteractionRule + Sync + Send>),
+                    cur.as_uvec2(),
+                )
             }
         }
     }
