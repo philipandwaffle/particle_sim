@@ -7,7 +7,7 @@ use bevy::{
 };
 
 use super::{
-    scale::Scale,
+    notched_scale::NotchedScale,
     shaped_container::{ShapedContainer, ShapedContainerBundle},
     vertex_line::{self, VertexLine},
     NavControlled, ReceiveNav,
@@ -31,7 +31,7 @@ impl GridBundle {
         dims: UVec2,
         translation: Vec3,
         scale: Vec3,
-        scale_meta: Scale,
+        notched_scale: NotchedScale,
         commands: &mut Commands,
         asset_server: &Res<AssetServer>,
         meshes: &mut Assets<Mesh>,
@@ -64,7 +64,7 @@ impl GridBundle {
                     5,
                     container_translation,
                     container_scale,
-                    scale_meta,
+                    notched_scale,
                     0.01,
                     0.005,
                     commands,

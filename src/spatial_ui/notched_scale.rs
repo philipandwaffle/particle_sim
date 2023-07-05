@@ -14,7 +14,7 @@ impl ScaleBundle {
     pub fn new(
         translation: Vec3,
         scale: Vec3,
-        scale_meta: Scale,
+        scale_meta: NotchedScale,
         color: Color,
         meshes: &mut Assets<Mesh>,
         materials: &mut Assets<StandardMaterial>,
@@ -38,7 +38,7 @@ impl ScaleBundle {
         };
     }
 
-    fn create_mesh(scale: Scale) -> Mesh {
+    fn create_mesh(scale: NotchedScale) -> Mesh {
         let scale_depth = scale.scale_depth;
         let notches = scale.notches;
         let notch_thickness = scale.notch_thickness;
@@ -160,14 +160,14 @@ impl ScaleBundle {
 }
 
 #[derive(Clone, Copy)]
-pub struct Scale {
+pub struct NotchedScale {
     pub notches: u32,
     pub scale_depth: f32,
     pub notch_thickness: f32,
     pub notch_height: f32,
     pub gap_height: f32,
 }
-impl Scale {
+impl NotchedScale {
     pub fn new(
         notches: u32,
         scale_depth: f32,

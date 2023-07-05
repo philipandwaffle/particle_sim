@@ -3,7 +3,7 @@ use bevy::prelude::{
     Vec3,
 };
 
-use super::{grid::GridBundle, scale::Scale, vertex_line::VertexLineBundle, ReceiveNav};
+use super::{grid::GridBundle, notched_scale::NotchedScale, vertex_line::VertexLineBundle, ReceiveNav};
 
 #[derive(Resource)]
 pub struct SpawnList {
@@ -15,14 +15,14 @@ pub enum UIElement {
         controllable: bool,
         translation: Vec3,
         scale: Vec3,
-        scale_meta: Scale,
+        scale_meta: NotchedScale,
         dims: UVec2,
     },
     VertexLine {
         controllable: bool,
         translation: Vec3,
         scale: Vec3,
-        scale_meta: Scale,
+        scale_meta: NotchedScale,
         vertices: usize,
         vertex_radius: f32,
         line_thickness: f32,
