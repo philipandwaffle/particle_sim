@@ -22,7 +22,7 @@ impl Plugin for SpatialUIPlugin {
             spawn: vec![UIElement::Grid {
                 controllable: true,
                 translation: vec3(0.0, 0.0, -10.0),
-                scale: vec3(20.0, 20.0, 3.0),
+                scale: vec3(10.0, 10.0, 3.0),
                 notched_scale: NotchedScale::new(10, 0.01, 0.01, 0.025, 0.01),
                 dims: uvec2(6, 6),
                 padding: 0.05,

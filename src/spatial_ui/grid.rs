@@ -40,8 +40,9 @@ impl GridBundle {
     ) -> Self {
         // calculate container scale and offset so that the containers use their centre as the anchor point
         let container_scale = scale / dims.extend(1).as_vec3();
-        let padded_container_scale = container_scale * (1.0 - padding * 2.0);
-        let container_offset = (translation + (scale * 0.5)) - (container_scale * (1.0 - padding));
+        let padded_container_scale = container_scale * (1.0 - (padding * 2.0));
+        let container_offset =
+            (translation + (scale * 0.5)) - padded_container_scale * (0.5 + padding);
 
         // Pre-allocate container and contents vec
         let height = dims.y as usize;

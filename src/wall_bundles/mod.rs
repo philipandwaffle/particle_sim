@@ -61,7 +61,7 @@ pub fn init_opaque_box(
 
     commands.spawn(WallBundle::new(
         "datum".into(),
-        vec3(20.0, 20.0, 0.5),
+        vec3(10.0, 10.0, 0.5),
         vec3(0.0, 0.0, -7.0),
         &asset_server,
         &mut meshes,
